@@ -1,0 +1,152 @@
+{
+  "playouts": 1000,
+  "seed": 39543,
+  "balance_result": "raspberry_blue_sim\\iterative_balance_runs_v4\\iteration_08\\balance_final.json",
+  "applied_adjustments": [
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.25
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.25
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "speed",
+      "factor": 0.85
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "power",
+      "factor": 0.7921
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "area",
+      "factor": 0.7921
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.7921
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 0.8448
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 0.8448
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.7921
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "power",
+      "factor": 0.7921
+    }
+  ],
+  "match_wins_during_training": {
+    "raspberry": 126,
+    "blueberry": 874
+  },
+  "match_win_rate_during_training": {
+    "raspberry": 0.126,
+    "blueberry": 0.874
+  },
+  "rounds_played": 2283,
+  "avg_final_upgrades_per_match": {
+    "raspberry": 1.002,
+    "blueberry": 1.045
+  },
+  "policy": {
+    "raspberry": {
+      "states": 985,
+      "action_nodes": 3247,
+      "visits": 175442,
+      "most_visited_actions": [
+        [
+          "wait",
+          115815
+        ],
+        [
+          "spawn:pie",
+          30353
+        ],
+        [
+          "spawn:tart",
+          8501
+        ],
+        [
+          "spawn:baumkuchen",
+          7391
+        ],
+        [
+          "spawn:scone",
+          6425
+        ],
+        [
+          "spawn:macaron",
+          5955
+        ],
+        [
+          "upgrade",
+          1002
+        ]
+      ]
+    },
+    "blueberry": {
+      "states": 801,
+      "action_nodes": 2826,
+      "visits": 175442,
+      "most_visited_actions": [
+        [
+          "wait",
+          121249
+        ],
+        [
+          "spawn:pie",
+          22949
+        ],
+        [
+          "spawn:baumkuchen",
+          8961
+        ],
+        [
+          "spawn:tarte_tatin",
+          8706
+        ],
+        [
+          "spawn:pannacotta",
+          7550
+        ],
+        [
+          "spawn:scone",
+          4982
+        ],
+        [
+          "upgrade",
+          1045
+        ]
+      ]
+    }
+  }
+}

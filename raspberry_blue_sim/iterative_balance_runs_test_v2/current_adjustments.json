@@ -1,0 +1,28 @@
+{
+  "accepted_adjustments": [
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.25
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.25
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "speed",
+      "factor": 0.85
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.2625
+    }
+  ]
+}

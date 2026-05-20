@@ -1,0 +1,7 @@
+rank,score,raspberry_win_rate,blueberry_win_rate,avg_final_control,avg_round_duration,patch
+1,0.583333,0.0,1.0,-1.0,123.4813,blueberry.tarte_tatin.cost factor=1.14 delta=0.0
+2,0.584033,1.0,0.0,1.0084,101.8396,blueberry.tarte_tatin.area factor=0.8772 delta=0.0
+3,0.75,0.0,1.0,-3.0,124.1282,blueberry.tarte_tatin.power factor=0.8772 delta=0.0
+4,0.75,0.0,1.0,-3.0,61.375,blueberry.tarte_tatin.hp factor=0.8993 delta=0.0
+5,0.75,0.0,1.0,-3.0,105.0469,blueberry.tarte_tatin.speed factor=0.9107 delta=0.0
+6,0.75,0.0,1.0,-3.0,100.125,blueberry.pie.power factor=0.8772 delta=0.0

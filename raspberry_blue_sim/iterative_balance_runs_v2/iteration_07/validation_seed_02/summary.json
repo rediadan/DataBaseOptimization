@@ -1,0 +1,23 @@
+{
+  "matches": 100,
+  "agent_type": "trained_mcts",
+  "match_wins": {
+    "raspberry": 96,
+    "blueberry": 4
+  },
+  "match_win_rate": {
+    "raspberry": 0.96,
+    "blueberry": 0.04
+  },
+  "round_wins": {
+    "raspberry": 196,
+    "blueberry": 99
+  },
+  "rounds_played": 295,
+  "avg_final_control": 1.3831,
+  "avg_round_duration": 138.8898,
+  "avg_final_upgrades_per_match": {
+    "raspberry": 1.0,
+    "blueberry": 1.04
+  }
+}

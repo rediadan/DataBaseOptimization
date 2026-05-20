@@ -1,0 +1,9 @@
+rank,score,raspberry_win_rate,blueberry_win_rate,avg_final_control,avg_round_duration,patch
+1,0.574075,1.0,0.0,0.8889,123.9014,raspberry.pie.cost factor=1.2625 delta=0.0
+2,0.583333,1.0,0.0,1.0,60.25,raspberry.scone.cost factor=1.2625 delta=0.0
+3,0.583333,1.0,0.0,1.0,122.3333,raspberry.pie.speed factor=0.8448 delta=0.0
+4,0.708333,0.0,1.0,-2.5,124.5,raspberry.scone.power factor=0.7921 delta=0.0
+5,0.75,0.0,1.0,-3.0,121.375,raspberry.scone.hp factor=0.8264 delta=0.0
+6,0.75,0.0,1.0,-3.0,111.0,raspberry.scone.speed factor=0.8448 delta=0.0
+7,0.75,0.0,1.0,-3.0,105.5,raspberry.pie.hp factor=0.8264 delta=0.0
+8,0.75,0.0,1.0,-3.0,113.5,raspberry.pie.power factor=0.7921 delta=0.0

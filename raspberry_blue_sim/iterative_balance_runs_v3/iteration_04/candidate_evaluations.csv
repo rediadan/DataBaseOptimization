@@ -1,0 +1,7 @@
+rank,score,raspberry_win_rate,blueberry_win_rate,avg_final_control,avg_round_duration,patch
+1,0.583333,1.0,0.0,1.0,102.0833,blueberry.pannacotta.cost factor=1.14 delta=0.0
+2,0.613633,0.0,1.0,-1.3636,132.8159,blueberry.pie.cost factor=1.14 delta=0.0
+3,0.639033,0.0,1.0,-1.6684,95.8732,blueberry.pannacotta.power factor=0.8772 delta=0.0
+4,0.715617,0.0,1.0,-2.5874,128.0279,blueberry.pie.power factor=0.8772 delta=0.0
+5,0.740625,1.0,0.0,2.8875,112.0593,blueberry.pannacotta.area factor=0.8772 delta=0.0
+6,0.75,0.0,1.0,-3.0,130.5625,blueberry.pannacotta.speed factor=0.9107 delta=0.0

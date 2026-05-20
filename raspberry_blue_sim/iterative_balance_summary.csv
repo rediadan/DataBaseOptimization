@@ -1,0 +1,5 @@
+run_id,method,playouts_per_iteration,validation_matches_per_seed,validation_seeds,total_validation_matches,candidate_playouts,candidate_matches_per_seed,candidate_seeds,iterations_completed,reached_45_55,best_iteration,best_raspberry_win_rate,best_blueberry_win_rate,best_avg_final_control,best_balance_score,final_iteration,final_raspberry_win_rate,final_blueberry_win_rate,final_avg_final_control,final_balance_score,summary
+v2,candidate_compare_multi_seed,500,100,3,300,0,20,3,20,False,14,0.6533,0.3467,0.9871,0.235558,20,0.0,1.0,-1.2767,0.606392,"가장 50%에 가까운 결과는 14회차 65.33 대 34.67이었으나 45~55 허용구간에는 미도달"
+v3,candidate_compare_with_candidate_retrain,500,100,2,200,100,20,2,20,False,19,0.21,0.79,-1.4564,0.411367,20,1.0,0.0,3.0,0.75,"후보 평가에도 짧은 재학습을 넣었지만 오히려 진동이 커졌고 허용구간에는 미도달"
+v4,candidate_compare_multi_seed,500,100,3,300,0,20,3,8,True,8,0.45,0.55,-0.4771,0.089758,8,0.45,0.55,-0.4771,0.089758,"8회차에서 45 대 55로 허용구간에 도달해 자동 종료"
+v5,candidate_compare_multi_seed,500,100,3,300,0,20,3,20,False,16,0.1533,0.8467,-0.6911,0.404292,20,1.0,0.0,3.0,0.75,"20회까지 반복했지만 허용구간에 미도달했고 최종은 라즈베리 완승으로 종료"

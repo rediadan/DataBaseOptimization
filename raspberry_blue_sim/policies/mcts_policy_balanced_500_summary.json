@@ -1,0 +1,110 @@
+{
+  "playouts": 500,
+  "seed": 42,
+  "balance_result": "raspberry_blue_sim\\balance_out\\balance_result.json",
+  "applied_adjustments": [
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.25
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.25
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "speed",
+      "factor": 0.85
+    }
+  ],
+  "match_wins_during_training": {
+    "raspberry": 22,
+    "blueberry": 478
+  },
+  "match_win_rate_during_training": {
+    "raspberry": 0.044,
+    "blueberry": 0.956
+  },
+  "rounds_played": 1090,
+  "avg_final_upgrades_per_match": {
+    "raspberry": 1.0,
+    "blueberry": 1.048
+  },
+  "policy": {
+    "raspberry": {
+      "states": 707,
+      "action_nodes": 2178,
+      "visits": 74705,
+      "most_visited_actions": [
+        [
+          "wait",
+          49356
+        ],
+        [
+          "spawn:pie",
+          12944
+        ],
+        [
+          "spawn:tart",
+          3424
+        ],
+        [
+          "spawn:baumkuchen",
+          3389
+        ],
+        [
+          "spawn:macaron",
+          2799
+        ],
+        [
+          "spawn:scone",
+          2293
+        ],
+        [
+          "upgrade",
+          500
+        ]
+      ]
+    },
+    "blueberry": {
+      "states": 578,
+      "action_nodes": 1957,
+      "visits": 74705,
+      "most_visited_actions": [
+        [
+          "wait",
+          50775
+        ],
+        [
+          "spawn:pie",
+          10105
+        ],
+        [
+          "spawn:tarte_tatin",
+          4848
+        ],
+        [
+          "spawn:baumkuchen",
+          3868
+        ],
+        [
+          "spawn:pannacotta",
+          2889
+        ],
+        [
+          "spawn:scone",
+          1696
+        ],
+        [
+          "upgrade",
+          524
+        ]
+      ]
+    }
+  }
+}

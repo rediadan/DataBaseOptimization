@@ -1,0 +1,10 @@
+match_id,round_no,winner,duration,final_control,raspberry_upgrades,blueberry_upgrades,reason
+1,1,blueberry,176.25,-3,1,1,blueberry_full_control
+1,2,raspberry,180.0,3,1,1,time
+1,3,raspberry,180.0,3,1,1,time
+2,1,blueberry,174.25,-3,1,1,blueberry_full_control
+2,2,raspberry,180.0,3,1,1,time
+2,3,raspberry,180.0,3,1,1,time
+3,1,blueberry,173.5,-3,1,1,blueberry_full_control
+3,2,raspberry,180.0,3,1,1,time
+3,3,raspberry,180.0,3,1,1,time

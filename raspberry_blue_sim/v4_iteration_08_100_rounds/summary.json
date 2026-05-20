@@ -1,0 +1,30 @@
+{
+  "basis": "v4 iteration_08 balance_final + policy",
+  "seed": 9543,
+  "rounds_played": 100,
+  "completed_matches": 37,
+  "round_wins": {
+    "raspberry": 59,
+    "blueberry": 41
+  },
+  "round_win_rate": {
+    "raspberry": 0.59,
+    "blueberry": 0.41
+  },
+  "completed_match_wins": {
+    "raspberry": 21,
+    "blueberry": 16
+  },
+  "completed_match_win_rate": {
+    "raspberry": 0.5676,
+    "blueberry": 0.4324
+  },
+  "avg_final_control": -0.32,
+  "avg_round_duration": 177.3025,
+  "full_control_rounds": 13,
+  "full_control_rate": 0.13,
+  "avg_final_upgrades_per_100_round_sample": {
+    "raspberry": 38,
+    "blueberry": 38
+  }
+}

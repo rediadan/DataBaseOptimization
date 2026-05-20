@@ -1,0 +1,142 @@
+{
+  "accepted_adjustments": [
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.25
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.25
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "speed",
+      "factor": 0.85
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.14
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "area",
+      "factor": 0.8772
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.14
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 1.14
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "speed",
+      "factor": 0.9107
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.8772
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.8772
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "power",
+      "factor": 0.8772
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.14
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.14
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "power",
+      "factor": 0.8772
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 0.8993
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "hp",
+      "factor": 0.9123
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 0.8993
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 0.8772
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "power",
+      "factor": 0.8772
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "speed",
+      "factor": 0.9107
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "speed",
+      "factor": 0.9107
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.1148
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "hp",
+      "factor": 0.8993
+    }
+  ]
+}

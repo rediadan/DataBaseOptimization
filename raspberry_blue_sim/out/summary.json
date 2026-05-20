@@ -1,0 +1,22 @@
+{
+  "matches": 200,
+  "match_wins": {
+    "raspberry": 1,
+    "blueberry": 199
+  },
+  "match_win_rate": {
+    "raspberry": 0.005,
+    "blueberry": 0.995
+  },
+  "round_wins": {
+    "raspberry": 20,
+    "blueberry": 399
+  },
+  "rounds_played": 419,
+  "avg_final_control": -2.7136,
+  "avg_round_duration": 61.4362,
+  "avg_final_upgrades_per_match": {
+    "raspberry": 0.605,
+    "blueberry": 0.59
+  }
+}

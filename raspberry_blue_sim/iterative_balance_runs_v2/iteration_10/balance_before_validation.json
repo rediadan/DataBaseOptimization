@@ -1,0 +1,213 @@
+{
+  "accepted_adjustments": [
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.25
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.25
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "speed",
+      "factor": 0.85
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "area",
+      "factor": 0.7921
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "hp",
+      "factor": 0.8264
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.2625
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "speed",
+      "factor": 0.8448
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.2625
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 0.8448
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.7973
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.2625
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "hp",
+      "factor": 0.8285
+    }
+  ],
+  "final_summary": {},
+  "final_units": {
+    "raspberry": [
+      {
+        "key": "pie",
+        "role": "attacker",
+        "name": "파이",
+        "cost": 101,
+        "hp": 130,
+        "speed": 0.8,
+        "power": 31.892,
+        "cooldown": 1.0,
+        "range": 1.0,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "tart",
+        "role": "aoe_ranged",
+        "name": "타르트",
+        "cost": 280,
+        "hp": 250,
+        "speed": 0.6,
+        "power": 20,
+        "cooldown": 2.0,
+        "range": 6.0,
+        "area": 1.2,
+        "behavior": "attack"
+      },
+      {
+        "key": "baumkuchen",
+        "role": "tank",
+        "name": "바움쿠헨",
+        "cost": 250,
+        "hp": 420,
+        "speed": 0.8,
+        "power": 10,
+        "cooldown": 1.8,
+        "range": 0.5,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "scone",
+        "role": "single_ranged",
+        "name": "스콘",
+        "cost": 500,
+        "hp": 300,
+        "speed": 0.5,
+        "power": 100,
+        "cooldown": 1.8,
+        "range": 3.0,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "macaron",
+        "role": "special",
+        "name": "마카롱",
+        "cost": 300,
+        "hp": 50,
+        "speed": 1.2,
+        "power": 50,
+        "cooldown": 1.5,
+        "range": 2.5,
+        "area": 1.0,
+        "behavior": "heal"
+      }
+    ],
+    "blueberry": [
+      {
+        "key": "pie",
+        "role": "attacker",
+        "name": "파이",
+        "cost": 158,
+        "hp": 82.85,
+        "speed": 1.0,
+        "power": 70,
+        "cooldown": 1.0,
+        "range": 1.0,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "tarte_tatin",
+        "role": "aoe_ranged",
+        "name": "타르트·타탱",
+        "cost": 284,
+        "hp": 148.752,
+        "speed": 0.7181,
+        "power": 50,
+        "cooldown": 3.0,
+        "range": 4.0,
+        "area": 1.9803,
+        "behavior": "attack"
+      },
+      {
+        "key": "baumkuchen",
+        "role": "tank",
+        "name": "바움쿠헨",
+        "cost": 250,
+        "hp": 300,
+        "speed": 1.0,
+        "power": 30,
+        "cooldown": 1.0,
+        "range": 0.5,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "scone",
+        "role": "single_ranged",
+        "name": "스콘",
+        "cost": 500,
+        "hp": 200,
+        "speed": 0.6758,
+        "power": 150,
+        "cooldown": 2.0,
+        "range": 3.0,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "pannacotta",
+        "role": "special",
+        "name": "판나코타",
+        "cost": 400,
+        "hp": 50,
+        "speed": 1.5,
+        "power": 400,
+        "cooldown": 0.5,
+        "range": 1.0,
+        "area": 6.5,
+        "behavior": "suicide_aoe"
+      }
+    ]
+  }
+}

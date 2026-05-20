@@ -1,0 +1,89 @@
+{
+  "playouts": 5000,
+  "seed": 4042,
+  "match_wins_during_training": {
+    "raspberry": 740,
+    "blueberry": 4260
+  },
+  "match_win_rate_during_training": {
+    "raspberry": 0.148,
+    "blueberry": 0.852
+  },
+  "rounds_played": 11701,
+  "avg_final_upgrades_per_match": {
+    "raspberry": 1.0118,
+    "blueberry": 1.3138
+  },
+  "policy": {
+    "raspberry": {
+      "states": 2304,
+      "action_nodes": 8234,
+      "visits": 1293848,
+      "most_visited_actions": [
+        [
+          "wait",
+          746329
+        ],
+        [
+          "spawn:pie",
+          270196
+        ],
+        [
+          "spawn:tart",
+          112565
+        ],
+        [
+          "spawn:baumkuchen",
+          69980
+        ],
+        [
+          "spawn:macaron",
+          51225
+        ],
+        [
+          "spawn:scone",
+          38494
+        ],
+        [
+          "upgrade",
+          5059
+        ]
+      ]
+    },
+    "blueberry": {
+      "states": 1864,
+      "action_nodes": 7042,
+      "visits": 1293848,
+      "most_visited_actions": [
+        [
+          "wait",
+          809954
+        ],
+        [
+          "spawn:pie",
+          187898
+        ],
+        [
+          "spawn:tarte_tatin",
+          103649
+        ],
+        [
+          "spawn:baumkuchen",
+          84371
+        ],
+        [
+          "spawn:pannacotta",
+          62814
+        ],
+        [
+          "spawn:scone",
+          38593
+        ],
+        [
+          "upgrade",
+          6569
+        ]
+      ]
+    }
+  }
+}
