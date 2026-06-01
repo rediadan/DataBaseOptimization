@@ -1,0 +1,280 @@
+{
+  "accepted_adjustments": [
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 0.9621
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cost",
+      "factor": 0.927
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "hp",
+      "factor": 1.0433
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "speed",
+      "factor": 1.0473
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cooldown",
+      "factor": 0.9658
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "power",
+      "factor": 1.0433
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "range",
+      "factor": 1.0138
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "area",
+      "factor": 1.0197
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "speed",
+      "factor": 0.9735
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.9379
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0584
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0273
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9772
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.0506
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0164
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 0.9631
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cost",
+      "factor": 0.9456
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "hp",
+      "factor": 1.0422
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "speed",
+      "factor": 1.023
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cooldown",
+      "factor": 0.9812
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "power",
+      "factor": 1.0728
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "range",
+      "factor": 1.0241
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "area",
+      "factor": 1.0345
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.0379
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.9395
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0569
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0265
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9778
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.0493
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0159
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "hp",
+      "factor": 0.9755
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cost",
+      "factor": 0.9551
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "hp",
+      "factor": 1.0345
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "speed",
+      "factor": 1.0188
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cooldown",
+      "factor": 0.9846
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "power",
+      "factor": 1.0596
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "range",
+      "factor": 1.0198
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "area",
+      "factor": 1.0282
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "speed",
+      "factor": 0.9794
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cost",
+      "factor": 0.9432
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "hp",
+      "factor": 1.0331
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "speed",
+      "factor": 1.0361
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cooldown",
+      "factor": 0.9736
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "power",
+      "factor": 1.0331
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "range",
+      "factor": 1.0105
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "area",
+      "factor": 1.015
+    }
+  ]
+}

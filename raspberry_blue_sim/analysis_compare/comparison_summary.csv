@@ -1,9 +1,0 @@
-metric,before,after,delta
-raspberry_win_rate,0.0,0.54,0.54
-blueberry_win_rate,1.0,0.46,-0.54
-raspberry_round_wins,0,154,154
-blueberry_round_wins,200,112,-88
-avg_final_control,-3.0,0.4737,3.4737
-avg_round_duration,70.75,109.5085,38.7585
-raspberry_avg_upgrades,1.0,1.0,0.0
-blueberry_avg_upgrades,1.0,1.0,0.0

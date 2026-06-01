@@ -1,0 +1,356 @@
+{
+  "accepted_adjustments": [
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "power",
+      "factor": 0.9349
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cost",
+      "factor": 0.9054
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "hp",
+      "factor": 1.0766
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "speed",
+      "factor": 1.0418
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cooldown",
+      "factor": 0.9664
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "power",
+      "factor": 1.1323
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "range",
+      "factor": 1.0439
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "area",
+      "factor": 1.0627
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "hp",
+      "factor": 0.9483
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.8801
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0749
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0818
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9422
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.0749
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0238
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 0.9379
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cost",
+      "factor": 0.883
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "hp",
+      "factor": 1.0729
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "speed",
+      "factor": 1.0795
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cooldown",
+      "factor": 0.9437
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "power",
+      "factor": 1.0729
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "range",
+      "factor": 1.0232
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "area",
+      "factor": 1.0331
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "speed",
+      "factor": 0.9641
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "cost",
+      "factor": 0.9172
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "hp",
+      "factor": 1.0797
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "speed",
+      "factor": 1.0372
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "cooldown",
+      "factor": 0.9691
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 1.0691
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "range",
+      "factor": 1.0223
+    }
+  ],
+  "final_summary": {
+    "matches": 160,
+    "agent_type": "policy_train",
+    "match_wins": {
+      "raspberry": 45,
+      "blueberry": 115
+    },
+    "match_win_rate": {
+      "raspberry": 0.2812,
+      "blueberry": 0.7188
+    },
+    "round_wins": {
+      "raspberry": 127,
+      "blueberry": 248
+    },
+    "rounds_played": 375,
+    "avg_final_control": -0.832,
+    "avg_round_duration": 162.0413,
+    "avg_final_upgrades_per_match": {
+      "raspberry": 1.0188,
+      "blueberry": 1.1812
+    },
+    "avg_final_attack_upgrades_per_match": {
+      "raspberry": 0.5312,
+      "blueberry": 0.6
+    },
+    "avg_final_hp_upgrades_per_match": {
+      "raspberry": 0.4875,
+      "blueberry": 0.5813
+    },
+    "validation_seeds": [
+      20265102,
+      20275102
+    ],
+    "matches_per_seed": 80
+  },
+  "final_units": {
+    "raspberry": [
+      {
+        "key": "pie",
+        "role": "attacker",
+        "name": "파이",
+        "cost": 80,
+        "hp": 130,
+        "speed": 0.8,
+        "power": 40,
+        "cooldown": 1.0,
+        "range": 1.0,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "tart",
+        "role": "aoe_ranged",
+        "name": "타르트",
+        "cost": 280,
+        "hp": 250,
+        "speed": 0.6,
+        "power": 20,
+        "cooldown": 2.0,
+        "range": 6.0,
+        "area": 1.2,
+        "behavior": "attack"
+      },
+      {
+        "key": "baumkuchen",
+        "role": "tank",
+        "name": "바움쿠헨",
+        "cost": 229,
+        "hp": 453.474,
+        "speed": 0.8298,
+        "power": 10.691,
+        "cooldown": 1.7444,
+        "range": 0.5111,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "scone",
+        "role": "single_ranged",
+        "name": "스콘",
+        "cost": 440,
+        "hp": 322.47,
+        "speed": 0.5409,
+        "power": 107.49,
+        "cooldown": 1.696,
+        "range": 3.0714,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "macaron",
+        "role": "special",
+        "name": "마카롱",
+        "cost": 240,
+        "hp": 57.7542,
+        "speed": 1.3496,
+        "power": 60.7422,
+        "cooldown": 1.368,
+        "range": 2.6703,
+        "area": 1.0979,
+        "behavior": "heal"
+      }
+    ],
+    "blueberry": [
+      {
+        "key": "pie",
+        "role": "attacker",
+        "name": "파이",
+        "cost": 100,
+        "hp": 100,
+        "speed": 1.0,
+        "power": 70,
+        "cooldown": 1.0,
+        "range": 1.0,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "tarte_tatin",
+        "role": "aoe_ranged",
+        "name": "타르트·타탱",
+        "cost": 180,
+        "hp": 180,
+        "speed": 1.0,
+        "power": 46.745,
+        "cooldown": 3.0,
+        "range": 4.0,
+        "area": 2.5,
+        "behavior": "attack"
+      },
+      {
+        "key": "baumkuchen",
+        "role": "tank",
+        "name": "바움쿠헨",
+        "cost": 250,
+        "hp": 284.49,
+        "speed": 0.9641,
+        "power": 28.137,
+        "cooldown": 1.0,
+        "range": 0.5,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "scone",
+        "role": "single_ranged",
+        "name": "스콘",
+        "cost": 500,
+        "hp": 200,
+        "speed": 0.8,
+        "power": 150,
+        "cooldown": 2.0,
+        "range": 3.0,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "pannacotta",
+        "role": "special",
+        "name": "판나코타",
+        "cost": 400,
+        "hp": 50,
+        "speed": 1.5,
+        "power": 400,
+        "cooldown": 0.5,
+        "range": 1.0,
+        "area": 6.5,
+        "behavior": "suicide_aoe"
+      }
+    ]
+  }
+}

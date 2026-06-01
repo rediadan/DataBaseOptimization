@@ -1,9 +1,0 @@
-team,unit_key,unit_name,produced,kills,damage,healing
-raspberry,baumkuchen,바움쿠헨,300,0,3900.0,0.0
-raspberry,macaron,마카롱,100,0,0.0,0.0
-raspberry,pie,파이,2000,100,62400.0,0.0
-raspberry,scone,스콘,600,1500,338000.0,0.0
-raspberry,tart,타르트,600,200,93600.0,0.0
-blueberry,baumkuchen,바움쿠헨,100,0,9000.0,0.0
-blueberry,pie,파이,3400,1000,182000.0,0.0
-blueberry,tarte_tatin,타르트·타탱,2300,2300,560000.0,0.0

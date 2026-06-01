@@ -1,0 +1,36 @@
+{
+  "matches": 160,
+  "agent_type": "policy_train",
+  "match_wins": {
+    "raspberry": 38,
+    "blueberry": 122
+  },
+  "match_win_rate": {
+    "raspberry": 0.2375,
+    "blueberry": 0.7625
+  },
+  "round_wins": {
+    "raspberry": 110,
+    "blueberry": 264
+  },
+  "rounds_played": 374,
+  "avg_final_control": -1.2166,
+  "avg_round_duration": 161.8743,
+  "avg_final_upgrades_per_match": {
+    "raspberry": 1.0,
+    "blueberry": 1.25
+  },
+  "avg_final_attack_upgrades_per_match": {
+    "raspberry": 0.5188,
+    "blueberry": 0.6188
+  },
+  "avg_final_hp_upgrades_per_match": {
+    "raspberry": 0.4813,
+    "blueberry": 0.6312
+  },
+  "validation_seeds": [
+    20266105,
+    20276105
+  ],
+  "matches_per_seed": 80
+}

@@ -437,6 +437,11 @@ def write_master_history(path: Path, rows: List[dict]) -> None:
                 "avg_final_control",
                 "avg_round_duration",
                 "balance_score",
+                "confirmation_raspberry_win_rate",
+                "confirmation_blueberry_win_rate",
+                "confirmation_avg_final_control",
+                "confirmation_balance_score",
+                "confirmation_passed",
                 "patch_added",
                 "stopped",
             ]
@@ -450,6 +455,11 @@ def write_master_history(path: Path, rows: List[dict]) -> None:
                     row["avg_final_control"],
                     row["avg_round_duration"],
                     row["balance_score"],
+                    row.get("confirmation_raspberry_win_rate", ""),
+                    row.get("confirmation_blueberry_win_rate", ""),
+                    row.get("confirmation_avg_final_control", ""),
+                    row.get("confirmation_balance_score", ""),
+                    row.get("confirmation_passed", ""),
                     row["patch_added"],
                     row["stopped"],
                 ]
@@ -458,7 +468,7 @@ def write_master_history(path: Path, rows: List[dict]) -> None:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--seed-balance", default="raspberry_blue_sim/balance_out/balance_result.json")
+    parser.add_argument("--seed-balance", default="")
     parser.add_argument("--out", default="raspberry_blue_sim/iterative_balance_runs")
     parser.add_argument("--max-iterations", type=int, default=20)
     parser.add_argument("--playouts", type=int, default=500)
@@ -473,6 +483,8 @@ def main():
     parser.add_argument("--candidate-seeds", type=int, default=3)
     parser.add_argument("--candidate-limit", type=int, default=8)
     parser.add_argument("--control-weight", type=float, default=0.25)
+    parser.add_argument("--target-confirmations", type=int, default=1)
+    parser.add_argument("--confirmation-seeds", type=int, default=0)
     args = parser.parse_args()
 
     out_dir = Path(args.out)
@@ -485,6 +497,7 @@ def main():
         f"out={out_dir}, max_iterations={args.max_iterations}, initial_playouts={args.playouts}, "
         f"matches={args.matches}, validation_seeds={args.validation_seeds}, "
         f"candidate_matches={args.candidate_matches}, candidate_seeds={args.candidate_seeds}, "
+        f"target_confirmations={args.target_confirmations}, "
         "policy_update=backprop_only, patch_mode=soft_nerf_and_low_impact_rework"
     )
 
@@ -533,8 +546,59 @@ def main():
         blueberry_rate = summary["match_win_rate"]["blueberry"]
         gap = abs(raspberry_rate - args.target)
         score = balance_score(summary, args.target, args.control_weight)
-        stopped = gap <= args.tolerance
+        target_reached = gap <= args.tolerance
+        stopped = target_reached
         patch_added = ""
+        confirmation_summary = None
+        confirmation_score = None
+        confirmation_passed = ""
+        patch_source_dir = iteration_dir
+
+        if target_reached and args.target_confirmations > 0:
+            log(
+                f"[{iteration_label}] target reached once: gap={gap:.4f}, "
+                f"running {args.target_confirmations} confirmation validation(s)"
+            )
+            confirmation_seed_count = args.confirmation_seeds or args.validation_seeds
+            stopped = True
+            for confirmation_index in range(args.target_confirmations):
+                confirmation_dir = iteration_dir / f"target_confirmation_{confirmation_index + 1:02d}"
+                confirmation_seeds = [
+                    args.seed
+                    + iteration * 1000
+                    + 500000
+                    + confirmation_index * 100000
+                    + seed_index * 10000
+                    for seed_index in range(confirmation_seed_count)
+                ]
+                reset_balance()
+                apply_adjustments(adjustments)
+                confirmation_policy = copy.deepcopy(policy)
+                confirmation_summary, _ = validate_policy_multi_seed(
+                    args.matches,
+                    confirmation_seeds,
+                    confirmation_policy,
+                    confirmation_dir,
+                    f"{iteration_label} target confirmation {confirmation_index + 1}/{args.target_confirmations}",
+                    agent_type="policy_train",
+                )
+                confirmation_rate = confirmation_summary["match_win_rate"]["raspberry"]
+                confirmation_gap = abs(confirmation_rate - args.target)
+                confirmation_score = balance_score(confirmation_summary, args.target, args.control_weight)
+                confirmation_passed = confirmation_gap <= args.tolerance
+                log(
+                    f"[{iteration_label}] confirmation {confirmation_index + 1}: "
+                    f"gap={confirmation_gap:.4f}, tolerance={args.tolerance}, passed={confirmation_passed}"
+                )
+                if not confirmation_passed:
+                    stopped = False
+                    summary = confirmation_summary
+                    raspberry_rate = summary["match_win_rate"]["raspberry"]
+                    blueberry_rate = summary["match_win_rate"]["blueberry"]
+                    gap = confirmation_gap
+                    score = confirmation_score
+                    patch_source_dir = confirmation_dir
+                    break
 
         if not stopped:
             dominant_team = "raspberry" if raspberry_rate > blueberry_rate else "blueberry"
@@ -546,7 +610,7 @@ def main():
                 f"underdog={underdog_team}, strength={strength:.4f}"
             )
             candidates = build_candidate_patches(
-                iteration_dir,
+                patch_source_dir,
                 dominant_team,
                 underdog_team,
                 adjustment_counts,
@@ -581,8 +645,11 @@ def main():
             log(f"[{iteration_label}] selected patch: {patch_added}")
             write_balance_result(iteration_dir / "balance_after_patch.json", adjustments, summary)
         else:
-            write_balance_result(iteration_dir / "balance_final.json", adjustments, summary)
-            log(f"[{iteration_label}] target reached: gap={gap:.4f}, tolerance={args.tolerance}")
+            final_summary = dict(summary)
+            if confirmation_summary:
+                final_summary["confirmation_summary"] = confirmation_summary
+            write_balance_result(iteration_dir / "balance_final.json", adjustments, final_summary)
+            log(f"[{iteration_label}] target confirmed: gap={gap:.4f}, tolerance={args.tolerance}")
 
         row = {
             "iteration": iteration,
@@ -591,6 +658,15 @@ def main():
             "avg_final_control": summary["avg_final_control"],
             "avg_round_duration": summary["avg_round_duration"],
             "balance_score": score,
+            "confirmation_raspberry_win_rate": (
+                confirmation_summary["match_win_rate"]["raspberry"] if confirmation_summary else ""
+            ),
+            "confirmation_blueberry_win_rate": (
+                confirmation_summary["match_win_rate"]["blueberry"] if confirmation_summary else ""
+            ),
+            "confirmation_avg_final_control": confirmation_summary["avg_final_control"] if confirmation_summary else "",
+            "confirmation_balance_score": confirmation_score if confirmation_score is not None else "",
+            "confirmation_passed": confirmation_passed,
             "patch_added": patch_added,
             "stopped": stopped,
         }
@@ -616,6 +692,8 @@ def main():
         "candidate_matches": args.candidate_matches,
         "candidate_playouts": 0,
         "candidate_seeds": args.candidate_seeds,
+        "target_confirmations": args.target_confirmations,
+        "confirmation_seeds": args.confirmation_seeds or args.validation_seeds,
         "policy_update_mode": "match_backpropagation_only",
         "patch_generation_mode": "soft_nerf_best_unit_and_rework_low_impact_unit",
         "control_weight": args.control_weight,
