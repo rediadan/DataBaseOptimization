@@ -61,6 +61,12 @@ def main():
         "avg_final_upgrades_per_match": {
             team: round(aggregate[team].upgrade_level / args.playouts, 4) for team in TEAMS
         },
+        "avg_final_attack_upgrades_per_match": {
+            team: round(aggregate[team].attack_upgrade_level / args.playouts, 4) for team in TEAMS
+        },
+        "avg_final_hp_upgrades_per_match": {
+            team: round(aggregate[team].hp_upgrade_level / args.playouts, 4) for team in TEAMS
+        },
         "policy": policy_summary(policy),
     }
 

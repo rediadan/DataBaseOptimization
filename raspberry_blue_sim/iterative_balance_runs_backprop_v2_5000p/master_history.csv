@@ -1,0 +1,7 @@
+iteration,raspberry_win_rate,blueberry_win_rate,avg_final_control,avg_round_duration,balance_score,patch_added,stopped
+1,0.0083,0.9917,-2.621,151.4718,0.710117,blueberry.scone.power factor=0.935 delta=0.0,False
+2,0.1667,0.8333,-1.4276,166.1802,0.452267,blueberry.tarte_tatin.cost factor=1.06 delta=0.0,False
+3,0.3,0.7,-0.6701,169.1319,0.255842,blueberry.tarte_tatin.cost factor=1.052 delta=0.0,False
+4,0.6583,0.3417,0.8657,175.424,0.230442,raspberry.tart.speed factor=0.9665 delta=0.0,False
+5,0.6,0.4,0.4698,175.0117,0.13915,raspberry.tart.cost factor=1.046 delta=0.0,False
+6,0.5333,0.4667,0.1447,173.2039,0.045358,,True

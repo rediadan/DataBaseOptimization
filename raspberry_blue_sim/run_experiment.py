@@ -156,6 +156,12 @@ def build_summary(match_rows, round_rows, aggregate, matches: int, agent_type: s
         "avg_final_upgrades_per_match": {
             team: round(aggregate[team].upgrade_level / matches, 4) for team in TEAMS
         },
+        "avg_final_attack_upgrades_per_match": {
+            team: round(aggregate[team].attack_upgrade_level / matches, 4) for team in TEAMS
+        },
+        "avg_final_hp_upgrades_per_match": {
+            team: round(aggregate[team].hp_upgrade_level / matches, 4) for team in TEAMS
+        },
     }
 
 

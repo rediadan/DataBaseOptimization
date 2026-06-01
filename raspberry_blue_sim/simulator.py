@@ -30,6 +30,11 @@ from config import (
     sector_from_position,
 )
 
+POLICY_BACKPROP_DISCOUNT = 0.995
+MATCH_WIN_REWARD_WEIGHT = 0.60
+ROUND_WIN_REWARD_WEIGHT = 0.25
+ROUND_STATE_REWARD_WEIGHT = 0.15
+
 
 @dataclass
 class Unit:
@@ -49,6 +54,8 @@ class TeamState:
     name: str
     credits: int = BASE_CREDITS
     upgrade_level: int = 0
+    attack_upgrade_level: int = 0
+    hp_upgrade_level: int = 0
     produced: Dict[str, int] = field(default_factory=dict)
     kills: Dict[str, int] = field(default_factory=dict)
     damage: Dict[str, float] = field(default_factory=dict)
@@ -103,11 +110,11 @@ class HeuristicAgent:
 
         if self.upgrade_first and state.upgrade_level == 0 and now < 12:
             if state.credits >= UPGRADE_COST:
-                sim.buy_upgrade(self.team)
+                sim.buy_upgrade(self.team, self.choose_upgrade_stat(state))
             return
 
         if now > 10 and state.credits >= UPGRADE_COST and state.upgrade_level == 0:
-            sim.buy_upgrade(self.team)
+            sim.buy_upgrade(self.team, self.choose_upgrade_stat(state))
             return
 
         if state.credits >= UPGRADE_COST:
@@ -117,7 +124,7 @@ class HeuristicAgent:
             if state.upgrade_level >= 3:
                 base_upgrade_chance *= 0.55
             if self.rng.random() < min(0.35, base_upgrade_chance):
-                sim.buy_upgrade(self.team)
+                sim.buy_upgrade(self.team, self.choose_upgrade_stat(state))
                 return
 
         if now > 8 and state.credits >= 650:
@@ -133,6 +140,13 @@ class HeuristicAgent:
 
         unit = self.choose_unit(affordable, control, pressure, now)
         sim.spawn(self.team, unit)
+
+    def choose_upgrade_stat(self, state: TeamState) -> str:
+        if state.attack_upgrade_level < state.hp_upgrade_level:
+            return "attack"
+        if state.hp_upgrade_level < state.attack_upgrade_level:
+            return "hp"
+        return self.rng.choice(["attack", "hp"])
 
     def choose_unit(self, affordable: List[UnitSpec], control: int, pressure: float, now: float) -> UnitSpec:
         weights = []
@@ -248,8 +262,14 @@ class PolicyMCTSAgent:
         if sim.states[self.team].upgrade_level > 0 or now > 12:
             return None
         legal = set(actions)
-        if ("upgrade", None) in legal:
-            return ("upgrade", None)
+        attack_upgrade = ("upgrade", "attack")
+        hp_upgrade = ("upgrade", "hp")
+        if attack_upgrade in legal and hp_upgrade in legal:
+            return self.rng.choice([attack_upgrade, hp_upgrade])
+        if attack_upgrade in legal:
+            return attack_upgrade
+        if hp_upgrade in legal:
+            return hp_upgrade
         if ("wait", None) in legal:
             return ("wait", None)
         return None
@@ -313,6 +333,7 @@ class RoundSim:
         self.policy_traces: Dict[str, List[tuple[str, str]]] = {team: [] for team in TEAMS}
         self.current_focus_counts: Dict[int, int] = {}
         self.agents = self.create_agents(agent_type)
+        self.final_scores: Dict[str, float] = {team: 0.5 for team in TEAMS}
 
     def create_agents(self, agent_type: str):
         if agent_type == "mcts":
@@ -335,7 +356,7 @@ class RoundSim:
 
         self.record_remaining_survival()
         winner = self.decide_winner()
-        self.update_policy(winner)
+        self.final_scores = {team: self.evaluate_for(team) for team in TEAMS}
         return RoundResult(
             self.match_id,
             self.round_no,
@@ -373,6 +394,8 @@ class RoundSim:
         time_bucket = min(5, int(now // 30))
         control = self.control * perspective
         upgrade_diff = max(-3, min(3, own.upgrade_level - enemy.upgrade_level))
+        attack_upgrade_diff = max(-3, min(3, own.attack_upgrade_level - enemy.attack_upgrade_level))
+        hp_upgrade_diff = max(-3, min(3, own.hp_upgrade_level - enemy.hp_upgrade_level))
         return "|".join(
             [
                 f"t{time_bucket}",
@@ -381,30 +404,17 @@ class RoundSim:
                 f"ecr{enemy_credit_bucket}",
                 f"p{pressure}",
                 f"u{upgrade_diff}",
+                f"a{attack_upgrade_diff}",
+                f"h{hp_upgrade_diff}",
             ]
         )
-
-    def update_policy(self, winner: str) -> None:
-        if self.agent_type != "policy_train":
-            return
-        for team, trace in self.policy_traces.items():
-            reward = self.evaluate_for(team)
-            if winner == team:
-                reward = min(1.0, reward + 0.15)
-            team_policy = self.policy.setdefault(team, {})
-            for state_key, action_key in trace:
-                state = team_policy.setdefault(state_key, {})
-                node = state.setdefault(action_key, {"visits": 0, "reward": 0.0, "wins": 0})
-                node["visits"] += 1
-                node["reward"] += reward
-                if winner == team:
-                    node["wins"] += 1
 
     def available_actions(self, team: str) -> List[tuple[str, Optional[str]]]:
         state = self.states[team]
         actions: List[tuple[str, Optional[str]]] = []
         if state.credits >= UPGRADE_COST:
-            actions.append(("upgrade", None))
+            actions.append(("upgrade", "attack"))
+            actions.append(("upgrade", "hp"))
         for spec in TEAMS[team]["units"]:
             if state.credits >= spec.cost:
                 actions.append(("spawn", spec.key))
@@ -418,23 +428,29 @@ class RoundSim:
         if kind == "wait":
             return True
         if kind == "upgrade":
-            return self.buy_upgrade(team)
+            return self.buy_upgrade(team, unit_key or "attack")
         if kind == "spawn" and unit_key:
             spec = next(spec for spec in TEAMS[team]["units"] if spec.key == unit_key)
             return self.spawn(team, spec)
         return False
 
-    def buy_upgrade(self, team: str) -> bool:
+    def buy_upgrade(self, team: str, upgrade_stat: str) -> bool:
         state = self.states[team]
         if state.credits < UPGRADE_COST:
             return False
+        if upgrade_stat not in {"attack", "hp"}:
+            return False
         state.credits -= UPGRADE_COST
         state.upgrade_level += 1
+        if upgrade_stat == "attack":
+            state.attack_upgrade_level += 1
+        else:
+            state.hp_upgrade_level += 1
         for unit in self.units:
             if unit.team != team:
                 continue
             hp, power = self.scaled_stats(team, unit.spec)
-            if TEAMS[team]["upgrade_stat"] == "hp":
+            if upgrade_stat == "hp":
                 missing_ratio = unit.hp / unit.max_hp if unit.max_hp else 1.0
                 unit.max_hp = hp
                 unit.hp = min(unit.max_hp, unit.max_hp * missing_ratio)
@@ -456,15 +472,14 @@ class RoundSim:
         return True
 
     def scaled_stats(self, team: str, spec: UnitSpec) -> tuple[float, float]:
-        level = self.states[team].upgrade_level
+        state = self.states[team]
         hp = spec.hp
         power = spec.power
-        if TEAMS[team]["upgrade_stat"] == "hp":
-            hp = spec.hp * (1 + UPGRADE_RATE * level)
-        if TEAMS[team]["upgrade_stat"] == "attack" and spec.behavior != "heal":
-            power = spec.power * (1 + UPGRADE_RATE * level)
-        if spec.behavior == "heal" and TEAMS[team]["upgrade_stat"] == "attack":
-            power = spec.power * (1 + UPGRADE_RATE * level)
+        hp = spec.hp * (1 + UPGRADE_RATE * state.hp_upgrade_level)
+        if spec.behavior != "heal":
+            power = spec.power * (1 + UPGRADE_RATE * state.attack_upgrade_level)
+        if spec.behavior == "heal":
+            power = spec.power * (1 + UPGRADE_RATE * state.attack_upgrade_level)
         return hp, power
 
     def spawn_position(self, team: str) -> float:
@@ -659,6 +674,8 @@ class MatchSim:
         self.policy = policy if policy is not None else {}
         self.states = {team: TeamState(team) for team in TEAMS}
         self.round_results: List[RoundResult] = []
+        self.policy_traces: Dict[str, List[tuple[str, str]]] = {team: [] for team in TEAMS}
+        self.round_scores: Dict[str, List[float]] = {team: [] for team in TEAMS}
 
     def run(self) -> MatchResult:
         wins = {"raspberry": 0, "blueberry": 0}
@@ -666,11 +683,16 @@ class MatchSim:
         while max(wins.values()) < MATCH_ROUNDS_TO_WIN and round_no <= 3:
             for state in self.states.values():
                 state.credits = BASE_CREDITS
-            result = RoundSim(self.rng, self.match_id, round_no, self.states, self.agent_type, self.policy).run()
+            round_sim = RoundSim(self.rng, self.match_id, round_no, self.states, self.agent_type, self.policy)
+            result = round_sim.run()
             self.round_results.append(result)
+            for team in TEAMS:
+                self.policy_traces[team].extend(round_sim.policy_traces[team])
+                self.round_scores[team].append(round_sim.final_scores[team])
             wins[result.winner] += 1
             round_no += 1
         winner = "raspberry" if wins["raspberry"] > wins["blueberry"] else "blueberry"
+        self.backpropagate_policy(winner, wins)
         return MatchResult(
             self.match_id,
             winner,
@@ -680,6 +702,29 @@ class MatchSim:
             self.states["raspberry"].upgrade_level,
             self.states["blueberry"].upgrade_level,
         )
+
+    def backpropagate_policy(self, winner: str, wins: Dict[str, int]) -> None:
+        if self.agent_type != "policy_train":
+            return
+        rounds_played = len(self.round_results) or 1
+        for team, trace in self.policy_traces.items():
+            if not trace:
+                continue
+            round_state_score = sum(self.round_scores[team]) / len(self.round_scores[team]) if self.round_scores[team] else 0.5
+            final_reward = (
+                MATCH_WIN_REWARD_WEIGHT * (1.0 if winner == team else 0.0)
+                + ROUND_WIN_REWARD_WEIGHT * (wins[team] / rounds_played)
+                + ROUND_STATE_REWARD_WEIGHT * round_state_score
+            )
+            team_policy = self.policy.setdefault(team, {})
+            for distance_from_terminal, (state_key, action_key) in enumerate(reversed(trace)):
+                discounted_reward = final_reward * (POLICY_BACKPROP_DISCOUNT ** distance_from_terminal)
+                state = team_policy.setdefault(state_key, {})
+                node = state.setdefault(action_key, {"visits": 0, "reward": 0.0, "wins": 0})
+                node["visits"] += 1
+                node["reward"] += discounted_reward
+                if winner == team:
+                    node["wins"] += 1
 
 
 def load_policy(path: Optional[str]) -> dict:
@@ -726,6 +771,8 @@ def run_matches(
             for key, value in state.max_focus_attackers.items():
                 aggregate[team].max_focus_attackers[key] = max(aggregate[team].max_focus_attackers.get(key, 0), value)
             aggregate[team].upgrade_level += state.upgrade_level
+            aggregate[team].attack_upgrade_level += state.attack_upgrade_level
+            aggregate[team].hp_upgrade_level += state.hp_upgrade_level
         if progress_label and (match_id == 1 or match_id == matches or match_id % progress_interval == 0):
             percent = match_id / matches * 100
             wins = {team: sum(1 for row in match_results if row.winner == team) for team in TEAMS}

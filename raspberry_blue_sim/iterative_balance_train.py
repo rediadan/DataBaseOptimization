@@ -1,4 +1,5 @@
 import argparse
+import copy
 import csv
 import json
 from pathlib import Path
@@ -54,16 +55,16 @@ def train_policy(playouts: int, seed: int, policy_path: Path, report_path: Path,
         "avg_final_upgrades_per_match": {
             team: round(aggregate[team].upgrade_level / playouts, 4) for team in TEAMS
         },
+        "avg_final_attack_upgrades_per_match": {
+            team: round(aggregate[team].attack_upgrade_level / playouts, 4) for team in TEAMS
+        },
+        "avg_final_hp_upgrades_per_match": {
+            team: round(aggregate[team].hp_upgrade_level / playouts, 4) for team in TEAMS
+        },
         "policy": policy_summary(policy),
     }
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     log(f"[{label}] train done: win_rate={report['match_win_rate_during_training']}, rounds={len(round_rows)}")
-    return policy
-
-
-def train_policy_in_memory(playouts: int, seed: int) -> dict:
-    policy: dict = {}
-    run_matches(playouts, seed, "policy_train", policy)
     return policy
 
 
@@ -88,6 +89,8 @@ def merge_aggregate(target: Dict[str, TeamState], source: Dict[str, TeamState]) 
         for key, value in state.max_focus_attackers.items():
             target[team].max_focus_attackers[key] = max(target[team].max_focus_attackers.get(key, 0), value)
         target[team].upgrade_level += state.upgrade_level
+        target[team].attack_upgrade_level += state.attack_upgrade_level
+        target[team].hp_upgrade_level += state.hp_upgrade_level
 
 
 def offset_match_ids(
@@ -118,6 +121,7 @@ def validate_policy_multi_seed(
     policy: dict,
     out_dir: Path,
     label: str = "",
+    agent_type: str = "trained_mcts",
 ) -> tuple[dict, Dict[str, TeamState]]:
     all_matches: List[MatchResult] = []
     all_rounds: List[RoundResult] = []
@@ -131,14 +135,14 @@ def validate_policy_multi_seed(
         match_rows, round_rows, seed_aggregate = run_matches(
             matches,
             seed,
-            "trained_mcts",
+            agent_type,
             policy,
             progress_label=seed_label,
         )
         write_matches(seed_dir / "matches.csv", match_rows)
         write_rounds(seed_dir / "rounds.csv", round_rows)
         write_unit_stats(seed_dir / "unit_stats.csv", seed_aggregate, matches)
-        seed_summary = build_summary(match_rows, round_rows, seed_aggregate, matches, "trained_mcts")
+        seed_summary = build_summary(match_rows, round_rows, seed_aggregate, matches, agent_type)
         (seed_dir / "summary.json").write_text(json.dumps(seed_summary, ensure_ascii=False, indent=2), encoding="utf-8")
         log(
             f"[{seed_label}] done: win_rate={seed_summary['match_win_rate']}, "
@@ -154,7 +158,7 @@ def validate_policy_multi_seed(
     write_matches(out_dir / "matches.csv", all_matches)
     write_rounds(out_dir / "rounds.csv", all_rounds)
     write_unit_stats(out_dir / "unit_stats.csv", aggregate, total_matches)
-    summary = build_summary(all_matches, all_rounds, aggregate, total_matches, "trained_mcts")
+    summary = build_summary(all_matches, all_rounds, aggregate, total_matches, agent_type)
     summary["validation_seeds"] = seeds
     summary["matches_per_seed"] = matches
     (out_dir / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -169,15 +173,48 @@ def validate_policy_multi_seed(
 def contribution_score(row: dict) -> float:
     return (
         float(row.get("damage_per_match", 0)) * 1.0
+        + float(row.get("healing", 0)) * 0.35
+        + float(row.get("damage_taken", 0)) * 0.12
         + float(row.get("kills_per_match", 0)) * 80.0
         + float(row.get("produced_per_match", 0)) * 8.0
+        + float(row.get("avg_survival_time", 0)) * 0.4
         + float(row.get("focus_fire_hits", 0)) * 0.8
     )
 
 
 def read_unit_rows(path: Path, team: str) -> List[dict]:
     with path.open("r", newline="", encoding="utf-8") as f:
-        return [row for row in csv.DictReader(f) if row["team"] == team]
+        rows = {row["unit_key"]: row for row in csv.DictReader(f) if row["team"] == team}
+    result = []
+    for spec in TEAMS[team]["units"]:
+        result.append(
+            rows.get(
+                spec.key,
+                {
+                    "team": team,
+                    "unit_key": spec.key,
+                    "unit_name": spec.name,
+                    "produced": "0",
+                    "produced_per_match": "0",
+                    "team_production_share": "0",
+                    "kills": "0",
+                    "kills_per_match": "0",
+                    "deaths": "0",
+                    "damage": "0",
+                    "damage_per_match": "0",
+                    "damage_taken": "0",
+                    "healing": "0",
+                    "attacks_made": "0",
+                    "attacks_received": "0",
+                    "survival_time": "0",
+                    "avg_survival_time": "0",
+                    "focus_fire_hits": "0",
+                    "focus_fire_events": "0",
+                    "max_focus_attackers": "0",
+                },
+            )
+        )
+    return result
 
 
 def get_spec(team: str, unit_key: str):
@@ -188,20 +225,59 @@ def candidate_stat_options(row: dict, team: str, unit_key: str, strength: float,
     spec = get_spec(team, unit_key)
     options: List[tuple[str, float]] = []
     nerf = mode == "nerf"
+    soft = mode == "soft_nerf"
+    amount = strength * 0.5 if soft else strength
 
     if float(row.get("damage_per_match", 0)) > 0 and spec.power > 0:
-        options.append(("power", 1.0 / (1.0 + strength) if nerf else 1.0 + strength * 0.75))
+        options.append(("power", 1.0 / (1.0 + amount) if nerf or soft else 1.0 + amount * 0.75))
     if float(row.get("team_production_share", 0)) >= 0.18:
-        options.append(("cost", 1.0 + strength if nerf else 1.0 / (1.0 + strength * 0.75)))
+        options.append(("cost", 1.0 + amount if nerf or soft else 1.0 / (1.0 + amount * 0.75)))
     if spec.area > 0 and float(row.get("focus_fire_hits", 0)) > 0:
-        options.append(("area", 1.0 / (1.0 + strength) if nerf else 1.0 + strength * 0.6))
+        options.append(("area", 1.0 / (1.0 + amount) if nerf or soft else 1.0 + amount * 0.6))
     if float(row.get("avg_survival_time", 0)) >= 8 and spec.hp > 0:
-        options.append(("hp", 1.0 / (1.0 + strength * 0.8) if nerf else 1.0 + strength * 0.6))
+        options.append(("hp", 1.0 / (1.0 + amount * 0.8) if nerf or soft else 1.0 + amount * 0.6))
     if spec.speed > 0:
-        options.append(("speed", 1.0 / (1.0 + strength * 0.7) if nerf else 1.0 + strength * 0.5))
+        options.append(("speed", 1.0 / (1.0 + amount * 0.7) if nerf or soft else 1.0 + amount * 0.5))
     if not options:
-        options.append(("cost", 1.0 + strength if nerf else 1.0 / (1.0 + strength * 0.75)))
+        options.append(("cost", 1.0 + amount if nerf or soft else 1.0 / (1.0 + amount * 0.75)))
     return options
+
+
+def unit_rework_profiles(team: str, unit_key: str, strength: float) -> List[Dict[str, Any]]:
+    spec = get_spec(team, unit_key)
+    profiles = [
+        ("balanced", 0.85, 0.75, 0.65, 0.35, 0.30, 0.30),
+        ("offense", 0.75, 0.55, 0.95, 0.30, 0.25, 0.45),
+        ("tempo", 1.00, 0.55, 0.55, 0.60, 0.45, 0.25),
+    ]
+    results: List[Dict[str, Any]] = []
+    for profile, cost_w, hp_w, power_w, speed_w, cooldown_w, range_area_w in profiles:
+        adjustments = [
+            {"team": team, "unit": unit_key, "stat": "cost", "factor": round(1.0 / (1.0 + strength * cost_w), 4)},
+            {"team": team, "unit": unit_key, "stat": "hp", "factor": round(1.0 + strength * hp_w, 4)},
+            {"team": team, "unit": unit_key, "stat": "speed", "factor": round(1.0 + strength * speed_w, 4)},
+            {"team": team, "unit": unit_key, "stat": "cooldown", "factor": round(1.0 / (1.0 + strength * cooldown_w), 4)},
+        ]
+        if spec.power > 0:
+            adjustments.append({"team": team, "unit": unit_key, "stat": "power", "factor": round(1.0 + strength * power_w, 4)})
+        if spec.range > 0:
+            adjustments.append({"team": team, "unit": unit_key, "stat": "range", "factor": round(1.0 + strength * range_area_w * 0.7, 4)})
+        if spec.area > 0:
+            adjustments.append({"team": team, "unit": unit_key, "stat": "area", "factor": round(1.0 + strength * range_area_w, 4)})
+        results.append({"profile": profile, "adjustments": adjustments})
+    return results
+
+
+def candidate_adjustments(candidate: Dict[str, Any]) -> List[Dict[str, Any]]:
+    return candidate.get("adjustments", [candidate])
+
+
+def describe_candidate(candidate: Dict[str, Any]) -> str:
+    if "adjustments" not in candidate:
+        return compact_adjustment(candidate)
+    prefix = candidate.get("description", "combined")
+    parts = [compact_adjustment(adjustment) for adjustment in candidate["adjustments"]]
+    return f"{prefix}: " + " | ".join(parts)
 
 
 def build_candidate_patches(
@@ -221,24 +297,41 @@ def build_candidate_patches(
 
     candidates: List[Dict[str, Any]] = []
     seen = set()
-    pools = [
-        (dominant_team, dominant_rows[:3], "nerf"),
-        (underdog_team, underdog_rows[:3], "buff"),
-    ]
-    for team, rows, mode in pools:
-        for row in rows:
-            unit_key = row["unit_key"]
-            prefix = f"{team}.{unit_key}"
-            options = sorted(
-                candidate_stat_options(row, team, unit_key, strength, mode),
-                key=lambda item: adjustment_counts.get(f"{prefix}.{item[0]}", 0),
-            )
-            for stat, factor in options:
-                key = (team, unit_key, stat, round(factor, 4))
+    strongest_row = dominant_rows[0]
+    weakest_rows = sorted(underdog_rows, key=contribution_score)[:2]
+    nerf_unit = strongest_row["unit_key"]
+    nerf_options = sorted(
+        candidate_stat_options(strongest_row, dominant_team, nerf_unit, strength, "soft_nerf"),
+        key=lambda item: adjustment_counts.get(f"{dominant_team}.{nerf_unit}.{item[0]}", 0),
+    )
+    for weak_row in weakest_rows:
+        rework_unit = weak_row["unit_key"]
+        for stat, factor in nerf_options:
+            nerf_patch = {"team": dominant_team, "unit": nerf_unit, "stat": stat, "factor": round(factor, 4)}
+            for profile in unit_rework_profiles(underdog_team, rework_unit, strength):
+                adjustments = [nerf_patch] + profile["adjustments"]
+                key = tuple(
+                    (item["team"], item["unit"], item["stat"], round(float(item.get("factor", 1.0)), 4))
+                    for item in adjustments
+                )
                 if key in seen:
                     continue
                 seen.add(key)
-                candidates.append({"team": team, "unit": unit_key, "stat": stat, "factor": round(factor, 4)})
+                candidates.append(
+                    {
+                        "kind": "soft_nerf_and_low_impact_rework",
+                        "description": (
+                            f"soft nerf {dominant_team}.{nerf_unit}.{stat} + "
+                            f"rework {underdog_team}.{rework_unit} ({profile['profile']})"
+                        ),
+                        "dominant_team": dominant_team,
+                        "underdog_team": underdog_team,
+                        "strong_unit": nerf_unit,
+                        "low_impact_unit": rework_unit,
+                        "profile": profile["profile"],
+                        "adjustments": adjustments,
+                    }
+                )
                 if len(candidates) >= max_candidates:
                     return candidates
     return candidates
@@ -255,8 +348,6 @@ def evaluate_candidate_patch(
     adjustments: List[Dict[str, Any]],
     patch: Dict[str, Any],
     policy: dict,
-    candidate_playouts: int,
-    train_seed: int,
     matches: int,
     seeds: List[int],
     target: float,
@@ -264,22 +355,22 @@ def evaluate_candidate_patch(
     label: str = "",
 ) -> Dict[str, Any]:
     if label:
-        log(f"[{label}] candidate start: {compact_adjustment(patch)}")
+        log(f"[{label}] candidate start: {describe_candidate(patch)}")
     reset_balance()
-    apply_adjustments(adjustments + [patch])
-    candidate_policy = train_policy_in_memory(candidate_playouts, train_seed) if candidate_playouts > 0 else policy
+    apply_adjustments(adjustments + candidate_adjustments(patch))
+    candidate_policy = copy.deepcopy(policy)
     summaries = []
     for seed_index, seed in enumerate(seeds):
         seed_label = f"{label} seed {seed_index + 1}/{len(seeds)}" if label else ""
         match_rows, round_rows, aggregate = run_matches(
             matches,
             seed,
-            "trained_mcts",
+            "policy_train",
             candidate_policy,
             progress_label=seed_label,
             progress_updates=2,
         )
-        summaries.append(build_summary(match_rows, round_rows, aggregate, matches, "trained_mcts"))
+        summaries.append(build_summary(match_rows, round_rows, aggregate, matches, "policy_train"))
     raspberry_rate = sum(item["match_win_rate"]["raspberry"] for item in summaries) / len(summaries)
     blueberry_rate = sum(item["match_win_rate"]["blueberry"] for item in summaries) / len(summaries)
     avg_control = sum(item["avg_final_control"] for item in summaries) / len(summaries)
@@ -294,7 +385,7 @@ def evaluate_candidate_patch(
     }
     result = {
         "patch": patch,
-        "patch_text": compact_adjustment(patch),
+        "patch_text": describe_candidate(patch),
         "score": balance_score(summary, target, control_weight),
         "summary": summary,
     }
@@ -378,7 +469,7 @@ def main():
     parser.add_argument("--patch-strength", type=float, default=0.15)
     parser.add_argument("--validation-seeds", type=int, default=3)
     parser.add_argument("--candidate-matches", type=int, default=20)
-    parser.add_argument("--candidate-playouts", type=int, default=100)
+    parser.add_argument("--candidate-playouts", type=int, default=0, help=argparse.SUPPRESS)
     parser.add_argument("--candidate-seeds", type=int, default=3)
     parser.add_argument("--candidate-limit", type=int, default=8)
     parser.add_argument("--control-weight", type=float, default=0.25)
@@ -391,10 +482,25 @@ def main():
     history: List[dict] = []
     log(
         "[experiment start] "
-        f"out={out_dir}, max_iterations={args.max_iterations}, playouts={args.playouts}, "
+        f"out={out_dir}, max_iterations={args.max_iterations}, initial_playouts={args.playouts}, "
         f"matches={args.matches}, validation_seeds={args.validation_seeds}, "
-        f"candidate_matches={args.candidate_matches}, candidate_seeds={args.candidate_seeds}"
+        f"candidate_matches={args.candidate_matches}, candidate_seeds={args.candidate_seeds}, "
+        "policy_update=backprop_only, patch_mode=soft_nerf_and_low_impact_rework"
     )
+
+    reset_balance()
+    apply_adjustments(adjustments)
+    if args.playouts > 0:
+        policy = train_policy(
+            args.playouts,
+            args.seed,
+            out_dir / "initial_policy.json",
+            out_dir / "initial_train_report.json",
+            "initial",
+        )
+    else:
+        policy = {}
+        save_policy(str(out_dir / "initial_policy.json"), policy)
 
     for iteration in range(1, args.max_iterations + 1):
         iteration_dir = out_dir / f"iteration_{iteration:02d}"
@@ -407,10 +513,21 @@ def main():
         write_balance_result(iteration_dir / "balance_before_validation.json", adjustments)
 
         policy_path = iteration_dir / "policy.json"
-        train_report_path = iteration_dir / "train_report.json"
-        policy = train_policy(args.playouts, args.seed + iteration * 1000, policy_path, train_report_path, iteration_label)
+        save_policy(str(iteration_dir / "policy_before_update.json"), policy)
         validation_seeds = [args.seed + iteration * 1000 + 501 + seed_index * 10000 for seed_index in range(args.validation_seeds)]
-        summary, _ = validate_policy_multi_seed(args.matches, validation_seeds, policy, iteration_dir, iteration_label)
+        summary, _ = validate_policy_multi_seed(
+            args.matches,
+            validation_seeds,
+            policy,
+            iteration_dir,
+            iteration_label,
+            agent_type="policy_train",
+        )
+        save_policy(str(policy_path), policy)
+        (iteration_dir / "policy_summary.json").write_text(
+            json.dumps(policy_summary(policy), ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
 
         raspberry_rate = summary["match_win_rate"]["raspberry"]
         blueberry_rate = summary["match_win_rate"]["blueberry"]
@@ -445,8 +562,6 @@ def main():
                         adjustments,
                         candidate,
                         policy,
-                        args.candidate_playouts,
-                        args.seed + iteration * 1000 + 50000 + candidate_index * 500,
                         args.candidate_matches,
                         candidate_seeds,
                         args.target,
@@ -457,10 +572,12 @@ def main():
             evaluations.sort(key=lambda item: item["score"])
             write_candidate_evaluations(iteration_dir / "candidate_evaluations.csv", evaluations)
             patch = evaluations[0]["patch"]
-            adjustments.append(patch)
-            count_key = f"{patch['team']}.{patch['unit']}.{patch['stat']}"
-            adjustment_counts[count_key] = adjustment_counts.get(count_key, 0) + 1
-            patch_added = compact_adjustment(patch)
+            selected_adjustments = candidate_adjustments(patch)
+            adjustments.extend(selected_adjustments)
+            for selected in selected_adjustments:
+                count_key = f"{selected['team']}.{selected['unit']}.{selected['stat']}"
+                adjustment_counts[count_key] = adjustment_counts.get(count_key, 0) + 1
+            patch_added = describe_candidate(patch)
             log(f"[{iteration_label}] selected patch: {patch_added}")
             write_balance_result(iteration_dir / "balance_after_patch.json", adjustments, summary)
         else:
@@ -492,12 +609,15 @@ def main():
     result = {
         "target": args.target,
         "tolerance": args.tolerance,
-        "playouts_per_iteration": args.playouts,
+        "initial_playouts": args.playouts,
+        "playouts_per_iteration": 0,
         "validation_matches": args.matches,
         "validation_seeds": args.validation_seeds,
         "candidate_matches": args.candidate_matches,
-        "candidate_playouts": args.candidate_playouts,
+        "candidate_playouts": 0,
         "candidate_seeds": args.candidate_seeds,
+        "policy_update_mode": "match_backpropagation_only",
+        "patch_generation_mode": "soft_nerf_best_unit_and_rework_low_impact_unit",
         "control_weight": args.control_weight,
         "iterations_completed": len(history),
         "final_history_row": history[-1] if history else {},
