@@ -1,0 +1,8 @@
+team,unit_key,unit_name,produced,produced_per_match,team_production_share,kills,kills_per_match,deaths,damage,damage_per_match,damage_taken,healing,attacks_made,attacks_received,survival_time,avg_survival_time,focus_fire_hits,focus_fire_events,max_focus_attackers
+raspberry,baumkuchen,바움쿠헨,130,13.0,0.1462,28,2.8,40,8207.91,820.7914,38271.33,0.0,600,1116,7209.0,55.4538,194,2,2
+raspberry,macaron,마카롱,33,3.3,0.0371,0,0.0,19,0.0,0.0,1674.45,9638.44,0,72,1097.0,33.2424,0,0,0
+raspberry,pie,파이,235,23.5,0.2643,351,35.1,26,74817.53,7481.7534,7117.76,0.0,2190,207,17215.0,73.2553,1044,21,3
+raspberry,scone,스콘,203,20.3,0.2283,331,33.1,0,69896.93,6989.6931,140.01,0.0,898,4,16271.0,80.1527,515,0,0
+raspberry,tart,타르트,288,28.8,0.324,121,12.1,13,47027.96,4702.7959,4312.0,0.0,2112,133,20615.5,71.5816,1191,0,0
+blueberry,baumkuchen,바움쿠헨,630,63.0,0.7581,53,5.3,630,32774.63,3277.4633,180496.51,0.0,1151,5224,3082.5,4.8929,16,2635,13
+blueberry,pie,파이,201,20.1,0.2419,45,4.5,201,18740.92,1874.0916,19453.83,0.0,381,576,924.5,4.5995,7,309,12

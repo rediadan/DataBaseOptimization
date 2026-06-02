@@ -1,0 +1,109 @@
+{
+  "matches": 80,
+  "agent_type": "policy_train",
+  "match_wins": {
+    "raspberry": 42,
+    "blueberry": 38
+  },
+  "match_win_rate": {
+    "raspberry": 0.525,
+    "blueberry": 0.475
+  },
+  "round_wins": {
+    "raspberry": 99,
+    "blueberry": 91
+  },
+  "rounds_played": 190,
+  "avg_final_control": -0.2579,
+  "avg_round_duration": 172.3711,
+  "avg_final_upgrades_per_match": {
+    "raspberry": 1.125,
+    "blueberry": 1.425
+  },
+  "avg_final_attack_upgrades_per_match": {
+    "raspberry": 0.5625,
+    "blueberry": 0.6
+  },
+  "avg_final_hp_upgrades_per_match": {
+    "raspberry": 0.5625,
+    "blueberry": 0.825
+  },
+  "strategy_diversity": {
+    "combined": {
+      "strategy_counts": {
+        "mixed_composition": 117,
+        "ranged_focus": 0,
+        "special_focus": 0,
+        "swarm_focus": 2,
+        "tank_aoe_focus": 1,
+        "tank_focus": 0,
+        "upgrade_focus": 40
+      },
+      "strategy_win_rates": {
+        "mixed_composition": 0.4359,
+        "swarm_focus": 0.5,
+        "tank_aoe_focus": 0.0,
+        "upgrade_focus": 0.7
+      },
+      "entropy": 0.66195,
+      "normalized_entropy": 0.340175,
+      "effective_strategies": 1.9386,
+      "present_strategies": 4,
+      "viable_strategies": 2,
+      "dominant_strategy_share": 0.7312,
+      "low_presence_strategies": 5,
+      "diversity_penalty": 0.57802
+    },
+    "by_team": {
+      "raspberry": {
+        "strategy_counts": {
+          "mixed_composition": 69,
+          "ranged_focus": 0,
+          "special_focus": 0,
+          "swarm_focus": 0,
+          "tank_aoe_focus": 1,
+          "tank_focus": 0,
+          "upgrade_focus": 10
+        },
+        "strategy_win_rates": {
+          "mixed_composition": 0.4638,
+          "tank_aoe_focus": 0.0,
+          "upgrade_focus": 1.0
+        },
+        "entropy": 0.442287,
+        "normalized_entropy": 0.22729,
+        "effective_strategies": 1.5563,
+        "present_strategies": 3,
+        "viable_strategies": 2,
+        "dominant_strategy_share": 0.8625,
+        "low_presence_strategies": 5,
+        "diversity_penalty": 0.69139
+      },
+      "blueberry": {
+        "strategy_counts": {
+          "mixed_composition": 48,
+          "ranged_focus": 0,
+          "special_focus": 0,
+          "swarm_focus": 2,
+          "tank_aoe_focus": 0,
+          "tank_focus": 0,
+          "upgrade_focus": 30
+        },
+        "strategy_win_rates": {
+          "mixed_composition": 0.3958,
+          "swarm_focus": 0.5,
+          "upgrade_focus": 0.6
+        },
+        "entropy": 0.766528,
+        "normalized_entropy": 0.393918,
+        "effective_strategies": 2.1523,
+        "present_strategies": 3,
+        "viable_strategies": 2,
+        "dominant_strategy_share": 0.6,
+        "low_presence_strategies": 5,
+        "diversity_penalty": 0.495051
+      }
+    },
+    "score": 0.57802
+  }
+}

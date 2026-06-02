@@ -1,0 +1,10 @@
+team,unit_key,unit_name,produced,produced_per_match,team_production_share,kills,kills_per_match,deaths,damage,damage_per_match,damage_taken,healing,attacks_made,attacks_received,survival_time,avg_survival_time,focus_fire_hits,focus_fire_events,max_focus_attackers
+raspberry,baumkuchen,바움쿠헨,920,92.0,0.7541,40,4.0,920,8598.21,859.8206,626263.12,0.0,640,9180,3360.0,3.6522,0,4060,17
+raspberry,macaron,마카롱,40,4.0,0.0328,0,0.0,40,0.0,0.0,3525.16,6502.74,0,20,60.0,1.5,0,0,0
+raspberry,pie,파이,240,24.0,0.1967,80,8.0,260,5340.57,534.0568,38795.59,0.0,200,600,610.0,2.5417,0,220,5
+raspberry,tart,타르트,20,2.0,0.0164,100,10.0,20,10913.48,1091.348,5753.61,0.0,120,0,220.0,11.0,0,0,0
+blueberry,baumkuchen,바움쿠헨,160,16.0,0.1311,0,0.0,0,0.0,0.0,0.0,0.0,0,0,4040.0,25.25,0,0,0
+blueberry,pannacotta,판나코타,20,2.0,0.0164,20,2.0,20,11403.22,1140.322,0.0,0.0,20,0,290.0,14.5,20,0,0
+blueberry,pie,파이,620,62.0,0.5082,540,54.0,220,263206.6,26320.6598,23162.65,0.0,5300,840,38900.0,62.7419,2440,0,0
+blueberry,scone,스콘,40,4.0,0.0328,320,32.0,0,224035.4,22403.5404,1689.6,0.0,1540,120,5690.0,142.25,360,0,0
+blueberry,tarte_tatin,타르트·타탱,380,38.0,0.3115,360,36.0,0,175692.27,17569.2266,0.0,0.0,2940,0,27010.0,71.0789,1460,0,0

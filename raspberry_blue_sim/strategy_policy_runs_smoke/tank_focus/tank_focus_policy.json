@@ -1,0 +1,1406 @@
+{
+  "raspberry": {
+    "t4|c3|cr0|ecr0|p-3|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 3,
+        "reward": 2.0361855592769853,
+        "wins": 3
+      },
+      "spawn:baumkuchen": {
+        "visits": 9,
+        "reward": 6.080794377624568,
+        "wins": 9
+      },
+      "wait": {
+        "visits": 8,
+        "reward": 4.273015972919357,
+        "wins": 8
+      },
+      "spawn:macaron": {
+        "visits": 2,
+        "reward": 0.9614103160593102,
+        "wins": 2
+      },
+      "spawn:tart": {
+        "visits": 1,
+        "reward": 0.3805972254932759,
+        "wins": 1
+      }
+    },
+    "t4|c3|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 2.5761978262834866,
+        "wins": 4
+      }
+    },
+    "t4|c2|cr0|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 15,
+        "reward": 9.333209708695703,
+        "wins": 15
+      },
+      "spawn:pie": {
+        "visits": 11,
+        "reward": 5.618023925234495,
+        "wins": 11
+      },
+      "spawn:tart": {
+        "visits": 7,
+        "reward": 3.956743967362991,
+        "wins": 7
+      },
+      "wait": {
+        "visits": 17,
+        "reward": 9.078731396891504,
+        "wins": 17
+      },
+      "spawn:macaron": {
+        "visits": 7,
+        "reward": 3.6185792283489486,
+        "wins": 7
+      }
+    },
+    "t4|c2|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 3,
+        "reward": 1.9104855141468333,
+        "wins": 3
+      },
+      "spawn:pie": {
+        "visits": 5,
+        "reward": 2.5325738951473897,
+        "wins": 5
+      },
+      "wait": {
+        "visits": 1,
+        "reward": 0.6910651769818626,
+        "wins": 1
+      },
+      "spawn:tart": {
+        "visits": 3,
+        "reward": 1.4007361330036168,
+        "wins": 3
+      }
+    },
+    "t3|c2|cr0|ecr0|p-3|u0|a0|h0": {
+      "wait": {
+        "visits": 28,
+        "reward": 14.709598902765908,
+        "wins": 28
+      },
+      "spawn:pie": {
+        "visits": 12,
+        "reward": 6.659379170275087,
+        "wins": 12
+      },
+      "spawn:baumkuchen": {
+        "visits": 15,
+        "reward": 10.186838079441475,
+        "wins": 15
+      },
+      "spawn:macaron": {
+        "visits": 7,
+        "reward": 3.31620404190483,
+        "wins": 7
+      },
+      "spawn:tart": {
+        "visits": 6,
+        "reward": 2.626771407511442,
+        "wins": 6
+      }
+    },
+    "t3|c2|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 7,
+        "reward": 4.292610630453726,
+        "wins": 7
+      },
+      "spawn:pie": {
+        "visits": 3,
+        "reward": 1.6193480187876261,
+        "wins": 3
+      },
+      "spawn:tart": {
+        "visits": 2,
+        "reward": 0.6733299366610821,
+        "wins": 2
+      }
+    },
+    "t3|c1|cr0|ecr0|p-3|u0|a0|h0": {
+      "wait": {
+        "visits": 10,
+        "reward": 5.459298689766766,
+        "wins": 10
+      },
+      "spawn:baumkuchen": {
+        "visits": 10,
+        "reward": 4.474030874116965,
+        "wins": 10
+      },
+      "spawn:pie": {
+        "visits": 2,
+        "reward": 0.9380689363121764,
+        "wins": 2
+      },
+      "spawn:tart": {
+        "visits": 4,
+        "reward": 2.467445950808063,
+        "wins": 4
+      },
+      "spawn:macaron": {
+        "visits": 4,
+        "reward": 2.420913619543615,
+        "wins": 4
+      }
+    },
+    "t2|c1|cr0|ecr0|p-3|u0|a0|h0": {
+      "wait": {
+        "visits": 28,
+        "reward": 13.206249138887541,
+        "wins": 28
+      },
+      "spawn:pie": {
+        "visits": 27,
+        "reward": 13.081983422246957,
+        "wins": 27
+      },
+      "spawn:baumkuchen": {
+        "visits": 21,
+        "reward": 11.817378122674922,
+        "wins": 21
+      },
+      "spawn:macaron": {
+        "visits": 9,
+        "reward": 4.57823351481048,
+        "wins": 9
+      },
+      "spawn:tart": {
+        "visits": 7,
+        "reward": 2.9756198434088175,
+        "wins": 7
+      },
+      "spawn:scone": {
+        "visits": 2,
+        "reward": 0.8269778070049905,
+        "wins": 2
+      }
+    },
+    "t2|c1|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 9,
+        "reward": 4.744440540828258,
+        "wins": 9
+      },
+      "spawn:pie": {
+        "visits": 7,
+        "reward": 3.2259766736700044,
+        "wins": 7
+      },
+      "spawn:tart": {
+        "visits": 5,
+        "reward": 2.0109713027405465,
+        "wins": 5
+      }
+    },
+    "t1|c1|cr0|ecr0|p-3|u0|a0|h0": {
+      "wait": {
+        "visits": 25,
+        "reward": 11.961352032529417,
+        "wins": 25
+      },
+      "spawn:pie": {
+        "visits": 7,
+        "reward": 3.341452613584471,
+        "wins": 7
+      },
+      "spawn:baumkuchen": {
+        "visits": 12,
+        "reward": 5.373128618704428,
+        "wins": 12
+      },
+      "spawn:macaron": {
+        "visits": 3,
+        "reward": 1.3560069623914452,
+        "wins": 3
+      },
+      "spawn:tart": {
+        "visits": 3,
+        "reward": 1.349226927579488,
+        "wins": 3
+      }
+    },
+    "t1|c1|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 1.1197775576697768,
+        "wins": 2
+      },
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.5272096327579194,
+        "wins": 1
+      },
+      "spawn:tart": {
+        "visits": 5,
+        "reward": 2.03579413075434,
+        "wins": 5
+      }
+    },
+    "t1|c0|cr0|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 11,
+        "reward": 5.796194413385818,
+        "wins": 11
+      },
+      "spawn:pie": {
+        "visits": 4,
+        "reward": 1.7418241986756853,
+        "wins": 4
+      },
+      "wait": {
+        "visits": 7,
+        "reward": 2.65972616529959,
+        "wins": 7
+      },
+      "spawn:tart": {
+        "visits": 2,
+        "reward": 0.7939457567844275,
+        "wins": 2
+      },
+      "spawn:macaron": {
+        "visits": 1,
+        "reward": 0.2652940023175083,
+        "wins": 1
+      }
+    },
+    "t1|c0|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 2.130304398301943,
+        "wins": 4
+      },
+      "spawn:pie": {
+        "visits": 4,
+        "reward": 1.5708283225136561,
+        "wins": 4
+      },
+      "spawn:tart": {
+        "visits": 1,
+        "reward": 0.2626476946443912,
+        "wins": 1
+      }
+    },
+    "t1|c0|cr1|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 5,
+        "reward": 2.0110395315601672,
+        "wins": 5
+      },
+      "spawn:scone": {
+        "visits": 1,
+        "reward": 0.401503051535726,
+        "wins": 1
+      },
+      "spawn:pie": {
+        "visits": 15,
+        "reward": 5.7988815363590644,
+        "wins": 15
+      }
+    },
+    "t0|c0|cr0|ecr0|p-3|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 8,
+        "reward": 4.000230676882985,
+        "wins": 8
+      },
+      "spawn:baumkuchen": {
+        "visits": 6,
+        "reward": 3.0695315714781324,
+        "wins": 6
+      },
+      "wait": {
+        "visits": 8,
+        "reward": 3.6569437948729586,
+        "wins": 8
+      },
+      "spawn:tart": {
+        "visits": 1,
+        "reward": 0.25615743398805874,
+        "wins": 1
+      },
+      "spawn:macaron": {
+        "visits": 5,
+        "reward": 1.9022744214295313,
+        "wins": 5
+      }
+    },
+    "t0|c0|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 1.012962514244395,
+        "wins": 2
+      },
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.2523342522661077,
+        "wins": 1
+      },
+      "spawn:tart": {
+        "visits": 1,
+        "reward": 0.4627702895690091,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr0|ecr0|p-2|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 3,
+        "reward": 1.2515930515080167,
+        "wins": 3
+      },
+      "wait": {
+        "visits": 2,
+        "reward": 0.508517238279208,
+        "wins": 2
+      },
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.5046938649178717,
+        "wins": 2
+      },
+      "spawn:macaron": {
+        "visits": 1,
+        "reward": 0.45131614788402513,
+        "wins": 1
+      },
+      "spawn:tart": {
+        "visits": 1,
+        "reward": 0.44905956714460504,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr0|ecr0|p-1|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 1.9708414058072112,
+        "wins": 4
+      },
+      "wait": {
+        "visits": 16,
+        "reward": 6.640497161121097,
+        "wins": 16
+      },
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.2485681320092545,
+        "wins": 1
+      },
+      "spawn:tart": {
+        "visits": 2,
+        "reward": 0.5022253208756157,
+        "wins": 2
+      },
+      "spawn:macaron": {
+        "visits": 1,
+        "reward": 0.24731505946064145,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr1|ecr1|p-1|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.9780362219470098,
+        "wins": 2
+      },
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.25359177201607247,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr0|ecr0|p0|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 7,
+        "reward": 3.246086542718995,
+        "wins": 7
+      },
+      "wait": {
+        "visits": 8,
+        "reward": 2.3984318300832133,
+        "wins": 8
+      },
+      "spawn:pie": {
+        "visits": 9,
+        "reward": 3.288791952194274,
+        "wins": 9
+      },
+      "spawn:tart": {
+        "visits": 1,
+        "reward": 0.23759385719528378,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr1|ecr1|p0|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 3,
+        "reward": 1.3889127566976085,
+        "wins": 3
+      },
+      "spawn:pie": {
+        "visits": 2,
+        "reward": 0.5049791985286718,
+        "wins": 2
+      },
+      "spawn:tart": {
+        "visits": 3,
+        "reward": 0.9126623819586478,
+        "wins": 3
+      }
+    },
+    "t4|c3|cr1|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.5589404254549533,
+        "wins": 1
+      }
+    },
+    "t3|c3|cr0|ecr0|p-3|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.5342853276151304,
+        "wins": 1
+      }
+    },
+    "t3|c2|cr1|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.5056233667157044,
+        "wins": 1
+      }
+    },
+    "t2|c2|cr0|ecr0|p-3|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.48332010681760434,
+        "wins": 1
+      }
+    },
+    "t5|c3|cr0|ecr0|p-3|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 8,
+        "reward": 4.4423752423304075,
+        "wins": 8
+      },
+      "wait": {
+        "visits": 20,
+        "reward": 11.579406757723163,
+        "wins": 20
+      },
+      "spawn:baumkuchen": {
+        "visits": 13,
+        "reward": 7.979650321330235,
+        "wins": 13
+      },
+      "spawn:macaron": {
+        "visits": 4,
+        "reward": 2.0149973486880377,
+        "wins": 4
+      },
+      "spawn:tart": {
+        "visits": 6,
+        "reward": 3.170372076067694,
+        "wins": 6
+      }
+    },
+    "t5|c3|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 2.3954195848583764,
+        "wins": 4
+      },
+      "spawn:pie": {
+        "visits": 4,
+        "reward": 1.9789741101722387,
+        "wins": 4
+      }
+    },
+    "t5|c2|cr0|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 2.300916052588235,
+        "wins": 4
+      },
+      "wait": {
+        "visits": 2,
+        "reward": 1.1361276154831326,
+        "wins": 2
+      },
+      "spawn:pie": {
+        "visits": 4,
+        "reward": 2.9029006729288636,
+        "wins": 4
+      }
+    },
+    "t5|c2|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 1.1418367994805352,
+        "wins": 2
+      },
+      "spawn:pie": {
+        "visits": 2,
+        "reward": 1.4533402424431512,
+        "wins": 2
+      }
+    },
+    "t4|c2|cr1|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 5,
+        "reward": 3.1713440579572736,
+        "wins": 5
+      },
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.69453786631343,
+        "wins": 1
+      }
+    },
+    "t3|c1|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 3,
+        "reward": 1.275260053732819,
+        "wins": 3
+      },
+      "spawn:pie": {
+        "visits": 3,
+        "reward": 1.8144423647338286,
+        "wins": 3
+      }
+    },
+    "t2|c1|cr1|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 3,
+        "reward": 1.7128075830544531,
+        "wins": 3
+      }
+    },
+    "t1|c1|cr1|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.8231398298537873,
+        "wins": 2
+      }
+    },
+    "t1|c0|cr0|ecr0|p-1|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.491480698902867,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr0|ecr0|p1|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 5,
+        "reward": 1.974469219588896,
+        "wins": 5
+      },
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.4581731106285864,
+        "wins": 1
+      },
+      "wait": {
+        "visits": 1,
+        "reward": 0.4558822450754434,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr1|ecr1|p2|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.4769193590945463,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr0|ecr0|p2|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 4,
+        "reward": 1.4789522683862146,
+        "wins": 4
+      },
+      "wait": {
+        "visits": 1,
+        "reward": 0.4721620884875782,
+        "wins": 1
+      },
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.4674522716549146,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr1|ecr1|p1|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.460475488068931,
+        "wins": 1
+      }
+    },
+    "t4|c2|cr0|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.3787099066578318,
+        "wins": 1
+      }
+    },
+    "t2|c1|cr0|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.3242068369248391,
+        "wins": 1
+      }
+    },
+    "t1|c0|cr1|ecr1|p-2|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.27067807294656476,
+        "wins": 1
+      }
+    },
+    "t1|c0|cr0|ecr0|p1|u0|a0|h0": {
+      "wait": {
+        "visits": 1,
+        "reward": 0.2693246825818319,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr1|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.2536022635840278,
+        "wins": 1
+      }
+    },
+    "t5|c3|cr1|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 1.154996200279573,
+        "wins": 2
+      }
+    },
+    "t5|c2|cr1|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 2.928626836366846,
+        "wins": 4
+      }
+    },
+    "t4|c1|cr0|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 1.3047154268968149,
+        "wins": 2
+      },
+      "wait": {
+        "visits": 1,
+        "reward": 0.6442317724616298,
+        "wins": 1
+      }
+    },
+    "t4|c1|cr1|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.6474691180518892,
+        "wins": 1
+      }
+    },
+    "t3|c1|cr1|ecr0|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 1.2349095627034434,
+        "wins": 2
+      }
+    },
+    "t1|c1|cr0|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 1.0105513428035393,
+        "wins": 2
+      }
+    },
+    "t0|c1|cr0|ecr0|p-3|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.474515130716786,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr1|ecr1|p-2|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.446814269308882,
+        "wins": 1
+      }
+    },
+    "t5|c3|cr0|ecr1|p-3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.39418859322267297,
+        "wins": 1
+      }
+    },
+    "t0|c0|cr1|ecr0|p-2|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.25486610252871605,
+        "wins": 1
+      }
+    }
+  },
+  "blueberry": {
+    "t4|c-3|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 16,
+        "reward": 2.0715031640039694,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 3,
+        "reward": 0.500198780149675,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 0.6410225075530341,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 1,
+        "reward": 0.03714638436198394,
+        "wins": 0
+      }
+    },
+    "t4|c-3|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 0.637817395015269,
+        "wins": 0
+      }
+    },
+    "t4|c-2|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 36,
+        "reward": 2.431598035142229,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 13,
+        "reward": 1.0498546277060805,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 5,
+        "reward": 0.4005362971790146,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 8,
+        "reward": 0.540620203682952,
+        "wins": 0
+      }
+    },
+    "t4|c-2|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.2172728214640699,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 4,
+        "reward": 0.22975546520951604,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 4,
+        "reward": 0.17239846983240978,
+        "wins": 0
+      }
+    },
+    "t3|c-2|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 47,
+        "reward": 4.891554403336086,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 8,
+        "reward": 0.9310892926854888,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 7,
+        "reward": 1.01972934998974,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 5,
+        "reward": 0.3301937274839415,
+        "wins": 0
+      },
+      "spawn:pannacotta": {
+        "visits": 2,
+        "reward": 0.06604740719459978,
+        "wins": 0
+      }
+    },
+    "t3|c-2|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 7,
+        "reward": 1.0146307032397912,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 3,
+        "reward": 0.20293420865486567,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 2,
+        "reward": 0.06571717015862678,
+        "wins": 0
+      }
+    },
+    "t3|c-1|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 19,
+        "reward": 1.173640975948078,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 5,
+        "reward": 0.2993093277359275,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 0.21835786826325485,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 4,
+        "reward": 0.23748403727681153,
+        "wins": 0
+      }
+    },
+    "t2|c-1|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 60,
+        "reward": 5.247765427438191,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 11,
+        "reward": 1.0917750900933105,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 10,
+        "reward": 0.8685250992138429,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 13,
+        "reward": 0.7308253823727271,
+        "wins": 0
+      },
+      "spawn:pannacotta": {
+        "visits": 3,
+        "reward": 0.1593590261874993,
+        "wins": 0
+      }
+    },
+    "t2|c-1|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 8,
+        "reward": 0.9814418358374644,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 8,
+        "reward": 0.4107816364643657,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 5,
+        "reward": 0.19469242016687746,
+        "wins": 0
+      }
+    },
+    "t1|c-1|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 35,
+        "reward": 2.6986552821467127,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 9,
+        "reward": 0.5972131764989748,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.27862868705025645,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 3,
+        "reward": 0.16408413628064572,
+        "wins": 0
+      },
+      "spawn:scone": {
+        "visits": 2,
+        "reward": 0.07524331403293627,
+        "wins": 0
+      },
+      "spawn:pannacotta": {
+        "visits": 1,
+        "reward": 0.027498018062772116,
+        "wins": 0
+      }
+    },
+    "t1|c-1|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 0.35477619249720793,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 5,
+        "reward": 0.21978343095970398,
+        "wins": 0
+      }
+    },
+    "t1|c0|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 25,
+        "reward": 2.129788835887373,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 0.530073060895635,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 2,
+        "reward": 0.26236312638712966,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 2,
+        "reward": 0.051656058100935126,
+        "wins": 0
+      }
+    },
+    "t1|c0|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 0.5274226955911567,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.025634480662345013,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 26,
+        "reward": 2.042861067957095,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 5,
+        "reward": 0.5323048692320049,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.2520504304108186,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 2,
+        "reward": 0.07717450976944587,
+        "wins": 0
+      },
+      "spawn:scone": {
+        "visits": 2,
+        "reward": 0.06870332134991902,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 3,
+        "reward": 0.2959566742187849,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.04360918439343686,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr0|ecr0|p2|u0|a0|h0": {
+      "wait": {
+        "visits": 4,
+        "reward": 0.3010468344992269,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 3,
+        "reward": 0.2673772161757567,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 3,
+        "reward": 0.08755075785833415,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr1|ecr0|p2|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.24214309512586815,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.024750620349732574,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr0|ecr0|p1|u0|a0|h0": {
+      "wait": {
+        "visits": 19,
+        "reward": 1.5118566523584167,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.23496900284058161,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 9,
+        "reward": 0.4424386105817283,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 3,
+        "reward": 0.09619163012063933,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr1|ecr0|p1|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 3,
+        "reward": 0.275899725748764,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 3,
+        "reward": 0.11899963136694387,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 2,
+        "reward": 0.04697050873324632,
+        "wins": 0
+      }
+    },
+    "t3|c-3|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 1,
+        "reward": 0.1322788461264941,
+        "wins": 0
+      }
+    },
+    "t2|c-2|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 1,
+        "reward": 0.11966083052466006,
+        "wins": 0
+      }
+    },
+    "t5|c-3|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 38,
+        "reward": 2.524863140238762,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 8,
+        "reward": 0.4466659345233739,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 0.30169880035329694,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 3,
+        "reward": 0.15564605748320337,
+        "wins": 0
+      }
+    },
+    "t5|c-3|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 4,
+        "reward": 0.30019030635153043,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 3,
+        "reward": 0.15369904268138115,
+        "wins": 0
+      },
+      "spawn:scone": {
+        "visits": 1,
+        "reward": 0.038472905250376936,
+        "wins": 0
+      }
+    },
+    "t5|c-2|cr0|ecr0|p3|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 4,
+        "reward": 0.28781051635791066,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.14381229692705078,
+        "wins": 0
+      },
+      "wait": {
+        "visits": 6,
+        "reward": 0.4257016007028094,
+        "wins": 0
+      },
+      "spawn:tarte_tatin": {
+        "visits": 1,
+        "reward": 0.07020778853246694,
+        "wins": 0
+      }
+    },
+    "t5|c-2|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.14309323544241553,
+        "wins": 0
+      }
+    },
+    "t4|c-2|cr1|ecr1|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 3,
+        "reward": 0.2187028167627743,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.06744813404795631,
+        "wins": 0
+      }
+    },
+    "t3|c-1|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 3,
+        "reward": 0.15981363291331588,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 2,
+        "reward": 0.11607573949547872,
+        "wins": 0
+      }
+    },
+    "t2|c-1|cr1|ecr1|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.07340298294664925,
+        "wins": 0
+      }
+    },
+    "t1|c-1|cr1|ecr1|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.06606910211867315,
+        "wins": 0
+      }
+    },
+    "t1|c0|cr0|ecr1|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 5,
+        "reward": 0.23691202552949542,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 6,
+        "reward": 0.2661971590963645,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 2,
+        "reward": 0.09783364128073946,
+        "wins": 0
+      }
+    },
+    "t1|c0|cr1|ecr1|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 5,
+        "reward": 0.23077475549411502,
+        "wins": 0
+      }
+    },
+    "t1|c0|cr0|ecr0|p2|u0|a0|h0": {
+      "wait": {
+        "visits": 1,
+        "reward": 0.061591606957759254,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr0|ecr0|p0|u0|a0|h0": {
+      "wait": {
+        "visits": 10,
+        "reward": 0.3783053559633243,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 2,
+        "reward": 0.09361659551054602,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.0931485125329933,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr1|ecr0|p-1|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.05976680219888568,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr0|ecr0|p-1|u0|a0|h0": {
+      "wait": {
+        "visits": 3,
+        "reward": 0.15192534252768267,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.05858040132919095,
+        "wins": 0
+      },
+      "spawn:pie": {
+        "visits": 2,
+        "reward": 0.09054514949257401,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr0|ecr0|p-2|u0|a0|h0": {
+      "spawn:pie": {
+        "visits": 1,
+        "reward": 0.05917062834695178,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr1|ecr0|p0|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.05770608151680261,
+        "wins": 0
+      }
+    },
+    "t1|c0|cr0|ecr0|p-1|u0|a0|h0": {
+      "wait": {
+        "visits": 1,
+        "reward": 0.033751355914145124,
+        "wins": 0
+      }
+    },
+    "t0|c0|cr1|ecr1|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.03162214126057823,
+        "wins": 0
+      }
+    },
+    "t5|c-2|cr0|ecr1|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.07235137831660339,
+        "wins": 0
+      }
+    },
+    "t5|c-2|cr1|ecr1|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 2,
+        "reward": 0.14184637101482497,
+        "wins": 0
+      }
+    },
+    "t4|c-2|cr0|ecr1|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.06778706939493098,
+        "wins": 0
+      }
+    },
+    "t4|c-1|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 2,
+        "reward": 0.12670703261402705,
+        "wins": 0
+      },
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.0635107013033737,
+        "wins": 0
+      }
+    },
+    "t4|c-1|cr1|ecr0|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.06319314779685684,
+        "wins": 0
+      }
+    },
+    "t3|c-1|cr1|ecr1|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.06101428893474855,
+        "wins": 0
+      }
+    },
+    "t0|c-1|cr0|ecr0|p3|u0|a0|h0": {
+      "wait": {
+        "visits": 1,
+        "reward": 0.04631279539239363,
+        "wins": 0
+      }
+    },
+    "t5|c-3|cr1|ecr1|p3|u0|a0|h0": {
+      "spawn:baumkuchen": {
+        "visits": 1,
+        "reward": 0.03944932523853127,
+        "wins": 0
+      }
+    }
+  }
+}

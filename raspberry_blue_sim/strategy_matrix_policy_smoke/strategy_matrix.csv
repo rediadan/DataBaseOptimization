@@ -1,0 +1,5 @@
+raspberry_strategy,blueberry_strategy,raspberry_win_rate,blueberry_win_rate,avg_final_control,avg_round_duration,raspberry_detected_dominant,blueberry_detected_dominant,strategy_diversity_penalty
+tank_focus,tank_focus,1.0,0.0,1.0,169.0,tank_focus,tank_focus,0.95
+tank_focus,ranged_focus,0.0,1.0,-3.0,151.75,tank_focus,ranged_focus,0.575904
+ranged_focus,tank_focus,1.0,0.0,3.0,140.5,mixed_composition,tank_focus,0.575904
+ranged_focus,ranged_focus,1.0,0.0,3.0,179.75,mixed_composition,ranged_focus,0.575904

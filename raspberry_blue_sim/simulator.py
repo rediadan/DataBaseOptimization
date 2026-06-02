@@ -35,6 +35,10 @@ POLICY_BACKPROP_DISCOUNT = 0.995
 MATCH_WIN_REWARD_WEIGHT = 0.60
 ROUND_WIN_REWARD_WEIGHT = 0.25
 ROUND_STATE_REWARD_WEIGHT = 0.15
+STRATEGY_POLICY_REWARD_WEIGHT = 0.45
+STRATEGY_POLICY_EXPLORATION_RATE = 0.08
+STRATEGY_POLICY_UCT_PRIOR_WEIGHT = 0.28
+STRATEGY_POLICY_BEST_PRIOR_WEIGHT = 0.10
 
 
 @dataclass
@@ -215,7 +219,7 @@ class StrategyBiasedAgent:
             if ("upgrade", "hp") in legal:
                 return ("upgrade", "hp")
             return ("upgrade", "attack")
-        should_save = state.upgrade_level < 2 or (state.upgrade_level < 3 and control >= -1)
+        should_save = state.upgrade_level < 2
         if should_save and state.credits >= BASE_CREDITS and ("wait", None) in legal:
             return ("wait", None)
         return None
@@ -262,9 +266,12 @@ class StrategyBiasedAgent:
             if now < 20 and role == "special":
                 weight *= 0.45
         elif self.strategy == "upgrade_focus":
-            weight *= 0.45 if state.upgrade_level < 2 else 0.7
-            if state.upgrade_level >= 2:
-                weight *= 1.45
+            if state.upgrade_level == 0:
+                weight *= 0.55
+            elif state.upgrade_level == 1:
+                weight *= 0.75
+            else:
+                weight *= 1.35
         elif self.strategy == "mixed":
             if role == "attacker":
                 weight *= 1.8
@@ -280,10 +287,14 @@ class StrategyBiasedAgent:
 
     def upgrade_weight(self, state: TeamState, upgrade_stat: str, now: float, control: int) -> float:
         if self.strategy == "upgrade_focus":
-            if state.upgrade_level < 3:
-                base = 7.5
+            if state.upgrade_level == 0:
+                base = 5.2
+            elif state.upgrade_level == 1:
+                base = 4.4
+            elif state.upgrade_level == 2:
+                base = 2.2
             else:
-                base = 2.0
+                base = 0.9
         elif self.strategy == "tank_aoe_focus":
             base = 1.25
             if upgrade_stat == "hp" and state.hp_upgrade_level <= state.attack_upgrade_level:
@@ -362,8 +373,8 @@ class StrategyMCTSAgent(MCTSAgent):
         super().__init__(team, rng, iterations=iterations, horizon=horizon)
         self.strategy = strategy
         self.bias = StrategyBiasedAgent(team, rng, strategy)
-        self.prior_weight = 0.22
-        self.reward_weight = 0.24
+        self.prior_weight = 0.16 if strategy == "upgrade_focus" else 0.22
+        self.reward_weight = 0.18 if strategy == "upgrade_focus" else 0.24
 
     def choose_action(self, sim: "RoundSim", now: float, actions: List[tuple[str, Optional[str]]]) -> tuple[str, Optional[str]]:
         stats = {action: {"visits": 0, "score": 0.0} for action in actions}
@@ -420,49 +431,7 @@ class StrategyMCTSAgent(MCTSAgent):
         return tactical_score * (1.0 - self.reward_weight) + strategy_score * self.reward_weight
 
     def strategy_reward(self, sim: "RoundSim") -> float:
-        state = sim.states[self.team]
-        role_counts: Dict[str, int] = {}
-        for spec in TEAMS[self.team]["units"]:
-            role_counts[spec.role] = role_counts.get(spec.role, 0) + state.produced.get(spec.key, 0)
-        total_units = sum(role_counts.values())
-
-        def share(role: str) -> float:
-            return role_counts.get(role, 0) / total_units if total_units else 0.0
-
-        tank = share("tank")
-        aoe = share("aoe_ranged")
-        single = share("single_ranged")
-        attacker = share("attacker")
-        special = share("special")
-        if self.strategy == "tank_focus":
-            return tank
-        if self.strategy == "tank_aoe_focus":
-            combo_share = tank + aoe
-            role_balance = 2.0 * min(tank, aoe)
-            return min(1.0, combo_share * 0.62 + role_balance * 0.38)
-        if self.strategy == "ranged_focus":
-            return min(1.0, aoe + single)
-        if self.strategy == "swarm_focus":
-            return attacker
-        if self.strategy == "special_focus":
-            return special
-        if self.strategy == "upgrade_focus":
-            upgrade_progress = min(1.0, state.upgrade_level / 3.0)
-            total_actions = total_units + state.upgrade_level
-            upgrade_share = state.upgrade_level / total_actions if total_actions else 0.0
-            return min(1.0, upgrade_progress * 0.72 + upgrade_share * 1.15)
-        if self.strategy == "mixed":
-            counts = [role_counts.get(role, 0) for role in ("attacker", "tank", "aoe_ranged", "single_ranged", "special")]
-            total = sum(counts)
-            if not total:
-                return 0.0
-            entropy = 0.0
-            for count in counts:
-                if count:
-                    p = count / total
-                    entropy -= p * math.log(p)
-            return entropy / math.log(len(counts))
-        return 0.5
+        return strategy_reward_for_state(self.team, sim.states[self.team], self.strategy)
 
 
 def action_to_key(action: tuple[str, Optional[str]]) -> str:
@@ -477,12 +446,82 @@ def key_to_action(key: str) -> tuple[str, Optional[str]]:
     return (kind, unit_key)
 
 
+def normalize_strategy_name(strategy: str) -> str:
+    return "mixed_composition" if strategy == "mixed" else strategy
+
+
+def display_strategy_name(strategy: str) -> str:
+    return "mixed" if strategy == "mixed_composition" else strategy
+
+
+def strategy_reward_for_state(team: str, state: TeamState, strategy: str) -> float:
+    strategy = normalize_strategy_name(strategy)
+    role_counts: Dict[str, int] = {}
+    for spec in TEAMS[team]["units"]:
+        role_counts[spec.role] = role_counts.get(spec.role, 0) + state.produced.get(spec.key, 0)
+    total_units = sum(role_counts.values())
+
+    def share(role: str) -> float:
+        return role_counts.get(role, 0) / total_units if total_units else 0.0
+
+    tank = share("tank")
+    aoe = share("aoe_ranged")
+    single = share("single_ranged")
+    attacker = share("attacker")
+    special = share("special")
+    if strategy == "tank_focus":
+        return tank
+    if strategy == "tank_aoe_focus":
+        combo_share = tank + aoe
+        role_balance = 2.0 * min(tank, aoe)
+        return min(1.0, combo_share * 0.62 + role_balance * 0.38)
+    if strategy == "ranged_focus":
+        return min(1.0, aoe + single)
+    if strategy == "swarm_focus":
+        return attacker
+    if strategy == "special_focus":
+        return special
+    if strategy == "upgrade_focus":
+        upgrade_progress = min(1.0, state.upgrade_level / 3.0)
+        upgrade_saturation = 1.0 - math.exp(-state.upgrade_level / 1.6)
+        total_actions = total_units + state.upgrade_level
+        upgrade_share = state.upgrade_level / total_actions if total_actions else 0.0
+        unit_anchor = min(1.0, total_units / 4.0)
+        upgrade_mix = upgrade_share * unit_anchor
+        upgrade_balance = 1.0
+        if state.upgrade_level:
+            imbalance = abs(state.attack_upgrade_level - state.hp_upgrade_level) / state.upgrade_level
+            upgrade_balance -= 0.18 * imbalance
+        return min(1.0, max(0.0, (upgrade_progress * 0.48 + upgrade_saturation * 0.22 + upgrade_mix * 0.42) * upgrade_balance))
+    if strategy == "mixed_composition":
+        counts = [role_counts.get(role, 0) for role in ("attacker", "tank", "aoe_ranged", "single_ranged", "special")]
+        total = sum(counts)
+        if not total:
+            return 0.0
+        entropy = 0.0
+        for count in counts:
+            if count:
+                p = count / total
+                entropy -= p * math.log(p)
+        return entropy / math.log(len(counts))
+    return 0.5
+
+
 class PolicyMCTSAgent:
-    def __init__(self, team: str, rng: random.Random, policy: dict, training: bool):
+    def __init__(
+        self,
+        team: str,
+        rng: random.Random,
+        policy: dict,
+        training: bool,
+        strategy: Optional[str] = None,
+    ):
         self.team = team
         self.rng = rng
         self.policy = policy
         self.training = training
+        self.strategy = normalize_strategy_name(strategy) if strategy else ""
+        self.strategy_bias = StrategyBiasedAgent(team, rng, display_strategy_name(self.strategy)) if self.strategy else None
         self.next_decision_at = 0.0
 
     def maybe_act(self, sim: "RoundSim", now: float) -> None:
@@ -493,7 +532,7 @@ class PolicyMCTSAgent:
         if not actions:
             return
         state_key = sim.state_key(self.team, now)
-        action = self.opening_upgrade_action(sim, now, actions) or self.choose_action(state_key, actions)
+        action = self.opening_upgrade_action(sim, now, actions) or self.choose_action(sim, now, state_key, actions)
         if self.training:
             sim.policy_traces[self.team].append((state_key, action_to_key(action)))
         sim.apply_action(self.team, action)
@@ -504,6 +543,8 @@ class PolicyMCTSAgent:
         now: float,
         actions: List[tuple[str, Optional[str]]],
     ) -> Optional[tuple[str, Optional[str]]]:
+        if self.strategy and self.strategy != "upgrade_focus":
+            return None
         if sim.states[self.team].upgrade_level > 0 or now > 12:
             return None
         legal = set(actions)
@@ -519,39 +560,59 @@ class PolicyMCTSAgent:
             return ("wait", None)
         return None
 
-    def choose_action(self, state_key: str, actions: List[tuple[str, Optional[str]]]) -> tuple[str, Optional[str]]:
-        if self.training and self.rng.random() < 0.12:
-            return self.rng.choice(actions)
+    def choose_action(self, sim: "RoundSim", now: float, state_key: str, actions: List[tuple[str, Optional[str]]]) -> tuple[str, Optional[str]]:
+        exploration_rate = STRATEGY_POLICY_EXPLORATION_RATE if self.strategy else 0.12
+        if self.training and self.rng.random() < exploration_rate:
+            return self.explore_action(sim, now, actions)
         legal = {action_to_key(action): action for action in actions}
         state = self.policy.get(self.team, {}).get(state_key, {})
         if self.training:
-            return self.choose_uct(state, legal)
-        return self.choose_best_known(state, legal, actions)
+            return self.choose_uct(sim, now, state, legal)
+        return self.choose_best_known(sim, now, state, legal, actions)
 
-    def choose_uct(self, state: dict, legal: Dict[str, tuple[str, Optional[str]]]) -> tuple[str, Optional[str]]:
+    def explore_action(self, sim: "RoundSim", now: float, actions: List[tuple[str, Optional[str]]]) -> tuple[str, Optional[str]]:
+        if not self.strategy_bias:
+            return self.rng.choice(actions)
+        weights = [max(0.01, self.strategy_bias.action_weight(sim, now, action)) for action in actions]
+        return self.rng.choices(actions, weights=weights, k=1)[0]
+
+    def choose_uct(self, sim: "RoundSim", now: float, state: dict, legal: Dict[str, tuple[str, Optional[str]]]) -> tuple[str, Optional[str]]:
         unvisited = [key for key in legal if state.get(key, {}).get("visits", 0) == 0]
         if unvisited:
-            return legal[self.rng.choice(unvisited)]
+            return legal[max(unvisited, key=lambda key: self.action_prior(sim, now, legal[key]))]
         total = sum(state.get(key, {}).get("visits", 0) for key in legal) or 1
         exploration = 1.2
         best_key = max(
             legal,
             key=lambda key: self.action_value(state, key)
-            + exploration * math.sqrt(math.log(total + 1) / state[key]["visits"]),
+            + exploration * math.sqrt(math.log(total + 1) / state[key]["visits"])
+            + STRATEGY_POLICY_UCT_PRIOR_WEIGHT * self.action_prior(sim, now, legal[key]),
         )
         return legal[best_key]
 
-    def choose_best_known(self, state: dict, legal: Dict[str, tuple[str, Optional[str]]], actions: List[tuple[str, Optional[str]]]) -> tuple[str, Optional[str]]:
+    def choose_best_known(
+        self,
+        sim: "RoundSim",
+        now: float,
+        state: dict,
+        legal: Dict[str, tuple[str, Optional[str]]],
+        actions: List[tuple[str, Optional[str]]],
+    ) -> tuple[str, Optional[str]]:
         known = [key for key in legal if state.get(key, {}).get("visits", 0) > 0]
         if not known:
-            affordable_units = [action for action in actions if action[0] == "spawn"]
-            return self.rng.choice(affordable_units or actions)
-        return legal[max(known, key=lambda key: self.action_value(state, key))]
+            return self.explore_action(sim, now, actions)
+        return legal[max(known, key=lambda key: self.action_value(state, key) + STRATEGY_POLICY_BEST_PRIOR_WEIGHT * self.action_prior(sim, now, legal[key]))]
 
     def action_value(self, state: dict, key: str) -> float:
         node = state.get(key, {})
         visits = node.get("visits", 0)
         return node.get("reward", 0.0) / visits if visits else 0.0
+
+    def action_prior(self, sim: "RoundSim", now: float, action: tuple[str, Optional[str]]) -> float:
+        if not self.strategy_bias:
+            return 0.0
+        raw = max(0.01, self.strategy_bias.action_weight(sim, now, action))
+        return min(1.0, math.log1p(raw) / math.log(9.5))
 
 
 class RoundSim:
@@ -597,6 +658,10 @@ class RoundSim:
             return MCTSAgent(team, self.rng)
         if agent_type == "policy_train":
             return PolicyMCTSAgent(team, self.rng, self.policy, training=True)
+        if agent_type.startswith("strategy_policy_train:"):
+            return PolicyMCTSAgent(team, self.rng, self.policy, training=True, strategy=agent_type.split(":", 1)[1])
+        if agent_type.startswith("trained_strategy_policy:"):
+            return PolicyMCTSAgent(team, self.rng, self.policy, training=False, strategy=agent_type.split(":", 1)[1])
         if agent_type == "trained_mcts":
             return PolicyMCTSAgent(team, self.rng, self.policy, training=False)
         return HeuristicAgent(team, self.rng)
@@ -971,18 +1036,26 @@ class MatchSim:
         )
 
     def backpropagate_policy(self, winner: str, wins: Dict[str, int]) -> None:
-        if self.agent_type != "policy_train":
+        if not self.has_policy_training_agent():
             return
         rounds_played = len(self.round_results) or 1
         for team, trace in self.policy_traces.items():
+            strategy = self.policy_training_strategy(team)
+            if strategy is None:
+                continue
             if not trace:
                 continue
             round_state_score = sum(self.round_scores[team]) / len(self.round_scores[team]) if self.round_scores[team] else 0.5
-            final_reward = (
+            base_reward = (
                 MATCH_WIN_REWARD_WEIGHT * (1.0 if winner == team else 0.0)
                 + ROUND_WIN_REWARD_WEIGHT * (wins[team] / rounds_played)
                 + ROUND_STATE_REWARD_WEIGHT * round_state_score
             )
+            if strategy:
+                strategy_score = strategy_reward_for_state(team, self.states[team], strategy)
+                final_reward = base_reward * (1.0 - STRATEGY_POLICY_REWARD_WEIGHT) + strategy_score * STRATEGY_POLICY_REWARD_WEIGHT
+            else:
+                final_reward = base_reward
             team_policy = self.policy.setdefault(team, {})
             for distance_from_terminal, (state_key, action_key) in enumerate(reversed(trace)):
                 discounted_reward = final_reward * (POLICY_BACKPROP_DISCOUNT ** distance_from_terminal)
@@ -992,6 +1065,22 @@ class MatchSim:
                 node["reward"] += discounted_reward
                 if winner == team:
                     node["wins"] += 1
+
+    def team_agent_type(self, team: str) -> str:
+        if isinstance(self.agent_type, dict):
+            return self.agent_type.get(team, "heuristic")
+        return self.agent_type
+
+    def has_policy_training_agent(self) -> bool:
+        return any(self.policy_training_strategy(team) is not None for team in TEAMS)
+
+    def policy_training_strategy(self, team: str) -> Optional[str]:
+        agent = self.team_agent_type(team)
+        if agent == "policy_train":
+            return ""
+        if agent.startswith("strategy_policy_train:"):
+            return agent.split(":", 1)[1]
+        return None
 
 
 def load_policy(path: Optional[str]) -> dict:

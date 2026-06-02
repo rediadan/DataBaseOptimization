@@ -1,5 +1,5 @@
 param(
-  [string]$OutputName = "iterative_balance_runs_strategy_matrix_v3_confirm_5000p",
+  [string]$OutputName = "live_training_current",
   [string]$SeedBalance = "strategy_matrix_seed_patch_v3.json",
   [int]$Seed = 20260603,
   [double]$PatchStrength = 0.035,
@@ -11,7 +11,8 @@ param(
   [int]$ConfirmationSeeds = 2,
   [int]$CandidateMatches = 14,
   [int]$CandidateSeeds = 2,
-  [int]$CandidateLimit = 10
+  [int]$CandidateLimit = 10,
+  [switch]$NoArchive
 )
 
 $ErrorActionPreference = "Stop"
@@ -19,7 +20,15 @@ $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $root = Split-Path -Parent $scriptDir
 $script = Join-Path $scriptDir "iterative_balance_train.py"
-$out = Join-Path $scriptDir $OutputName
+. (Join-Path $scriptDir "live_run_utils.ps1")
+$archiveLabel = if ($SeedBalance) { [IO.Path]::GetFileNameWithoutExtension($SeedBalance) } else { "no_seed_balance" }
+$out = Initialize-LiveOutput `
+  -ScriptDir $scriptDir `
+  -OutputName $OutputName `
+  -LiveName "live_training_current" `
+  -ArchivePrefix "training" `
+  -ArchiveLabel $archiveLabel `
+  -NoArchive:$NoArchive
 $log = Join-Path $out "run_console.log"
 $seedArgs = @()
 
@@ -28,7 +37,6 @@ if ($SeedBalance) {
   $seedArgs = @("--seed-balance", $seedBalancePath)
 }
 
-New-Item -ItemType Directory -Force -Path $out | Out-Null
 Set-Location $root
 
 Write-Host "Raspberry Blue strategy training started" -ForegroundColor Cyan

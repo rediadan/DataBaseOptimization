@@ -151,6 +151,7 @@ button {
 
 .metric,
 .heatmap-panel,
+.balance-panel,
 .side,
 .training-panel,
 .log-panel {
@@ -194,10 +195,130 @@ button {
 }
 
 .heatmap-panel,
+.balance-panel,
 .side,
 .training-panel,
 .log-panel {
   padding: 14px;
+}
+
+.balance-panel {
+  margin-bottom: 12px;
+}
+
+.balance-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.balance-chip {
+  min-width: 62px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  text-align: center;
+  background: #eef2f7;
+  color: #334155;
+}
+
+.balance-chip.buff {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.balance-chip.nerf {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.balance-table-wrap {
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.balance-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+}
+
+.balance-table th,
+.balance-table td {
+  height: 30px;
+  padding: 7px 10px;
+  border-right: 1px solid #cfd6e2;
+  border-bottom: 1px solid #cfd6e2;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.balance-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #111827;
+  color: #f8fafc;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.balance-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.balance-table th:last-child,
+.balance-table td:last-child {
+  border-right: 0;
+}
+
+.balance-team,
+.balance-unit {
+  font-weight: 900;
+  color: #111827;
+}
+
+.balance-table tr.team-raspberry .balance-team,
+.balance-table tr.team-raspberry .balance-unit {
+  background: #fdecef;
+}
+
+.balance-table tr.team-blueberry .balance-team,
+.balance-table tr.team-blueberry .balance-unit {
+  background: #eaf1ff;
+}
+
+.balance-cell {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.balance-cell.buff {
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 900;
+}
+
+.balance-cell.nerf {
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 900;
+}
+
+.empty-balance {
+  min-height: 84px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .training-heatmap {
@@ -413,6 +534,20 @@ button {
   font-weight: 900;
 }
 
+.axis.team-axis {
+  border: 1px solid rgba(17, 24, 39, 0.06);
+}
+
+.axis.x.team-axis {
+  background: #eaf1ff;
+  border-top: 5px solid #8fb0ea;
+}
+
+.axis.y.team-axis {
+  background: #fdecef;
+  border-left: 5px solid #e89aaa;
+}
+
 .axis.x {
   min-height: 54px;
 }
@@ -435,6 +570,8 @@ button {
 .cell.empty {
   background: #e5e7eb;
   color: #64748b;
+  border-top: 5px solid #b8cdf5;
+  border-left: 5px solid #f0b6c2;
 }
 
 .cell .rate {
@@ -727,6 +864,18 @@ button {
       </aside>
     </section>
 
+    <section class="balance-panel" aria-label="balance adjustment table">
+      <div class="section-title">
+        <h2>Balance Adjustments</h2>
+        <div class="balance-toolbar">
+          <span id="balance-source">waiting</span>
+          <span id="balance-buff-count" class="balance-chip buff">0 buff</span>
+          <span id="balance-nerf-count" class="balance-chip nerf">0 nerf</span>
+        </div>
+      </div>
+      <div id="balance-table"></div>
+    </section>
+
     <section class="metrics matrix-metrics" aria-label="matrix metrics">
       <div class="metric">
         <span>Avg Raspberry</span>
@@ -790,9 +939,27 @@ button {
   </main>
 
   <script>
-const DEFAULT_TRAINING_ROOT = "/raspberry_blue_sim/iterative_balance_runs_strategy_matrix_v5_fixed_mechanics_confirm_5000p";
-const DEFAULT_MATRIX_ROOT = "/raspberry_blue_sim/strategy_matrix_v5_fixed_mechanics_from_strategy_matrix_balance";
+const DEFAULT_TRAINING_ROOT = "/raspberry_blue_sim/live_training_current";
+const DEFAULT_MATRIX_ROOT = "/raspberry_blue_sim/live_matrix_current";
 const DEFAULT_COMPARE = "/raspberry_blue_sim/strategy_matrix_v1_from_strategy_diversity_balance/strategy_matrix.csv";
+const BASE_UNITS = {
+  raspberry: {
+    pie: { cost: 80, hp: 130, speed: 0.8, power: 40, cooldown: 1.0, range: 1.0, area: 0.0 },
+    tart: { cost: 280, hp: 250, speed: 0.6, power: 20, cooldown: 2.0, range: 6.0, area: 1.2 },
+    baumkuchen: { cost: 250, hp: 420, speed: 0.8, power: 10, cooldown: 1.8, range: 0.5, area: 0.0 },
+    scone: { cost: 500, hp: 300, speed: 0.5, power: 100, cooldown: 1.8, range: 3.0, area: 0.0 },
+    macaron: { cost: 300, hp: 50, speed: 1.2, power: 50, cooldown: 1.5, range: 2.5, area: 1.0 },
+  },
+  blueberry: {
+    pie: { cost: 100, hp: 100, speed: 1.0, power: 70, cooldown: 1.0, range: 1.0, area: 0.0 },
+    tarte_tatin: { cost: 180, hp: 180, speed: 1.0, power: 50, cooldown: 3.0, range: 4.0, area: 2.5 },
+    baumkuchen: { cost: 250, hp: 300, speed: 1.0, power: 30, cooldown: 1.0, range: 0.5, area: 0.0 },
+    scone: { cost: 500, hp: 200, speed: 0.8, power: 150, cooldown: 2.0, range: 3.0, area: 0.0 },
+    pannacotta: { cost: 400, hp: 50, speed: 1.5, power: 400, cooldown: 0.5, range: 1.0, area: 6.5 },
+  },
+};
+const STAT_ORDER = ["cost", "hp", "speed", "power", "cooldown", "range", "area"];
+const LOWER_IS_BETTER = new Set(["cost", "cooldown"]);
 
 const $ = (id) => document.getElementById(id);
 const state = {
@@ -848,25 +1015,28 @@ async function refresh() {
   const matrixPath = $("matrix-path").value.trim();
   const summaryPath = $("summary-path").value.trim();
   const comparePath = $("compare-path").value.trim();
-  const [historyResult, logResult, matrixResult, summaryResult, compareResult] = await Promise.all([
+  const [historyResult, logResult, balanceResult, matrixResult, summaryResult, compareResult] = await Promise.all([
     safeLoad(fetchCsv(`${trainingRoot}/master_history.csv`), []),
     safeLoad(fetchText(`${trainingRoot}/run_console.log`), ""),
+    safeLoad(loadBalancePatchData(trainingRoot), { source: "", adjustments: [], finalUnits: null }),
     safeLoad(matrixPath ? fetchMatrixCsv(matrixPath) : Promise.resolve([]), []),
     safeLoad(summaryPath ? fetchJson(summaryPath) : Promise.resolve(null), null),
     safeLoad(comparePath ? fetchMatrixCsv(comparePath) : Promise.resolve([]), []),
   ]);
   const historyRows = historyResult.value;
   const logText = logResult.value;
+  const balanceData = balanceResult.value;
   const rows = matrixResult.value;
   const summary = summaryResult.value;
   const compareRows = compareResult.value;
   state.lastRows = rows;
   state.compareRows = compareRows;
-  renderTraining(historyRows.map(normalizeHistoryRow), logText);
+  renderTraining(historyRows.map(normalizeHistoryRow), logText, balanceData);
   render(rows, summary, compareRows);
   const failures = [
     historyResult.error ? "history" : "",
     logResult.error ? "log" : "",
+    balanceResult.error ? "balance" : "",
     matrixResult.error ? "matrix" : "",
     summaryResult.error ? "summary" : "",
     compareResult.error ? "compare" : "",
@@ -950,6 +1120,40 @@ async function fetchJson(path) {
   return JSON.parse(await fetchText(path));
 }
 
+async function loadBalancePatchData(trainingRoot) {
+  const currentPath = `${trainingRoot}/current_adjustments.json`;
+  const finalPath = `${trainingRoot}/final_result.json`;
+  let currentPayload = null;
+  let finalPayload = null;
+  try {
+    currentPayload = await fetchJson(currentPath);
+  } catch (error) {
+    // Missing live balance files are expected before the first accepted patch.
+  }
+  try {
+    finalPayload = await fetchJson(finalPath);
+  } catch (error) {
+    // final_result.json appears only after training finishes.
+  }
+  const currentAdjustments = Array.isArray(currentPayload?.accepted_adjustments) ? currentPayload.accepted_adjustments : [];
+  if (currentAdjustments.length) {
+    return {
+      source: currentPath,
+      adjustments: currentAdjustments,
+      finalUnits: finalPayload?.final_units || null,
+    };
+  }
+  const finalAdjustments = Array.isArray(finalPayload?.accepted_adjustments) ? finalPayload.accepted_adjustments : [];
+  if (finalAdjustments.length || finalPayload?.final_units) {
+    return {
+      source: finalPath,
+      adjustments: finalAdjustments,
+      finalUnits: finalPayload?.final_units || null,
+    };
+  }
+  return { source: "", adjustments: [], finalUnits: null };
+}
+
 function parseCsv(text) {
   const rows = [];
   let field = "";
@@ -1013,7 +1217,7 @@ function normalizeHistoryRow(row) {
   };
 }
 
-function renderTraining(historyRows, logText) {
+function renderTraining(historyRows, logText, balanceData) {
   const latest = historyRows.at(-1);
   const logState = parseLogState(logText);
   $("train-stage").textContent = logState.stage;
@@ -1029,6 +1233,7 @@ function renderTraining(historyRows, logText) {
   renderLiveProgress(logState);
   renderCandidateStrip(logState);
   renderTrainingHeatmap(historyRows);
+  renderBalanceAdjustments(balanceData);
   renderLog(logText);
 }
 
@@ -1282,6 +1487,180 @@ function renderTrainingHeatmap(rows) {
   panel.innerHTML = fragments.join("");
 }
 
+function renderBalanceAdjustments(balanceData) {
+  const rows = buildBalanceUnitRows(balanceData);
+  const changedCells = rows.flatMap((row) => STAT_ORDER.map((stat) => row.stats[stat])).filter((cell) => cell.changed);
+  const buffCount = changedCells.filter((cell) => cell.effect === "buff").length;
+  const nerfCount = changedCells.filter((cell) => cell.effect === "nerf").length;
+  $("balance-buff-count").textContent = `${buffCount} buff`;
+  $("balance-nerf-count").textContent = `${nerfCount} nerf`;
+  $("balance-source").textContent = balanceData?.source ? shortBalanceSource(balanceData.source) : "no patch file";
+  if (!changedCells.length) {
+    $("balance-table").innerHTML = `<div class="empty-balance">waiting for accepted balance adjustments</div>`;
+    return;
+  }
+  $("balance-table").innerHTML = `
+    <div class="balance-table-wrap">
+      <table class="balance-table">
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Unit</th>
+            ${STAT_ORDER.map((stat) => `<th>${statLabel(stat)}</th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map((row) => `
+            <tr class="team-${row.team}">
+              <td class="balance-team">${teamLabel(row.team)}</td>
+              <td class="balance-unit">${escapeHtml(row.unit)}</td>
+              ${STAT_ORDER.map((stat) => renderBalanceStatCell(row.stats[stat])).join("")}
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function buildBalanceUnitRows(balanceData) {
+  const cells = buildBalanceRows(balanceData);
+  const cellMap = new Map(cells.map((cell) => [`${cell.team}|${cell.unit}|${cell.stat}`, cell]));
+  const rows = [];
+  for (const team of Object.keys(BASE_UNITS)) {
+    for (const unit of Object.keys(BASE_UNITS[team])) {
+      const stats = {};
+      for (const stat of STAT_ORDER) {
+        const changed = cellMap.get(`${team}|${unit}|${stat}`);
+        const before = BASE_UNITS[team][unit][stat];
+        stats[stat] = changed || {
+          team,
+          unit,
+          stat,
+          before,
+          current: before,
+          delta: 0,
+          factor: 1,
+          effect: "neutral",
+          changed: false,
+        };
+        if (changed) stats[stat].changed = true;
+      }
+      rows.push({ team, unit, stats });
+    }
+  }
+  return rows;
+}
+
+function renderBalanceStatCell(cell) {
+  const className = cell.changed ? cell.effect : "neutral";
+  const text = cell.changed
+    ? `${formatStat(cell.before)} -> ${formatStat(cell.current)}`
+    : formatStat(cell.before);
+  const title = cell.changed
+    ? `${cell.stat}: ${formatStat(cell.before)} -> ${formatStat(cell.current)} (${cell.factor.toFixed(4)}x, ${cell.effect})`
+    : `${cell.stat}: unchanged`;
+  return `<td class="balance-cell ${className}" title="${escapeHtml(title)}">${escapeHtml(text)}</td>`;
+}
+
+function buildBalanceRows(balanceData) {
+  const adjustments = Array.isArray(balanceData?.adjustments) ? balanceData.adjustments : [];
+  const factors = new Map();
+  for (const adjustment of adjustments) {
+    const team = adjustment.team;
+    const unit = adjustment.unit;
+    const stat = adjustment.stat;
+    const factor = Number(adjustment.factor);
+    if (!BASE_UNITS[team]?.[unit] || !STAT_ORDER.includes(stat) || !Number.isFinite(factor)) continue;
+    const key = `${team}|${unit}|${stat}`;
+    factors.set(key, (factors.get(key) || 1) * factor);
+  }
+  const finalUnitMap = flattenFinalUnits(balanceData?.finalUnits);
+  const rows = [];
+  for (const team of Object.keys(BASE_UNITS)) {
+    for (const unit of Object.keys(BASE_UNITS[team])) {
+      for (const stat of STAT_ORDER) {
+        const key = `${team}|${unit}|${stat}`;
+        const factor = factors.get(key);
+        if (!factor || Math.abs(factor - 1) < 0.000001) continue;
+        const before = BASE_UNITS[team][unit][stat];
+        const current = finalUnitMap.get(key) ?? before * factor;
+        const delta = current - before;
+        const effect = classifyBalanceEffect(stat, delta);
+        rows.push({ team, unit, stat, before, current, delta, factor, effect });
+      }
+    }
+  }
+  return rows.sort((a, b) => {
+    const teamOrder = teamOrderIndex(a.team) - teamOrderIndex(b.team);
+    if (teamOrder) return teamOrder;
+    const unitOrder = a.unit.localeCompare(b.unit);
+    if (unitOrder) return unitOrder;
+    return STAT_ORDER.indexOf(a.stat) - STAT_ORDER.indexOf(b.stat);
+  });
+}
+
+function flattenFinalUnits(finalUnits) {
+  const map = new Map();
+  if (!finalUnits || typeof finalUnits !== "object") return map;
+  for (const [team, units] of Object.entries(finalUnits)) {
+    if (!Array.isArray(units)) continue;
+    for (const unit of units) {
+      for (const stat of STAT_ORDER) {
+        if (Number.isFinite(Number(unit[stat]))) {
+          map.set(`${team}|${unit.key}|${stat}`, Number(unit[stat]));
+        }
+      }
+    }
+  }
+  return map;
+}
+
+function classifyBalanceEffect(stat, delta) {
+  if (Math.abs(delta) < 0.000001) return "neutral";
+  const better = LOWER_IS_BETTER.has(stat) ? delta < 0 : delta > 0;
+  return better ? "buff" : "nerf";
+}
+
+function shortBalanceSource(path) {
+  if (path.endsWith("/current_adjustments.json")) return "live current_adjustments.json";
+  if (path.endsWith("/final_result.json")) return "final_result.json";
+  return path.split("/").slice(-2).join("/");
+}
+
+function teamLabel(team) {
+  return team === "raspberry" ? "Raspberry" : team === "blueberry" ? "Blueberry" : team;
+}
+
+function statLabel(stat) {
+  const labels = {
+    cost: "Cost",
+    hp: "HP",
+    speed: "Speed",
+    power: "Power",
+    cooldown: "Cooldown",
+    range: "Range",
+    area: "Area",
+  };
+  return labels[stat] || stat;
+}
+
+function teamOrderIndex(team) {
+  return team === "raspberry" ? 0 : team === "blueberry" ? 1 : 2;
+}
+
+function formatStat(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "-";
+  if (Math.abs(number) >= 100) return number.toFixed(0);
+  if (Math.abs(number) >= 10) return number.toFixed(2);
+  return number.toFixed(3);
+}
+
+function statDigits(stat) {
+  return stat === "cost" ? 0 : 3;
+}
+
 function renderLog(logText) {
   const lines = (logText || "").trim().split(/\r?\n/).filter(Boolean);
   $("live-log").textContent = lines.slice(-36).join("\n") || "waiting for run_console.log";
@@ -1397,12 +1776,12 @@ function renderHeatmap(rows, strategies, compareMap) {
   heatmap.style.setProperty("--cols", strategies.length);
   const map = rowMap(rows);
   const fragments = [];
-  fragments.push(`<div class="corner">R \\ B</div>`);
+  fragments.push(`<div class="corner" style="background:linear-gradient(135deg,#fdecef 0%,#fdecef 48%,#eaf1ff 52%,#eaf1ff 100%)">R \\ B</div>`);
   for (const strategy of strategies) {
-    fragments.push(`<div class="axis x">${label(strategy)}</div>`);
+    fragments.push(`<div class="axis x team-axis">${label(strategy)}</div>`);
   }
   for (const rStrategy of strategies) {
-    fragments.push(`<div class="axis y">${label(rStrategy)}</div>`);
+    fragments.push(`<div class="axis y team-axis">${label(rStrategy)}</div>`);
     for (const bStrategy of strategies) {
       const key = `${rStrategy}|${bStrategy}`;
       const row = map.get(key);

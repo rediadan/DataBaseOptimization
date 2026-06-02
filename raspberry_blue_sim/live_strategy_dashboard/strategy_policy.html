@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Strategy Policy Training Viewer</title>
+  <style>
+:root {
+  --bg: #f6f7fb;
+  --panel: #ffffff;
+  --ink: #111827;
+  --muted: #64748b;
+  --line: #d9dee8;
+  --raspberry: #d4485b;
+  --blueberry: #3567d6;
+  --good: #15803d;
+  --warn: #b45309;
+  --bad: #b91c1c;
+  --pending: #eef2f7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1120px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Segoe UI, Pretendard, Arial, sans-serif;
+}
+
+.shell {
+  width: min(1500px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 18px 0 24px;
+}
+
+.topbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 10px 0 16px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 26px;
+  line-height: 1.15;
+}
+
+#subtitle {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  max-width: 780px;
+}
+
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--warn);
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.14);
+}
+
+.dot.ok {
+  background: var(--good);
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.14);
+}
+
+.dot.bad {
+  background: var(--bad);
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.14);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: minmax(520px, 1fr) 120px 100px;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+
+label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+input,
+select,
+button {
+  height: 38px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 13px;
+}
+
+input,
+select {
+  padding: 0 10px;
+}
+
+button {
+  cursor: pointer;
+  font-weight: 900;
+  background: #111827;
+  color: #fff;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: 1.2fr 1.3fr repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.metric,
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.metric {
+  min-height: 78px;
+  padding: 12px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+}
+
+.metric span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.metric strong {
+  font-size: 23px;
+  line-height: 1;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(760px, 1fr) 440px;
+  gap: 12px;
+  align-items: start;
+}
+
+.panel {
+  padding: 14px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.strategy-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.strategy-card {
+  min-height: 176px;
+  border: 1px solid #cfd7e5;
+  border-left: 6px solid var(--pending);
+  border-radius: 8px;
+  padding: 12px;
+  display: grid;
+  align-content: space-between;
+  gap: 10px;
+  background: #f8fafc;
+}
+
+.strategy-card.done {
+  background: #fff;
+}
+
+.strategy-card.running {
+  border-left-color: var(--warn);
+  background: #fff8eb;
+}
+
+.strategy-card.good {
+  border-left-color: var(--good);
+}
+
+.strategy-card.bad {
+  border-left-color: var(--bad);
+}
+
+.strategy-name {
+  font-size: 15px;
+  font-weight: 950;
+  line-height: 1.2;
+}
+
+.strategy-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.strategy-main strong {
+  font-size: 30px;
+  letter-spacing: 0;
+}
+
+.strategy-main span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  height: 24px;
+  border-radius: 999px;
+  padding: 0 9px;
+  background: #e5eaf2;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.status-chip.done {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-chip.running {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-chip.bad {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.mini-bars {
+  display: grid;
+  gap: 8px;
+}
+
+.mini-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.bar {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5eaf2;
+}
+
+.bar > i {
+  display: block;
+  height: 100%;
+  width: var(--value);
+  background: var(--blueberry);
+}
+
+.bar.raspberry > i {
+  background: var(--raspberry);
+}
+
+.bar.progress > i {
+  background: var(--warn);
+}
+
+.card-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.stat-box {
+  border: 1px solid #edf1f7;
+  border-radius: 6px;
+  padding: 8px;
+  background: #fbfdff;
+}
+
+.stat-box span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.stat-box b {
+  display: block;
+  margin-top: 3px;
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.details {
+  display: grid;
+  gap: 8px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid #edf1f7;
+  padding-bottom: 7px;
+  font-size: 13px;
+}
+
+.detail-row b {
+  font-weight: 900;
+}
+
+.detail-row span {
+  color: var(--muted);
+}
+
+.log {
+  margin: 0;
+  min-height: 330px;
+  max-height: 500px;
+  overflow: auto;
+  white-space: pre-wrap;
+  border-radius: 6px;
+  background: #111827;
+  color: #dbeafe;
+  padding: 12px;
+  font: 12px/1.45 Consolas, ui-monospace, monospace;
+}
+
+.table-wrap {
+  margin-top: 12px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th,
+td {
+  border-bottom: 1px solid #edf1f7;
+  padding: 9px 8px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+th:first-child,
+td:first-child,
+th:nth-child(2),
+td:nth-child(2) {
+  text-align: left;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  border-radius: 999px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 900;
+  background: #edf2ff;
+  color: #2f55bf;
+}
+
+.empty {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: var(--muted);
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  font-weight: 800;
+}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <h1>Strategy Policy Training Viewer</h1>
+        <p id="subtitle">Shows one policy-training run per strategy. The large number on each card is either live progress or target-strategy adherence.</p>
+      </div>
+      <div class="statusbar">
+        <i id="status-dot" class="dot"></i>
+        <span id="status-text">waiting</span>
+      </div>
+    </header>
+
+    <section class="controls">
+      <label>
+        Strategy Policy Folder
+        <input id="folder" spellcheck="false" value="/raspberry_blue_sim/live_strategy_policy_current">
+      </label>
+      <label>
+        Refresh
+        <select id="refresh-interval">
+          <option value="1000">1s</option>
+          <option value="2000" selected>2s</option>
+          <option value="5000">5s</option>
+          <option value="10000">10s</option>
+        </select>
+      </label>
+      <button id="apply">Apply</button>
+    </section>
+
+    <section class="metrics">
+      <div class="metric"><span>Completed</span><strong id="metric-completed">0 / 7</strong></div>
+      <div class="metric"><span>Current</span><strong id="metric-live">-</strong></div>
+      <div class="metric"><span>Avg Target Hit</span><strong id="metric-hit">-</strong></div>
+      <div class="metric"><span>R Win Avg</span><strong id="metric-rwin">-</strong></div>
+      <div class="metric"><span>B Win Avg</span><strong id="metric-bwin">-</strong></div>
+      <div class="metric"><span>Last Strategy</span><strong id="metric-last">-</strong></div>
+    </section>
+
+    <section class="layout">
+      <div class="panel">
+        <div class="section-title">
+          <h2>Strategy Progress</h2>
+          <span class="hint" id="grid-hint">waiting for summary</span>
+        </div>
+        <div id="strategy-grid" class="strategy-grid"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Strategy</th>
+                <th>R Win</th>
+                <th>B Win</th>
+                <th>R Hit</th>
+                <th>B Hit</th>
+                <th>R Detected</th>
+                <th>B Detected</th>
+                <th>R Upg</th>
+                <th>B Upg</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="section-title">
+          <h2>Run Detail</h2>
+          <span class="hint" id="updated-at">-</span>
+        </div>
+        <div class="details">
+          <div class="detail-row"><span>Folder</span><b id="detail-folder">-</b></div>
+          <div class="detail-row"><span>Playouts / Strategy</span><b id="detail-playouts">-</b></div>
+          <div class="detail-row"><span>Seed</span><b id="detail-seed">-</b></div>
+          <div class="detail-row"><span>Balance</span><b id="detail-balance">-</b></div>
+        </div>
+        <div class="section-title" style="margin-top: 16px;">
+          <h2>Console Log</h2>
+          <span class="hint" id="log-hint">tail</span>
+        </div>
+        <pre id="log" class="log">waiting for run_console.log...</pre>
+      </aside>
+    </section>
+  </main>
+
+<script>
+const STRATEGIES = ["tank_focus", "tank_aoe_focus", "ranged_focus", "swarm_focus", "special_focus", "upgrade_focus", "mixed"];
+const $ = (id) => document.getElementById(id);
+const state = { timer: null };
+
+init();
+
+function init() {
+  const params = new URLSearchParams(location.search);
+  if (params.get("folder")) $("folder").value = params.get("folder");
+  if (params.get("interval")) $("refresh-interval").value = params.get("interval");
+  $("apply").addEventListener("click", () => {
+    updateUrl();
+    schedule();
+  });
+  $("refresh-interval").addEventListener("change", schedule);
+  $("folder").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      updateUrl();
+      schedule();
+    }
+  });
+  renderEmpty();
+  schedule();
+}
+
+function updateUrl() {
+  const params = new URLSearchParams();
+  params.set("folder", normalizeFolder($("folder").value));
+  params.set("interval", $("refresh-interval").value);
+  history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
+}
+
+function schedule() {
+  if (state.timer) clearInterval(state.timer);
+  refresh();
+  state.timer = setInterval(refresh, Number($("refresh-interval").value));
+}
+
+async function refresh() {
+  const root = normalizeFolder($("folder").value);
+  const [summaryResult, csvResult, logResult] = await Promise.all([
+    safeLoad(fetchJson(`${root}/strategy_policy_training_summary.json`), null),
+    safeLoad(fetchCsv(`${root}/strategy_policy_training.csv`), []),
+    safeLoad(fetchText(`${root}/run_console.log`), ""),
+  ]);
+
+  const summary = summaryResult.ok ? summaryResult.value : null;
+  const csvRows = csvResult.ok ? csvResult.value : [];
+  const rows = summary?.rows?.length ? summary.rows : csvRows;
+  const log = logResult.ok ? logResult.value : "";
+  render(root, summary, rows, log, {
+    summaryOk: summaryResult.ok,
+    csvOk: csvResult.ok,
+    logOk: logResult.ok,
+    summaryError: summaryResult.error,
+    csvError: csvResult.error,
+    logError: logResult.error,
+  });
+}
+
+async function safeLoad(promise, fallback) {
+  try {
+    return { ok: true, value: await promise };
+  } catch (error) {
+    return { ok: false, value: fallback, error };
+  }
+}
+
+async function fetchText(path) {
+  const response = await fetch(toUrl(path), { cache: "no-store" });
+  if (!response.ok) throw new Error(`${response.status} ${path}`);
+  return response.text();
+}
+
+async function fetchJson(path) {
+  return JSON.parse(await fetchText(path));
+}
+
+async function fetchCsv(path) {
+  const text = await fetchText(path);
+  return parseCsv(text);
+}
+
+function toUrl(path) {
+  const normalized = path.replaceAll("\\", "/");
+  if (normalized.startsWith("http://") || normalized.startsWith("https://")) return normalized;
+  return normalized.startsWith("/") ? normalized : `/${normalized}`;
+}
+
+function normalizeFolder(value) {
+  let folder = (value || "").trim().replaceAll("\\", "/");
+  folder = folder.replace(/^["']|["']$/g, "");
+  folder = folder.replace(/\/+$/g, "");
+  if (!folder) return "/raspberry_blue_sim/live_strategy_policy_current";
+  return folder.startsWith("/") ? folder : `/${folder}`;
+}
+
+function parseCsv(text) {
+  const lines = text.trim() ? text.trim().split(/\r?\n/) : [];
+  if (!lines.length) return [];
+  const headers = splitCsvLine(lines[0]);
+  return lines.slice(1).map((line) => {
+    const values = splitCsvLine(line);
+    const row = {};
+    headers.forEach((header, index) => row[header] = values[index] ?? "");
+    return row;
+  });
+}
+
+function splitCsvLine(line) {
+  const cells = [];
+  let current = "";
+  let quoted = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"' && line[i + 1] === '"') {
+      current += '"';
+      i++;
+    } else if (ch === '"') {
+      quoted = !quoted;
+    } else if (ch === "," && !quoted) {
+      cells.push(current);
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+  cells.push(current);
+  return cells;
+}
+
+function render(root, summary, rows, log, status) {
+  const total = Number(summary?.total_strategies || STRATEGIES.length);
+  const completed = Number(summary?.completed_strategies || rows.length || 0);
+  const live = summary?.live === true || (completed > 0 && completed < total);
+  const rowMap = new Map(rows.map((row) => [row.strategy, row]));
+  const progress = live ? currentProgress(log, rowMap) : null;
+  const current = progress?.strategy || "";
+  const targetHits = rows.map(targetHit).filter((value) => Number.isFinite(value));
+  const rWins = rows.map((row) => Number(row.raspberry_win_rate)).filter(Number.isFinite);
+  const bWins = rows.map((row) => Number(row.blueberry_win_rate)).filter(Number.isFinite);
+
+  $("metric-completed").textContent = `${completed} / ${total}`;
+  $("metric-live").textContent = progress ? `${progress.strategy} ${percent(progress.rate)}` : live ? "running" : completed >= total ? "done" : "waiting";
+  $("metric-hit").textContent = targetHits.length ? percent(avg(targetHits)) : "-";
+  $("metric-rwin").textContent = rWins.length ? percent(avg(rWins)) : "-";
+  $("metric-bwin").textContent = bWins.length ? percent(avg(bWins)) : "-";
+  $("metric-last").textContent = rows.length ? rows[rows.length - 1].strategy : current || "-";
+
+  $("detail-folder").textContent = root;
+  $("detail-playouts").textContent = summary?.playouts_per_strategy ?? rows[0]?.playouts ?? "-";
+  $("detail-seed").textContent = summary?.seed ?? rows[0]?.seed ?? "-";
+  $("detail-balance").textContent = shortPath(summary?.balance_result || "-");
+  $("updated-at").textContent = new Date().toLocaleTimeString();
+  $("grid-hint").textContent = `${completed} completed, ${total - completed} remaining`;
+  $("log").textContent = tail(log || "waiting for run_console.log...", 120);
+
+  renderCards(rowMap, current, progress);
+  renderRows(rows);
+  renderStatus(status, rows, live);
+}
+
+function renderCards(rowMap, current, progress) {
+  $("strategy-grid").innerHTML = STRATEGIES.map((strategy) => {
+    const row = rowMap.get(strategy);
+    const hit = row ? targetHit(row) : 0;
+    const cls = row ? (hit >= 0.6 ? "done good" : hit >= 0.35 ? "done" : "done bad") : (strategy === current ? "running" : "");
+    const status = row ? (hit >= 0.35 ? "done" : "weak hit") : strategy === current ? "running" : "pending";
+    const statusCls = row ? (hit >= 0.35 ? "done" : "bad") : strategy === current ? "running" : "";
+    const title = row ? percent(hit) : strategy === current && progress ? percent(progress.rate) : strategy === current ? "running" : "pending";
+    const rWin = row ? percent(Number(row.raspberry_win_rate)) : "-";
+    const bWin = row ? percent(Number(row.blueberry_win_rate)) : "-";
+    const rHit = row ? countRatio(row.raspberry_target_strategy_count, row.playouts) : "-";
+    const bHit = row ? countRatio(row.blueberry_target_strategy_count, row.playouts) : "-";
+    const progressLine = strategy === current && progress ? `
+      <div>
+        <div class="mini-label"><span>progress ${progress.done}/${progress.total}</span><span>${percent(progress.rate)}</span></div>
+        <div class="bar progress"><i style="--value: ${clamp(progress.rate * 100, 0, 100)}%"></i></div>
+      </div>` : "";
+    return `
+      <article class="strategy-card ${cls}">
+        <div>
+          <div class="strategy-main">
+            <div class="strategy-name">${escapeHtml(strategy)}</div>
+            <span class="status-chip ${statusCls}">${status}</span>
+          </div>
+          <div class="strategy-main"><strong>${title}</strong><span>${row ? "target hit" : strategy === current ? "progress" : "status"}</span></div>
+        </div>
+        <div class="mini-bars">
+          ${progressLine}
+          <div>
+            <div class="mini-label"><span>Raspberry win</span><span>${rWin}</span></div>
+            <div class="bar raspberry"><i style="--value: ${row ? clamp(Number(row.raspberry_win_rate) * 100, 0, 100) : 0}%"></i></div>
+          </div>
+          <div>
+            <div class="mini-label"><span>Blueberry win</span><span>${bWin}</span></div>
+            <div class="bar"><i style="--value: ${row ? clamp(Number(row.blueberry_win_rate) * 100, 0, 100) : 0}%"></i></div>
+          </div>
+          <div class="card-stats">
+            <div class="stat-box"><span>R hit</span><b>${rHit}</b></div>
+            <div class="stat-box"><span>B hit</span><b>${bHit}</b></div>
+          </div>
+        </div>
+      </article>`;
+  }).join("");
+}
+
+function renderRows(rows) {
+  if (!rows.length) {
+    $("rows").innerHTML = `<tr><td colspan="10"><div class="empty">Waiting for strategy_policy_training.csv or summary.json.</div></td></tr>`;
+    return;
+  }
+  $("rows").innerHTML = rows.map((row, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td><span class="pill">${escapeHtml(row.strategy)}</span></td>
+      <td>${percent(Number(row.raspberry_win_rate))}</td>
+      <td>${percent(Number(row.blueberry_win_rate))}</td>
+      <td>${countRatio(row.raspberry_target_strategy_count, row.playouts)}</td>
+      <td>${countRatio(row.blueberry_target_strategy_count, row.playouts)}</td>
+      <td>${escapeHtml(row.raspberry_detected_dominant || "-")}</td>
+      <td>${escapeHtml(row.blueberry_detected_dominant || "-")}</td>
+      <td>${fmt(row.raspberry_avg_upgrades)}</td>
+      <td>${fmt(row.blueberry_avg_upgrades)}</td>
+    </tr>
+  `).join("");
+}
+
+function renderEmpty() {
+  $("strategy-grid").innerHTML = STRATEGIES.map((strategy) => `
+    <article class="strategy-card">
+      <div class="strategy-main">
+        <div class="strategy-name">${escapeHtml(strategy)}</div>
+        <span class="status-chip">pending</span>
+      </div>
+      <div class="strategy-main"><strong>pending</strong><span>status</span></div>
+    </article>
+  `).join("");
+}
+
+function renderStatus(status, rows, live) {
+  const dot = $("status-dot");
+  dot.className = "dot";
+  if (status.summaryOk || status.csvOk || status.logOk) {
+    dot.classList.add("ok");
+    $("status-text").textContent = live ? "running" : rows.length ? "loaded" : "waiting for files";
+    return;
+  }
+  dot.classList.add("bad");
+  $("status-text").textContent = "folder not readable";
+}
+
+function currentProgress(log, rowMap) {
+  const text = log || "";
+  const starts = [...text.matchAll(/\[([a-z_]+)\] strategy policy training start/g)];
+  if (!starts.length) return null;
+  const strategy = starts[starts.length - 1][1];
+  if (rowMap.has(strategy)) return null;
+  const pattern = new RegExp(`\\[${strategy.replaceAll("_", "_")} policy train\\] (\\d+)\\/(\\d+) matches .*wins=\\{'raspberry': (\\d+), 'blueberry': (\\d+)\\}`, "g");
+  const matches = [...text.matchAll(pattern)];
+  if (!matches.length) return { strategy, done: 0, total: 0, rate: 0, raspberryWins: 0, blueberryWins: 0 };
+  const latest = matches[matches.length - 1];
+  const done = Number(latest[1]);
+  const total = Number(latest[2]);
+  return {
+    strategy,
+    done,
+    total,
+    rate: total ? done / total : 0,
+    raspberryWins: Number(latest[3]),
+    blueberryWins: Number(latest[4]),
+  };
+}
+
+function targetHit(row) {
+  const playouts = Number(row.playouts);
+  if (!playouts) return NaN;
+  const r = Number(row.raspberry_target_strategy_count || 0) / playouts;
+  const b = Number(row.blueberry_target_strategy_count || 0) / playouts;
+  return (r + b) / 2;
+}
+
+function avg(values) {
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function percent(value) {
+  return Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : "-";
+}
+
+function countRatio(count, total) {
+  const c = Number(count);
+  const t = Number(total);
+  return Number.isFinite(c) && Number.isFinite(t) && t ? `${c}/${t}` : "-";
+}
+
+function fmt(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number.toFixed(2) : "-";
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function tail(text, maxLines) {
+  const lines = text.split(/\r?\n/);
+  return lines.slice(-maxLines).join("\n");
+}
+
+function shortPath(path) {
+  if (!path || path === "-") return "-";
+  const parts = path.replaceAll("\\", "/").split("/");
+  return parts.slice(-2).join("/");
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+</script>
+</body>
+</html>

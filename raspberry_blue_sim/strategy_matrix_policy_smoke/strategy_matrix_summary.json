@@ -1,0 +1,65 @@
+{
+  "matches_per_matchup": 1,
+  "strategies": [
+    "tank_focus",
+    "ranged_focus"
+  ],
+  "agent_mode": "strategy_policy",
+  "mcts_iterations": 4,
+  "policy_dir": "raspberry_blue_sim/strategy_policy_runs_smoke",
+  "balance_result": "raspberry_blue_sim/iterative_balance_runs_strategy_mcts_upgrade_tuned_confirm_5000p/final_result.json",
+  "score": {
+    "avg_raspberry_win_rate": 0.75,
+    "weakest_strategy_avg_win_rate": 0.25,
+    "strongest_strategy_avg_win_rate": 0.75,
+    "strategy_win_rate_spread": 0.5,
+    "avg_mirror_gap": 0.5,
+    "matrix_balance_penalty": 1.25
+  },
+  "rows": [
+    {
+      "raspberry_strategy": "tank_focus",
+      "blueberry_strategy": "tank_focus",
+      "raspberry_win_rate": 1.0,
+      "blueberry_win_rate": 0.0,
+      "avg_final_control": 1.0,
+      "avg_round_duration": 169.0,
+      "raspberry_detected_dominant": "tank_focus",
+      "blueberry_detected_dominant": "tank_focus",
+      "strategy_diversity_penalty": 0.95
+    },
+    {
+      "raspberry_strategy": "tank_focus",
+      "blueberry_strategy": "ranged_focus",
+      "raspberry_win_rate": 0.0,
+      "blueberry_win_rate": 1.0,
+      "avg_final_control": -3.0,
+      "avg_round_duration": 151.75,
+      "raspberry_detected_dominant": "tank_focus",
+      "blueberry_detected_dominant": "ranged_focus",
+      "strategy_diversity_penalty": 0.575904
+    },
+    {
+      "raspberry_strategy": "ranged_focus",
+      "blueberry_strategy": "tank_focus",
+      "raspberry_win_rate": 1.0,
+      "blueberry_win_rate": 0.0,
+      "avg_final_control": 3.0,
+      "avg_round_duration": 140.5,
+      "raspberry_detected_dominant": "mixed_composition",
+      "blueberry_detected_dominant": "tank_focus",
+      "strategy_diversity_penalty": 0.575904
+    },
+    {
+      "raspberry_strategy": "ranged_focus",
+      "blueberry_strategy": "ranged_focus",
+      "raspberry_win_rate": 1.0,
+      "blueberry_win_rate": 0.0,
+      "avg_final_control": 3.0,
+      "avg_round_duration": 179.75,
+      "raspberry_detected_dominant": "mixed_composition",
+      "blueberry_detected_dominant": "ranged_focus",
+      "strategy_diversity_penalty": 0.575904
+    }
+  ]
+}

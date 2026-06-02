@@ -1,0 +1,4 @@
+match_id,winner,raspberry_rounds,blueberry_rounds,rounds_played,raspberry_final_upgrades,blueberry_final_upgrades,raspberry_strategy,blueberry_strategy
+1,raspberry,2,0,2,0,0,tank_focus,tank_focus
+2,raspberry,2,0,2,0,0,mixed_composition,mixed_composition
+3,raspberry,2,0,2,0,0,mixed_composition,mixed_composition

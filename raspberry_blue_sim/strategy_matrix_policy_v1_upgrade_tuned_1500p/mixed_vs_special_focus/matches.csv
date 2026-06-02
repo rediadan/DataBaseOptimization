@@ -1,0 +1,11 @@
+match_id,winner,raspberry_rounds,blueberry_rounds,rounds_played,raspberry_final_upgrades,blueberry_final_upgrades,raspberry_strategy,blueberry_strategy
+1,blueberry,0,2,2,0,1,mixed_composition,swarm_focus
+2,blueberry,0,2,2,1,1,mixed_composition,swarm_focus
+3,blueberry,0,2,2,0,2,mixed_composition,upgrade_focus
+4,blueberry,1,2,3,0,2,swarm_focus,upgrade_focus
+5,blueberry,0,2,2,1,1,mixed_composition,swarm_focus
+6,blueberry,0,2,2,0,1,swarm_focus,mixed_composition
+7,blueberry,0,2,2,0,1,mixed_composition,swarm_focus
+8,blueberry,0,2,2,0,1,swarm_focus,mixed_composition
+9,blueberry,0,2,2,0,0,mixed_composition,mixed_composition
+10,blueberry,0,2,2,0,0,swarm_focus,mixed_composition

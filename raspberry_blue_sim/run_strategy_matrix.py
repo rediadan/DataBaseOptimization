@@ -6,7 +6,7 @@ from pathlib import Path
 from balance import apply_adjustments, reset_balance
 from config import TEAMS
 from run_experiment import build_summary, write_matches, write_rounds, write_unit_stats
-from simulator import run_matches
+from simulator import load_policy, run_matches
 
 
 STRATEGIES = [
@@ -30,6 +30,35 @@ def agent_map(raspberry_strategy: str, blueberry_strategy: str, mode: str, mcts_
     return {
         "raspberry": agent_name(raspberry_strategy, mode, mcts_iterations),
         "blueberry": agent_name(blueberry_strategy, mode, mcts_iterations),
+    }
+
+
+def strategy_policy_agent_map(raspberry_strategy: str, blueberry_strategy: str) -> dict:
+    return {
+        "raspberry": f"trained_strategy_policy:{raspberry_strategy}",
+        "blueberry": f"trained_strategy_policy:{blueberry_strategy}",
+    }
+
+
+def load_strategy_policies(policy_dir: str, strategies: list[str]) -> dict:
+    if not policy_dir:
+        raise ValueError("--policy-dir is required when --agent-mode strategy_policy")
+    root = Path(policy_dir)
+    policies = {}
+    for strategy in strategies:
+        policy_path = root / strategy / f"{strategy}_policy.json"
+        if not policy_path.exists():
+            raise FileNotFoundError(f"missing strategy policy: {policy_path}")
+        policies[strategy] = load_policy(str(policy_path))
+    return policies
+
+
+def combined_strategy_policy(policies: dict, raspberry_strategy: str, blueberry_strategy: str) -> dict:
+    raspberry_policy = policies[raspberry_strategy]
+    blueberry_policy = policies[blueberry_strategy]
+    return {
+        "raspberry": raspberry_policy.get("raspberry", {}),
+        "blueberry": blueberry_policy.get("blueberry", {}),
     }
 
 
@@ -108,6 +137,7 @@ def write_matrix_report(
     rows: list[dict],
     agent_mode: str,
     mcts_iterations: int,
+    policy_dir: str = "",
     live: bool = False,
 ) -> None:
     report = {
@@ -115,6 +145,7 @@ def write_matrix_report(
         "strategies": strategies,
         "agent_mode": agent_mode,
         "mcts_iterations": mcts_iterations,
+        "policy_dir": policy_dir.replace("\\", "/") if policy_dir else "",
         "balance_result": balance_result.replace("\\", "/"),
         "score": matrix_score(rows, strategies),
         "rows": rows,
@@ -133,13 +164,15 @@ def main() -> None:
     parser.add_argument("--out", default="raspberry_blue_sim/strategy_matrix_out")
     parser.add_argument("--balance-result", default="")
     parser.add_argument("--strategies", nargs="*", default=STRATEGIES)
-    parser.add_argument("--agent-mode", choices=["strategy_mcts", "strategy_biased"], default="strategy_mcts")
+    parser.add_argument("--agent-mode", choices=["strategy_mcts", "strategy_biased", "strategy_policy"], default="strategy_mcts")
     parser.add_argument("--mcts-iterations", type=int, default=4)
+    parser.add_argument("--policy-dir", default="")
     args = parser.parse_args()
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     load_balance(args.balance_result)
+    strategy_policies = load_strategy_policies(args.policy_dir, args.strategies) if args.agent_mode == "strategy_policy" else {}
 
     rows = []
     for r_index, raspberry_strategy in enumerate(args.strategies):
@@ -147,10 +180,17 @@ def main() -> None:
             matchup_dir = out_dir / f"{raspberry_strategy}_vs_{blueberry_strategy}"
             matchup_dir.mkdir(parents=True, exist_ok=True)
             seed = args.seed + r_index * 1000 + b_index * 37
+            if args.agent_mode == "strategy_policy":
+                matchup_agent = strategy_policy_agent_map(raspberry_strategy, blueberry_strategy)
+                matchup_policy = combined_strategy_policy(strategy_policies, raspberry_strategy, blueberry_strategy)
+            else:
+                matchup_agent = agent_map(raspberry_strategy, blueberry_strategy, args.agent_mode, args.mcts_iterations)
+                matchup_policy = None
             match_rows, round_rows, aggregate = run_matches(
                 args.matches,
                 seed,
-                agent_map(raspberry_strategy, blueberry_strategy, args.agent_mode, args.mcts_iterations),
+                matchup_agent,
+                matchup_policy,
                 progress_label=f"{raspberry_strategy} vs {blueberry_strategy}",
                 progress_updates=2,
             )
@@ -187,6 +227,7 @@ def main() -> None:
                 rows,
                 args.agent_mode,
                 args.mcts_iterations,
+                args.policy_dir,
                 live=len(rows) < len(args.strategies) * len(args.strategies),
             )
 
@@ -195,6 +236,7 @@ def main() -> None:
         "strategies": args.strategies,
         "agent_mode": args.agent_mode,
         "mcts_iterations": args.mcts_iterations,
+        "policy_dir": args.policy_dir,
         "balance_result": args.balance_result,
         "score": matrix_score(rows, args.strategies),
         "rows": rows,
@@ -207,6 +249,7 @@ def main() -> None:
         rows,
         args.agent_mode,
         args.mcts_iterations,
+        args.policy_dir,
     )
     print(json.dumps(report["score"], ensure_ascii=False, indent=2))
     print(f"wrote: {out_dir}")

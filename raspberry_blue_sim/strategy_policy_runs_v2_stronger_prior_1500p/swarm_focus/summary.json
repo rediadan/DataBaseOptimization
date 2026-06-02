@@ -1,0 +1,189 @@
+{
+  "matches": 1500,
+  "agent_type": "strategy_policy_train:swarm_focus",
+  "match_wins": {
+    "raspberry": 768,
+    "blueberry": 732
+  },
+  "match_win_rate": {
+    "raspberry": 0.512,
+    "blueberry": 0.488
+  },
+  "round_wins": {
+    "raspberry": 1739,
+    "blueberry": 1769
+  },
+  "rounds_played": 3508,
+  "avg_final_control": -0.1727,
+  "avg_round_duration": 166.7691,
+  "avg_final_upgrades_per_match": {
+    "raspberry": 0.7727,
+    "blueberry": 0.4613
+  },
+  "avg_final_attack_upgrades_per_match": {
+    "raspberry": 0.422,
+    "blueberry": 0.2547
+  },
+  "avg_final_hp_upgrades_per_match": {
+    "raspberry": 0.3507,
+    "blueberry": 0.2067
+  },
+  "strategy_diversity": {
+    "combined": {
+      "strategy_counts": {
+        "mixed_composition": 302,
+        "ranged_focus": 0,
+        "special_focus": 0,
+        "swarm_focus": 2309,
+        "tank_aoe_focus": 0,
+        "tank_focus": 0,
+        "upgrade_focus": 389
+      },
+      "strategy_win_rates": {
+        "mixed_composition": 0.4238,
+        "swarm_focus": 0.4573,
+        "upgrade_focus": 0.8123
+      },
+      "entropy": 0.697503,
+      "normalized_entropy": 0.358446,
+      "effective_strategies": 2.0087,
+      "present_strategies": 3,
+      "viable_strategies": 3,
+      "dominant_strategy_share": 0.7697,
+      "low_presence_strategies": 4,
+      "diversity_penalty": 0.533396
+    },
+    "by_team": {
+      "raspberry": {
+        "strategy_counts": {
+          "mixed_composition": 198,
+          "ranged_focus": 0,
+          "special_focus": 0,
+          "swarm_focus": 1036,
+          "tank_aoe_focus": 0,
+          "tank_focus": 0,
+          "upgrade_focus": 266
+        },
+        "strategy_win_rates": {
+          "mixed_composition": 0.4747,
+          "swarm_focus": 0.4402,
+          "upgrade_focus": 0.8195
+        },
+        "entropy": 0.829646,
+        "normalized_entropy": 0.426354,
+        "effective_strategies": 2.2925,
+        "present_strategies": 3,
+        "viable_strategies": 3,
+        "dominant_strategy_share": 0.6907,
+        "low_presence_strategies": 4,
+        "diversity_penalty": 0.463027
+      },
+      "blueberry": {
+        "strategy_counts": {
+          "mixed_composition": 104,
+          "ranged_focus": 0,
+          "special_focus": 0,
+          "swarm_focus": 1273,
+          "tank_aoe_focus": 0,
+          "tank_focus": 0,
+          "upgrade_focus": 123
+        },
+        "strategy_win_rates": {
+          "mixed_composition": 0.3269,
+          "swarm_focus": 0.4713,
+          "upgrade_focus": 0.7967
+        },
+        "entropy": 0.52938,
+        "normalized_entropy": 0.272048,
+        "effective_strategies": 1.6979,
+        "present_strategies": 3,
+        "viable_strategies": 2,
+        "dominant_strategy_share": 0.8487,
+        "low_presence_strategies": 4,
+        "diversity_penalty": 0.662244
+      }
+    },
+    "score": 0.533396
+  },
+  "policy_path": "C:/Users/User/Documents/데이터 기반 최적화 전략 다양화/DataBaseOptimization_Base_balance/raspberry_blue_sim/strategy_policy_runs_v2_stronger_prior_1500p/swarm_focus/swarm_focus_policy.json",
+  "policy": {
+    "raspberry": {
+      "states": 7495,
+      "action_nodes": 20309,
+      "visits": 391065,
+      "most_visited_actions": [
+        [
+          "spawn:pie",
+          181418
+        ],
+        [
+          "wait",
+          111424
+        ],
+        [
+          "spawn:macaron",
+          28210
+        ],
+        [
+          "spawn:tart",
+          24234
+        ],
+        [
+          "spawn:baumkuchen",
+          23988
+        ],
+        [
+          "spawn:scone",
+          20632
+        ],
+        [
+          "upgrade:attack",
+          633
+        ],
+        [
+          "upgrade:hp",
+          526
+        ]
+      ]
+    },
+    "blueberry": {
+      "states": 6938,
+      "action_nodes": 17980,
+      "visits": 391065,
+      "most_visited_actions": [
+        [
+          "wait",
+          158175
+        ],
+        [
+          "spawn:pie",
+          157267
+        ],
+        [
+          "spawn:tarte_tatin",
+          20856
+        ],
+        [
+          "spawn:baumkuchen",
+          18628
+        ],
+        [
+          "spawn:pannacotta",
+          18214
+        ],
+        [
+          "spawn:scone",
+          17233
+        ],
+        [
+          "upgrade:attack",
+          382
+        ],
+        [
+          "upgrade:hp",
+          310
+        ]
+      ]
+    }
+  }
+}

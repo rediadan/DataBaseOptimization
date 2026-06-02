@@ -1,0 +1,2 @@
+iteration,raspberry_win_rate,blueberry_win_rate,avg_final_control,avg_round_duration,balance_score,strategy_diversity_penalty,effective_strategies,dominant_strategy_share,confirmation_raspberry_win_rate,confirmation_blueberry_win_rate,confirmation_avg_final_control,confirmation_balance_score,confirmation_strategy_diversity_penalty,confirmation_passed,patch_added,stopped
+1,0.5,0.5,-0.3514,172.4199,0.332084,0.582175,1.9446,0.7438,0.525,0.475,-0.1895,0.358667,0.623117,True,,True
