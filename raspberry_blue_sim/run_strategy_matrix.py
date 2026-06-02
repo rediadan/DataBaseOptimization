@@ -20,10 +20,16 @@ STRATEGIES = [
 ]
 
 
-def agent_map(raspberry_strategy: str, blueberry_strategy: str) -> dict:
+def agent_name(strategy: str, mode: str, mcts_iterations: int) -> str:
+    if mode == "strategy_biased":
+        return f"strategy:{strategy}"
+    return f"strategy_mcts:{strategy}:{mcts_iterations}"
+
+
+def agent_map(raspberry_strategy: str, blueberry_strategy: str, mode: str, mcts_iterations: int) -> dict:
     return {
-        "raspberry": f"strategy:{raspberry_strategy}",
-        "blueberry": f"strategy:{blueberry_strategy}",
+        "raspberry": agent_name(raspberry_strategy, mode, mcts_iterations),
+        "blueberry": agent_name(blueberry_strategy, mode, mcts_iterations),
     }
 
 
@@ -94,10 +100,21 @@ def write_matrix(path: Path, rows: list[dict]) -> None:
             writer.writerow({key: row.get(key, "") for key in fieldnames})
 
 
-def write_matrix_report(path: Path, matches: int, strategies: list[str], balance_result: str, rows: list[dict], live: bool = False) -> None:
+def write_matrix_report(
+    path: Path,
+    matches: int,
+    strategies: list[str],
+    balance_result: str,
+    rows: list[dict],
+    agent_mode: str,
+    mcts_iterations: int,
+    live: bool = False,
+) -> None:
     report = {
         "matches_per_matchup": matches,
         "strategies": strategies,
+        "agent_mode": agent_mode,
+        "mcts_iterations": mcts_iterations,
         "balance_result": balance_result.replace("\\", "/"),
         "score": matrix_score(rows, strategies),
         "rows": rows,
@@ -116,6 +133,8 @@ def main() -> None:
     parser.add_argument("--out", default="raspberry_blue_sim/strategy_matrix_out")
     parser.add_argument("--balance-result", default="")
     parser.add_argument("--strategies", nargs="*", default=STRATEGIES)
+    parser.add_argument("--agent-mode", choices=["strategy_mcts", "strategy_biased"], default="strategy_mcts")
+    parser.add_argument("--mcts-iterations", type=int, default=4)
     args = parser.parse_args()
 
     out_dir = Path(args.out)
@@ -131,7 +150,7 @@ def main() -> None:
             match_rows, round_rows, aggregate = run_matches(
                 args.matches,
                 seed,
-                agent_map(raspberry_strategy, blueberry_strategy),
+                agent_map(raspberry_strategy, blueberry_strategy, args.agent_mode, args.mcts_iterations),
                 progress_label=f"{raspberry_strategy} vs {blueberry_strategy}",
                 progress_updates=2,
             )
@@ -166,17 +185,29 @@ def main() -> None:
                 args.strategies,
                 args.balance_result,
                 rows,
+                args.agent_mode,
+                args.mcts_iterations,
                 live=len(rows) < len(args.strategies) * len(args.strategies),
             )
 
     report = {
         "matches_per_matchup": args.matches,
         "strategies": args.strategies,
+        "agent_mode": args.agent_mode,
+        "mcts_iterations": args.mcts_iterations,
         "balance_result": args.balance_result,
         "score": matrix_score(rows, args.strategies),
         "rows": rows,
     }
-    write_matrix_report(out_dir / "strategy_matrix_summary.json", args.matches, args.strategies, args.balance_result, rows)
+    write_matrix_report(
+        out_dir / "strategy_matrix_summary.json",
+        args.matches,
+        args.strategies,
+        args.balance_result,
+        rows,
+        args.agent_mode,
+        args.mcts_iterations,
+    )
     print(json.dumps(report["score"], ensure_ascii=False, indent=2))
     print(f"wrote: {out_dir}")
 

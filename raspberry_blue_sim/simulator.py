@@ -357,6 +357,114 @@ class MCTSAgent:
         return clone.evaluate_for(self.team)
 
 
+class StrategyMCTSAgent(MCTSAgent):
+    def __init__(self, team: str, rng: random.Random, strategy: str, iterations: int = 4, horizon: float = 8.0):
+        super().__init__(team, rng, iterations=iterations, horizon=horizon)
+        self.strategy = strategy
+        self.bias = StrategyBiasedAgent(team, rng, strategy)
+        self.prior_weight = 0.22
+        self.reward_weight = 0.24
+
+    def choose_action(self, sim: "RoundSim", now: float, actions: List[tuple[str, Optional[str]]]) -> tuple[str, Optional[str]]:
+        stats = {action: {"visits": 0, "score": 0.0} for action in actions}
+        priors = {action: self.action_prior(sim, now, action) for action in actions}
+        for iteration in range(max(1, self.iterations)):
+            action = self.select_strategy_uct(stats, priors)
+            score = self.rollout_score(sim, now, action, iteration)
+            stats[action]["visits"] += 1
+            stats[action]["score"] += score
+        return max(
+            actions,
+            key=lambda action: (
+                stats[action]["score"] / max(1, stats[action]["visits"])
+                + 0.08 * priors[action]
+            ),
+        )
+
+    def select_strategy_uct(
+        self,
+        stats: Dict[tuple[str, Optional[str]], Dict[str, float]],
+        priors: Dict[tuple[str, Optional[str]], float],
+    ) -> tuple[str, Optional[str]]:
+        unvisited = [action for action, values in stats.items() if values["visits"] == 0]
+        if unvisited:
+            return max(unvisited, key=lambda action: priors[action])
+        total = sum(values["visits"] for values in stats.values())
+        exploration = 1.15
+        return max(
+            stats,
+            key=lambda action: (
+                stats[action]["score"] / stats[action]["visits"]
+                + exploration * math.sqrt(math.log(total + 1) / stats[action]["visits"])
+                + self.prior_weight * priors[action]
+            ),
+        )
+
+    def action_prior(self, sim: "RoundSim", now: float, action: tuple[str, Optional[str]]) -> float:
+        raw = max(0.01, self.bias.action_weight(sim, now, action))
+        return min(1.0, math.log1p(raw) / math.log(9.5))
+
+    def rollout_score(self, sim: "RoundSim", now: float, action: tuple[str, Optional[str]], iteration: int) -> float:
+        clone = copy.deepcopy(sim)
+        clone.rng = random.Random(self.rng.randrange(1_000_000_000) + iteration)
+        clone.agents = {team: HeuristicAgent(team, clone.rng) for team in TEAMS}
+        clone.apply_action(self.team, action)
+        end = min(ROUND_SECONDS, now + self.horizon)
+        t = now
+        reason = None
+        while t < end and reason is None:
+            reason = clone.play_step(t, DT)
+            t += DT
+        tactical_score = clone.evaluate_for(self.team)
+        strategy_score = self.strategy_reward(clone)
+        return tactical_score * (1.0 - self.reward_weight) + strategy_score * self.reward_weight
+
+    def strategy_reward(self, sim: "RoundSim") -> float:
+        state = sim.states[self.team]
+        role_counts: Dict[str, int] = {}
+        for spec in TEAMS[self.team]["units"]:
+            role_counts[spec.role] = role_counts.get(spec.role, 0) + state.produced.get(spec.key, 0)
+        total_units = sum(role_counts.values())
+
+        def share(role: str) -> float:
+            return role_counts.get(role, 0) / total_units if total_units else 0.0
+
+        tank = share("tank")
+        aoe = share("aoe_ranged")
+        single = share("single_ranged")
+        attacker = share("attacker")
+        special = share("special")
+        if self.strategy == "tank_focus":
+            return tank
+        if self.strategy == "tank_aoe_focus":
+            combo_share = tank + aoe
+            role_balance = 2.0 * min(tank, aoe)
+            return min(1.0, combo_share * 0.62 + role_balance * 0.38)
+        if self.strategy == "ranged_focus":
+            return min(1.0, aoe + single)
+        if self.strategy == "swarm_focus":
+            return attacker
+        if self.strategy == "special_focus":
+            return special
+        if self.strategy == "upgrade_focus":
+            upgrade_progress = min(1.0, state.upgrade_level / 3.0)
+            total_actions = total_units + state.upgrade_level
+            upgrade_share = state.upgrade_level / total_actions if total_actions else 0.0
+            return min(1.0, upgrade_progress * 0.72 + upgrade_share * 1.15)
+        if self.strategy == "mixed":
+            counts = [role_counts.get(role, 0) for role in ("attacker", "tank", "aoe_ranged", "single_ranged", "special")]
+            total = sum(counts)
+            if not total:
+                return 0.0
+            entropy = 0.0
+            for count in counts:
+                if count:
+                    p = count / total
+                    entropy -= p * math.log(p)
+            return entropy / math.log(len(counts))
+        return 0.5
+
+
 def action_to_key(action: tuple[str, Optional[str]]) -> str:
     kind, unit_key = action
     return kind if unit_key is None else f"{kind}:{unit_key}"
@@ -478,6 +586,11 @@ class RoundSim:
         return {team: self.create_agent(team, agent_type) for team in TEAMS}
 
     def create_agent(self, team: str, agent_type: str):
+        if agent_type.startswith("strategy_mcts:"):
+            parts = agent_type.split(":")
+            strategy = parts[1] if len(parts) > 1 else "mixed"
+            iterations = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 4
+            return StrategyMCTSAgent(team, self.rng, strategy, iterations=iterations)
         if agent_type.startswith("strategy:"):
             return StrategyBiasedAgent(team, self.rng, agent_type.split(":", 1)[1])
         if agent_type == "mcts":

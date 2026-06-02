@@ -1320,7 +1320,8 @@ function formatTrainingValue(value, type) {
 function render(rows, summary, compareRows) {
   const strategies = summary?.strategies?.length ? summary.strategies : getStrategies(rows);
   const compareMap = rowMap(compareRows);
-  $("subtitle").textContent = `Training: ${$("training-root").value.trim()} | Matrix: ${$("matrix-root").value.trim()}`;
+  const mode = summary?.agent_mode ? ` | Agent: ${summary.agent_mode}${summary.mcts_iterations ? ` x${summary.mcts_iterations}` : ""}` : "";
+  $("subtitle").textContent = `Training: ${$("training-root").value.trim()} | Matrix: ${$("matrix-root").value.trim()}${mode}`;
   renderMetrics(rows, summary);
   renderHeatmap(rows, strategies, compareMap);
   renderAverages(rows, strategies);
