@@ -11,6 +11,7 @@ from simulator import run_matches
 
 STRATEGIES = [
     "tank_focus",
+    "tank_aoe_focus",
     "ranged_focus",
     "swarm_focus",
     "special_focus",
@@ -34,11 +35,11 @@ def load_balance(path: str) -> None:
     apply_adjustments(payload.get("accepted_adjustments", []))
 
 
-def matrix_score(rows: list[dict]) -> dict:
+def matrix_score(rows: list[dict], strategies: list[str]) -> dict:
     raspberry_rates = [float(row["raspberry_win_rate"]) for row in rows]
     low_team_strategy_rates = []
     dominant_gaps = []
-    for strategy in STRATEGIES:
+    for strategy in strategies:
         raspberry_as_strategy = [
             float(row["raspberry_win_rate"])
             for row in rows
@@ -98,7 +99,7 @@ def write_matrix_report(path: Path, matches: int, strategies: list[str], balance
         "matches_per_matchup": matches,
         "strategies": strategies,
         "balance_result": balance_result.replace("\\", "/"),
-        "score": matrix_score(rows),
+        "score": matrix_score(rows, strategies),
         "rows": rows,
     }
     if live:
@@ -172,7 +173,7 @@ def main() -> None:
         "matches_per_matchup": args.matches,
         "strategies": args.strategies,
         "balance_result": args.balance_result,
-        "score": matrix_score(rows),
+        "score": matrix_score(rows, args.strategies),
         "rows": rows,
     }
     write_matrix_report(out_dir / "strategy_matrix_summary.json", args.matches, args.strategies, args.balance_result, rows)

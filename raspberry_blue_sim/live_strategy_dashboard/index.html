@@ -758,7 +758,7 @@ button {
       <div class="heatmap-panel">
         <div class="section-title">
           <h2>Raspberry Win Rate</h2>
-          <span id="completion">0 / 36 matchups</span>
+          <span id="completion">0 / 49 matchups</span>
         </div>
         <div id="heatmap" class="heatmap"></div>
         <div class="legend">
@@ -1318,7 +1318,7 @@ function formatTrainingValue(value, type) {
 }
 
 function render(rows, summary, compareRows) {
-  const strategies = getStrategies(rows);
+  const strategies = summary?.strategies?.length ? summary.strategies : getStrategies(rows);
   const compareMap = rowMap(compareRows);
   $("subtitle").textContent = `Training: ${$("training-root").value.trim()} | Matrix: ${$("matrix-root").value.trim()}`;
   renderMetrics(rows, summary);
@@ -1328,7 +1328,7 @@ function render(rows, summary, compareRows) {
 }
 
 function getStrategies(rows) {
-  const preferred = ["tank_focus", "ranged_focus", "swarm_focus", "special_focus", "upgrade_focus", "mixed"];
+  const preferred = ["tank_focus", "tank_aoe_focus", "ranged_focus", "swarm_focus", "special_focus", "upgrade_focus", "mixed"];
   const seen = new Set(rows.flatMap((row) => [row.raspberry_strategy, row.blueberry_strategy]).filter(Boolean));
   const ordered = preferred.filter((item) => seen.has(item));
   for (const item of seen) {
@@ -1347,13 +1347,15 @@ function rowMap(rows) {
 
 function renderMetrics(rows, summary) {
   const score = summary?.score || computeScore(rows);
+  const strategies = summary?.strategies || getStrategies(rows);
+  const totalMatchups = strategies.length ? strategies.length * strategies.length : 0;
   $("metric-avg-raspberry").textContent = pct(score.avg_raspberry_win_rate);
   $("metric-weakest").textContent = pct(score.weakest_strategy_avg_win_rate);
   $("metric-strongest").textContent = pct(score.strongest_strategy_avg_win_rate);
   $("metric-spread").textContent = pp(score.strategy_win_rate_spread);
   $("metric-mirror").textContent = pp(score.avg_mirror_gap);
   $("metric-penalty").textContent = Number(score.matrix_balance_penalty ?? 0).toFixed(3);
-  $("completion").textContent = `${rows.length} / 36 matchups`;
+  $("completion").textContent = `${rows.length} / ${totalMatchups} matchups`;
 }
 
 function computeScore(rows) {

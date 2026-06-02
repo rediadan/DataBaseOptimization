@@ -240,6 +240,15 @@ class StrategyBiasedAgent:
             weight *= 8.0 if role == "tank" else 0.45
             if control < 0 and role == "tank":
                 weight *= 1.35
+        elif self.strategy == "tank_aoe_focus":
+            if role == "tank":
+                weight *= 4.8 + max(0, -control) * 0.6
+            elif role == "aoe_ranged":
+                weight *= 5.6 + min(1.8, pressure * 0.45)
+            elif role == "single_ranged":
+                weight *= 0.75
+            else:
+                weight *= 0.45
         elif self.strategy == "ranged_focus":
             weight *= 7.0 if role in {"aoe_ranged", "single_ranged"} else 0.5
             if pressure > 0 and role == "aoe_ranged":
@@ -275,6 +284,12 @@ class StrategyBiasedAgent:
                 base = 7.5
             else:
                 base = 2.0
+        elif self.strategy == "tank_aoe_focus":
+            base = 1.25
+            if upgrade_stat == "hp" and state.hp_upgrade_level <= state.attack_upgrade_level:
+                base *= 1.15
+            if upgrade_stat == "attack" and state.attack_upgrade_level <= state.hp_upgrade_level:
+                base *= 1.10
         elif self.strategy in {"tank_focus", "swarm_focus"}:
             base = 0.7 if state.upgrade_level == 0 and now < 35 else 1.2
         elif self.strategy == "ranged_focus":

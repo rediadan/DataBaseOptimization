@@ -9,6 +9,7 @@ from config import TEAMS
 
 DESIRED_STRATEGIES = [
     "tank_focus",
+    "tank_aoe_focus",
     "ranged_focus",
     "swarm_focus",
     "special_focus",
@@ -30,6 +31,7 @@ ROLE_TO_STRATEGY = {
 
 STRATEGY_TO_ROLES = {
     "tank_focus": {"tank"},
+    "tank_aoe_focus": {"tank", "aoe_ranged"},
     "ranged_focus": {"aoe_ranged", "single_ranged"},
     "swarm_focus": {"attacker"},
     "special_focus": {"special"},
@@ -64,6 +66,7 @@ def classify_strategy(team: str, produced: Dict[str, int], attack_upgrades: int,
     role_shares = {role: round(_safe_divide(count, total_units), 4) for role, count in sorted(role_counts.items())}
     strategy_group_counts = {
         "tank_focus": role_counts.get("tank", 0),
+        "tank_aoe_focus": role_counts.get("tank", 0) + role_counts.get("aoe_ranged", 0),
         "ranged_focus": role_counts.get("aoe_ranged", 0) + role_counts.get("single_ranged", 0),
         "swarm_focus": role_counts.get("attacker", 0),
         "special_focus": role_counts.get("special", 0),
@@ -94,9 +97,19 @@ def classify_strategy(team: str, produced: Dict[str, int], attack_upgrades: int,
     elif total_units == 0:
         strategy = "upgrade_focus"
     else:
-        dominant_strategy, dominant_count = max(strategy_group_counts.items(), key=lambda item: item[1])
-        dominant_share = _safe_divide(dominant_count, total_units)
-        strategy = dominant_strategy if dominant_share >= 0.52 else "mixed_composition"
+        tank_share = _safe_divide(role_counts.get("tank", 0), total_units)
+        aoe_share = _safe_divide(role_counts.get("aoe_ranged", 0), total_units)
+        tank_aoe_share = tank_share + aoe_share
+        if tank_share >= 0.22 and aoe_share >= 0.22 and tank_aoe_share >= 0.58:
+            strategy = "tank_aoe_focus"
+        else:
+            single_strategy_counts = {
+                key: strategy_group_counts[key]
+                for key in ("tank_focus", "ranged_focus", "swarm_focus", "special_focus")
+            }
+            dominant_strategy, dominant_count = max(single_strategy_counts.items(), key=lambda item: item[1])
+            dominant_share = _safe_divide(dominant_count, total_units)
+            strategy = dominant_strategy if dominant_share >= 0.52 else "mixed_composition"
 
     return {
         "strategy": strategy,
