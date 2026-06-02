@@ -1,0 +1,86 @@
+{
+  "source_matrix": "raspberry_blue_sim\\strategy_matrix_v1_from_strategy_diversity_balance",
+  "score": {
+    "avg_raspberry_win_rate": 0.2632,
+    "weakest_strategy_avg_win_rate": 0.2208,
+    "strongest_strategy_avg_win_rate": 0.8917,
+    "strategy_win_rate_spread": 0.6708,
+    "avg_mirror_gap": 0.3646,
+    "matrix_balance_penalty": 1.272222
+  },
+  "problem_matchups": 32,
+  "dead_or_weak_strategies": [
+    {
+      "team": "raspberry",
+      "strategy": "tank_focus",
+      "avg_win_rate": 0.012499999999999999,
+      "min_win_rate": 0.0,
+      "max_win_rate": 0.075
+    },
+    {
+      "team": "raspberry",
+      "strategy": "swarm_focus",
+      "avg_win_rate": 0.12708333333333333,
+      "min_win_rate": 0.0,
+      "max_win_rate": 0.625
+    },
+    {
+      "team": "raspberry",
+      "strategy": "special_focus",
+      "avg_win_rate": 0.010416666666666666,
+      "min_win_rate": 0.0,
+      "max_win_rate": 0.05
+    },
+    {
+      "team": "raspberry",
+      "strategy": "upgrade_focus",
+      "avg_win_rate": 0.275,
+      "min_win_rate": 0.0,
+      "max_win_rate": 0.875
+    },
+    {
+      "team": "raspberry",
+      "strategy": "mixed",
+      "avg_win_rate": 0.2875,
+      "min_win_rate": 0.0125,
+      "max_win_rate": 0.8
+    }
+  ],
+  "overpowered_strategies": [
+    {
+      "team": "raspberry",
+      "strategy": "ranged_focus",
+      "avg_win_rate": 0.8666666666666667,
+      "min_win_rate": 0.4875,
+      "max_win_rate": 1.0
+    },
+    {
+      "team": "blueberry",
+      "strategy": "ranged_focus",
+      "avg_win_rate": 0.9166666666666666,
+      "min_win_rate": 0.5125,
+      "max_win_rate": 1.0
+    },
+    {
+      "team": "blueberry",
+      "strategy": "special_focus",
+      "avg_win_rate": 0.8333333333333331,
+      "min_win_rate": 0.05,
+      "max_win_rate": 1.0
+    },
+    {
+      "team": "blueberry",
+      "strategy": "upgrade_focus",
+      "avg_win_rate": 0.8375,
+      "min_win_rate": 0.125,
+      "max_win_rate": 1.0
+    },
+    {
+      "team": "blueberry",
+      "strategy": "mixed",
+      "avg_win_rate": 0.8312499999999999,
+      "min_win_rate": 0.1125,
+      "max_win_rate": 1.0
+    }
+  ]
+}

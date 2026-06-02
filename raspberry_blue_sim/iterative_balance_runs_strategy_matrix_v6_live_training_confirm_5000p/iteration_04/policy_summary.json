@@ -1,0 +1,80 @@
+{
+  "raspberry": {
+    "states": 6955,
+    "action_nodes": 26372,
+    "visits": 1588959,
+    "most_visited_actions": [
+      [
+        "wait",
+        830977
+      ],
+      [
+        "spawn:pie",
+        186854
+      ],
+      [
+        "spawn:tart",
+        168417
+      ],
+      [
+        "spawn:macaron",
+        163194
+      ],
+      [
+        "spawn:baumkuchen",
+        150829
+      ],
+      [
+        "spawn:scone",
+        82616
+      ],
+      [
+        "upgrade:hp",
+        3055
+      ],
+      [
+        "upgrade:attack",
+        3017
+      ]
+    ]
+  },
+  "blueberry": {
+    "states": 5865,
+    "action_nodes": 21878,
+    "visits": 1588959,
+    "most_visited_actions": [
+      [
+        "wait",
+        928405
+      ],
+      [
+        "spawn:pie",
+        301870
+      ],
+      [
+        "spawn:baumkuchen",
+        99241
+      ],
+      [
+        "spawn:tarte_tatin",
+        95625
+      ],
+      [
+        "spawn:pannacotta",
+        84254
+      ],
+      [
+        "spawn:scone",
+        72403
+      ],
+      [
+        "upgrade:hp",
+        3654
+      ],
+      [
+        "upgrade:attack",
+        3507
+      ]
+    ]
+  }
+}

@@ -9,6 +9,7 @@ from balance import apply_adjustments, compact_adjustment, export_units, reset_b
 from config import TEAMS
 from run_experiment import build_summary, write_matches, write_rounds, write_unit_stats
 from simulator import MatchResult, RoundResult, TeamState, run_matches, save_policy
+from strategy_diversity import STRATEGY_TO_ROLES, average_strategy_diversity
 from train_mcts import policy_summary
 
 
@@ -19,7 +20,7 @@ def log(message: str) -> None:
 def read_seed_adjustments(path: str) -> List[Dict[str, Any]]:
     if not path:
         return []
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    data = json.loads(Path(path).read_text(encoding="utf-8-sig"))
     return data.get("accepted_adjustments", [])
 
 
@@ -295,6 +296,8 @@ def build_candidate_patches(
     if not underdog_rows:
         raise RuntimeError(f"No unit rows found for {underdog_team}")
 
+    diversity_quota = max(1, max_candidates // 3)
+    balance_quota = max(1, max_candidates - diversity_quota)
     candidates: List[Dict[str, Any]] = []
     seen = set()
     strongest_row = dominant_rows[0]
@@ -332,16 +335,112 @@ def build_candidate_patches(
                         "adjustments": adjustments,
                     }
                 )
+                if len(candidates) >= balance_quota:
+                    candidates.extend(
+                        build_strategy_diversity_candidates(
+                            validation_dir,
+                            adjustment_counts,
+                            strength,
+                            max(0, max_candidates - len(candidates)),
+                        )
+                    )
+                    return candidates[:max_candidates]
+    candidates.extend(
+        build_strategy_diversity_candidates(
+            validation_dir,
+            adjustment_counts,
+            strength,
+            max(0, max_candidates - len(candidates)),
+        )
+    )
+    return candidates[:max_candidates]
+
+
+def role_units_from_rows(rows: List[dict], roles: set[str]) -> List[dict]:
+    return [row for row in rows if get_spec(row["team"], row["unit_key"]).role in roles]
+
+
+def build_strategy_diversity_candidates(
+    validation_dir: Path,
+    adjustment_counts: Dict[str, int],
+    strength: float,
+    max_candidates: int,
+) -> List[Dict[str, Any]]:
+    if max_candidates <= 0:
+        return []
+    summary_path = validation_dir / "summary.json"
+    if not summary_path.exists():
+        return []
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    diversity = summary.get("strategy_diversity", {})
+    by_team = diversity.get("by_team", {})
+    if not by_team:
+        return []
+
+    candidates: List[Dict[str, Any]] = []
+    seen = set()
+    for team in TEAMS:
+        rows = read_unit_rows(validation_dir / "unit_stats.csv", team)
+        counts = by_team.get(team, {}).get("strategy_counts", {})
+        known_counts = {key: value for key, value in counts.items() if key in STRATEGY_TO_ROLES}
+        if not known_counts:
+            continue
+        overused_strategy = max(known_counts, key=known_counts.get)
+        underused_strategy = min(known_counts, key=known_counts.get)
+        if known_counts[overused_strategy] <= 0 or underused_strategy == overused_strategy:
+            continue
+
+        overused_rows = role_units_from_rows(rows, STRATEGY_TO_ROLES[overused_strategy])
+        underused_rows = role_units_from_rows(rows, STRATEGY_TO_ROLES[underused_strategy])
+        if not overused_rows or not underused_rows:
+            continue
+
+        overused_row = max(overused_rows, key=contribution_score)
+        underused_row = min(underused_rows, key=contribution_score)
+        overused_unit = overused_row["unit_key"]
+        underused_unit = underused_row["unit_key"]
+        nerf_options = sorted(
+            candidate_stat_options(overused_row, team, overused_unit, strength, "soft_nerf"),
+            key=lambda item: adjustment_counts.get(f"{team}.{overused_unit}.{item[0]}", 0),
+        )[:2]
+        for stat, factor in nerf_options:
+            nerf_patch = {"team": team, "unit": overused_unit, "stat": stat, "factor": round(factor, 4)}
+            for profile in unit_rework_profiles(team, underused_unit, strength):
+                adjustments = [nerf_patch] + profile["adjustments"]
+                key = tuple(
+                    (item["team"], item["unit"], item["stat"], round(float(item.get("factor", 1.0)), 4))
+                    for item in adjustments
+                )
+                if key in seen:
+                    continue
+                seen.add(key)
+                candidates.append(
+                    {
+                        "kind": "strategy_diversity_rebalance",
+                        "description": (
+                            f"reduce {team} {overused_strategy} via {overused_unit}.{stat} + "
+                            f"enable {underused_strategy} via {underused_unit} ({profile['profile']})"
+                        ),
+                        "team": team,
+                        "overused_strategy": overused_strategy,
+                        "underused_strategy": underused_strategy,
+                        "overused_unit": overused_unit,
+                        "underused_unit": underused_unit,
+                        "profile": profile["profile"],
+                        "adjustments": adjustments,
+                    }
+                )
                 if len(candidates) >= max_candidates:
                     return candidates
     return candidates
 
 
-def balance_score(summary: dict, target: float, control_weight: float) -> float:
+def balance_score(summary: dict, target: float, control_weight: float, diversity_weight: float = 0.0) -> float:
     raspberry_rate = float(summary["match_win_rate"]["raspberry"])
     win_gap = abs(raspberry_rate - target)
     control_gap = min(1.0, abs(float(summary["avg_final_control"])) / 3.0)
-    return round(win_gap + control_weight * control_gap, 6)
+    diversity_gap = float(summary.get("strategy_diversity", {}).get("score", 0.0))
+    return round(win_gap + control_weight * control_gap + diversity_weight * diversity_gap, 6)
 
 
 def evaluate_candidate_patch(
@@ -352,6 +451,7 @@ def evaluate_candidate_patch(
     seeds: List[int],
     target: float,
     control_weight: float,
+    diversity_weight: float,
     label: str = "",
 ) -> Dict[str, Any]:
     if label:
@@ -382,11 +482,12 @@ def evaluate_candidate_patch(
         },
         "avg_final_control": round(avg_control, 4),
         "avg_round_duration": round(avg_duration, 4),
+        "strategy_diversity": average_strategy_diversity(summaries),
     }
     result = {
         "patch": patch,
         "patch_text": describe_candidate(patch),
-        "score": balance_score(summary, target, control_weight),
+        "score": balance_score(summary, target, control_weight, diversity_weight),
         "summary": summary,
     }
     if label:
@@ -408,11 +509,15 @@ def write_candidate_evaluations(path: Path, rows: List[Dict[str, Any]]) -> None:
                 "blueberry_win_rate",
                 "avg_final_control",
                 "avg_round_duration",
+                "strategy_diversity_penalty",
+                "effective_strategies",
+                "dominant_strategy_share",
                 "patch",
             ]
         )
         for index, row in enumerate(rows, start=1):
             summary = row["summary"]
+            diversity = summary.get("strategy_diversity", {}).get("combined", {})
             writer.writerow(
                 [
                     index,
@@ -421,6 +526,9 @@ def write_candidate_evaluations(path: Path, rows: List[Dict[str, Any]]) -> None:
                     summary["match_win_rate"]["blueberry"],
                     summary["avg_final_control"],
                     summary["avg_round_duration"],
+                    diversity.get("diversity_penalty", ""),
+                    diversity.get("effective_strategies", ""),
+                    diversity.get("dominant_strategy_share", ""),
                     row["patch_text"],
                 ]
             )
@@ -437,10 +545,14 @@ def write_master_history(path: Path, rows: List[dict]) -> None:
                 "avg_final_control",
                 "avg_round_duration",
                 "balance_score",
+                "strategy_diversity_penalty",
+                "effective_strategies",
+                "dominant_strategy_share",
                 "confirmation_raspberry_win_rate",
                 "confirmation_blueberry_win_rate",
                 "confirmation_avg_final_control",
                 "confirmation_balance_score",
+                "confirmation_strategy_diversity_penalty",
                 "confirmation_passed",
                 "patch_added",
                 "stopped",
@@ -455,10 +567,14 @@ def write_master_history(path: Path, rows: List[dict]) -> None:
                     row["avg_final_control"],
                     row["avg_round_duration"],
                     row["balance_score"],
+                    row.get("strategy_diversity_penalty", ""),
+                    row.get("effective_strategies", ""),
+                    row.get("dominant_strategy_share", ""),
                     row.get("confirmation_raspberry_win_rate", ""),
                     row.get("confirmation_blueberry_win_rate", ""),
                     row.get("confirmation_avg_final_control", ""),
                     row.get("confirmation_balance_score", ""),
+                    row.get("confirmation_strategy_diversity_penalty", ""),
                     row.get("confirmation_passed", ""),
                     row["patch_added"],
                     row["stopped"],
@@ -483,6 +599,7 @@ def main():
     parser.add_argument("--candidate-seeds", type=int, default=3)
     parser.add_argument("--candidate-limit", type=int, default=8)
     parser.add_argument("--control-weight", type=float, default=0.25)
+    parser.add_argument("--strategy-diversity-weight", type=float, default=0.20)
     parser.add_argument("--target-confirmations", type=int, default=1)
     parser.add_argument("--confirmation-seeds", type=int, default=0)
     args = parser.parse_args()
@@ -498,7 +615,8 @@ def main():
         f"matches={args.matches}, validation_seeds={args.validation_seeds}, "
         f"candidate_matches={args.candidate_matches}, candidate_seeds={args.candidate_seeds}, "
         f"target_confirmations={args.target_confirmations}, "
-        "policy_update=backprop_only, patch_mode=soft_nerf_and_low_impact_rework"
+        f"strategy_diversity_weight={args.strategy_diversity_weight}, "
+        "policy_update=backprop_only, patch_mode=soft_nerf_low_impact_rework_plus_strategy_diversity"
     )
 
     reset_balance()
@@ -545,7 +663,7 @@ def main():
         raspberry_rate = summary["match_win_rate"]["raspberry"]
         blueberry_rate = summary["match_win_rate"]["blueberry"]
         gap = abs(raspberry_rate - args.target)
-        score = balance_score(summary, args.target, args.control_weight)
+        score = balance_score(summary, args.target, args.control_weight, args.strategy_diversity_weight)
         target_reached = gap <= args.tolerance
         stopped = target_reached
         patch_added = ""
@@ -584,7 +702,12 @@ def main():
                 )
                 confirmation_rate = confirmation_summary["match_win_rate"]["raspberry"]
                 confirmation_gap = abs(confirmation_rate - args.target)
-                confirmation_score = balance_score(confirmation_summary, args.target, args.control_weight)
+                confirmation_score = balance_score(
+                    confirmation_summary,
+                    args.target,
+                    args.control_weight,
+                    args.strategy_diversity_weight,
+                )
                 confirmation_passed = confirmation_gap <= args.tolerance
                 log(
                     f"[{iteration_label}] confirmation {confirmation_index + 1}: "
@@ -630,6 +753,7 @@ def main():
                         candidate_seeds,
                         args.target,
                         args.control_weight,
+                        args.strategy_diversity_weight,
                         f"{iteration_label} candidate {candidate_index + 1}/{len(candidates)}",
                     )
                 )
@@ -658,6 +782,9 @@ def main():
             "avg_final_control": summary["avg_final_control"],
             "avg_round_duration": summary["avg_round_duration"],
             "balance_score": score,
+            "strategy_diversity_penalty": summary.get("strategy_diversity", {}).get("score", ""),
+            "effective_strategies": summary.get("strategy_diversity", {}).get("combined", {}).get("effective_strategies", ""),
+            "dominant_strategy_share": summary.get("strategy_diversity", {}).get("combined", {}).get("dominant_strategy_share", ""),
             "confirmation_raspberry_win_rate": (
                 confirmation_summary["match_win_rate"]["raspberry"] if confirmation_summary else ""
             ),
@@ -666,6 +793,9 @@ def main():
             ),
             "confirmation_avg_final_control": confirmation_summary["avg_final_control"] if confirmation_summary else "",
             "confirmation_balance_score": confirmation_score if confirmation_score is not None else "",
+            "confirmation_strategy_diversity_penalty": (
+                confirmation_summary.get("strategy_diversity", {}).get("score", "") if confirmation_summary else ""
+            ),
             "confirmation_passed": confirmation_passed,
             "patch_added": patch_added,
             "stopped": stopped,
@@ -695,8 +825,10 @@ def main():
         "target_confirmations": args.target_confirmations,
         "confirmation_seeds": args.confirmation_seeds or args.validation_seeds,
         "policy_update_mode": "match_backpropagation_only",
-        "patch_generation_mode": "soft_nerf_best_unit_and_rework_low_impact_unit",
+        "patch_generation_mode": "soft_nerf_low_impact_rework_plus_strategy_diversity",
         "control_weight": args.control_weight,
+        "strategy_diversity_weight": args.strategy_diversity_weight,
+        "strategy_diversity_mode": "per_match_play_style_profiles",
         "iterations_completed": len(history),
         "final_history_row": history[-1] if history else {},
         "accepted_adjustments": adjustments,

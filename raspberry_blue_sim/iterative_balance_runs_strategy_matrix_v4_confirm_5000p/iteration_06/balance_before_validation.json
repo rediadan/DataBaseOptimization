@@ -1,0 +1,1965 @@
+{
+  "accepted_adjustments": [
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.9623
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.9445
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0431
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0235
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9808
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.0744
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0247
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 0.9625
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cost",
+      "factor": 0.9379
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "hp",
+      "factor": 1.0584
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "speed",
+      "factor": 1.0273
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cooldown",
+      "factor": 0.9772
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "power",
+      "factor": 1.0506
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "range",
+      "factor": 1.0164
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "area",
+      "factor": 1.0234
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "area",
+      "factor": 0.9633
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cost",
+      "factor": 0.9392
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "hp",
+      "factor": 1.0572
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "speed",
+      "factor": 1.0267
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cooldown",
+      "factor": 0.9776
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "power",
+      "factor": 1.0495
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "range",
+      "factor": 1.016
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "area",
+      "factor": 1.0229
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 0.9658
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.9433
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0531
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0248
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9792
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.046
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0149
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "power",
+      "factor": 0.9684
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cost",
+      "factor": 0.9387
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "hp",
+      "factor": 1.0359
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "speed",
+      "factor": 1.0392
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cooldown",
+      "factor": 0.9715
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "power",
+      "factor": 1.0359
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "range",
+      "factor": 1.0114
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "area",
+      "factor": 1.0163
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 0.9688
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "cost",
+      "factor": 0.9481
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "hp",
+      "factor": 1.0483
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "speed",
+      "factor": 1.0225
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "cooldown",
+      "factor": 0.981
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 1.0419
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "range",
+      "factor": 1.0135
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "hp",
+      "factor": 0.9752
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "cost",
+      "factor": 0.9545
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "hp",
+      "factor": 1.035
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "speed",
+      "factor": 1.0191
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "cooldown",
+      "factor": 0.9844
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 1.0604
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "range",
+      "factor": 1.02
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.0326
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.9387
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0359
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0392
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9715
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.0359
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0114
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "speed",
+      "factor": 0.9791
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cost",
+      "factor": 0.9425
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "hp",
+      "factor": 1.0336
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "speed",
+      "factor": 1.0366
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cooldown",
+      "factor": 0.9733
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "power",
+      "factor": 1.0336
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "range",
+      "factor": 1.0107
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "area",
+      "factor": 1.0153
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "speed",
+      "factor": 0.9812
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.9606
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0301
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0164
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9865
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.052
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0172
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.025
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cost",
+      "factor": 0.9638
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "hp",
+      "factor": 1.0275
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "speed",
+      "factor": 1.015
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cooldown",
+      "factor": 0.9876
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "power",
+      "factor": 1.0476
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "range",
+      "factor": 1.0158
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "area",
+      "factor": 1.0225
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.9748
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 0.9579
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "hp",
+      "factor": 1.0388
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "speed",
+      "factor": 1.0181
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cooldown",
+      "factor": 0.9847
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "power",
+      "factor": 1.0336
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "range",
+      "factor": 1.0109
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "area",
+      "factor": 1.0155
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "speed",
+      "factor": 0.9792
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 0.9565
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "hp",
+      "factor": 1.0333
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "speed",
+      "factor": 1.0182
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cooldown",
+      "factor": 0.9851
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "power",
+      "factor": 1.0576
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "range",
+      "factor": 1.0191
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "area",
+      "factor": 1.0273
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "hp",
+      "factor": 0.9807
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 0.9598
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "hp",
+      "factor": 1.0369
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "speed",
+      "factor": 1.0172
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cooldown",
+      "factor": 0.9854
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "power",
+      "factor": 1.032
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "range",
+      "factor": 1.0103
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "area",
+      "factor": 1.0148
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "speed",
+      "factor": 0.9821
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 0.9575
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "hp",
+      "factor": 1.0391
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "speed",
+      "factor": 1.0183
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cooldown",
+      "factor": 0.9846
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "power",
+      "factor": 1.0339
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "range",
+      "factor": 1.011
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "area",
+      "factor": 1.0157
+    },
+    {
+      "factor": 0.84,
+      "stat": "cost",
+      "reason": "matrix_v2_buff_dead_raspberry_tank_focus",
+      "unit": "baumkuchen",
+      "team": "raspberry"
+    },
+    {
+      "factor": 1.16,
+      "stat": "hp",
+      "reason": "matrix_v2_buff_dead_raspberry_tank_focus",
+      "unit": "baumkuchen",
+      "team": "raspberry"
+    },
+    {
+      "factor": 1.08,
+      "stat": "speed",
+      "reason": "matrix_v2_buff_dead_raspberry_tank_focus",
+      "unit": "baumkuchen",
+      "team": "raspberry"
+    },
+    {
+      "factor": 1.08,
+      "stat": "power",
+      "reason": "matrix_v2_buff_dead_raspberry_tank_focus",
+      "unit": "baumkuchen",
+      "team": "raspberry"
+    },
+    {
+      "factor": 0.82,
+      "stat": "cost",
+      "reason": "matrix_v2_buff_dead_raspberry_special_focus",
+      "unit": "macaron",
+      "team": "raspberry"
+    },
+    {
+      "factor": 1.12,
+      "stat": "hp",
+      "reason": "matrix_v2_buff_dead_raspberry_special_focus",
+      "unit": "macaron",
+      "team": "raspberry"
+    },
+    {
+      "factor": 1.22,
+      "stat": "power",
+      "reason": "matrix_v2_buff_dead_raspberry_special_focus",
+      "unit": "macaron",
+      "team": "raspberry"
+    },
+    {
+      "factor": 0.88,
+      "stat": "cooldown",
+      "reason": "matrix_v2_buff_dead_raspberry_special_focus",
+      "unit": "macaron",
+      "team": "raspberry"
+    },
+    {
+      "factor": 1.1,
+      "stat": "range",
+      "reason": "matrix_v2_buff_dead_raspberry_special_focus",
+      "unit": "macaron",
+      "team": "raspberry"
+    },
+    {
+      "factor": 1.08,
+      "stat": "hp",
+      "reason": "matrix_v2_support_weak_raspberry_swarm_focus",
+      "unit": "pie",
+      "team": "raspberry"
+    },
+    {
+      "factor": 0.96,
+      "stat": "cost",
+      "reason": "matrix_v2_support_weak_raspberry_swarm_focus",
+      "unit": "pie",
+      "team": "raspberry"
+    },
+    {
+      "factor": 0.92,
+      "stat": "power",
+      "reason": "matrix_v2_nerf_overpowered_raspberry_ranged_focus",
+      "unit": "scone",
+      "team": "raspberry"
+    },
+    {
+      "factor": 0.94,
+      "stat": "power",
+      "reason": "matrix_v2_nerf_overpowered_raspberry_ranged_focus",
+      "unit": "tart",
+      "team": "raspberry"
+    },
+    {
+      "factor": 0.94,
+      "stat": "area",
+      "reason": "matrix_v2_nerf_overpowered_raspberry_ranged_focus",
+      "unit": "tart",
+      "team": "raspberry"
+    },
+    {
+      "factor": 1.14,
+      "stat": "cost",
+      "reason": "matrix_v2_nerf_overpowered_blueberry_ranged_focus",
+      "unit": "tarte_tatin",
+      "team": "blueberry"
+    },
+    {
+      "factor": 0.9,
+      "stat": "power",
+      "reason": "matrix_v2_nerf_overpowered_blueberry_ranged_focus",
+      "unit": "tarte_tatin",
+      "team": "blueberry"
+    },
+    {
+      "factor": 0.88,
+      "stat": "area",
+      "reason": "matrix_v2_nerf_overpowered_blueberry_ranged_focus",
+      "unit": "tarte_tatin",
+      "team": "blueberry"
+    },
+    {
+      "factor": 1.08,
+      "stat": "cooldown",
+      "reason": "matrix_v2_nerf_overpowered_blueberry_ranged_focus",
+      "unit": "tarte_tatin",
+      "team": "blueberry"
+    },
+    {
+      "factor": 1.12,
+      "stat": "cost",
+      "reason": "matrix_v2_nerf_overpowered_blueberry_special_focus",
+      "unit": "pannacotta",
+      "team": "blueberry"
+    },
+    {
+      "factor": 0.9,
+      "stat": "power",
+      "reason": "matrix_v2_nerf_overpowered_blueberry_special_focus",
+      "unit": "pannacotta",
+      "team": "blueberry"
+    },
+    {
+      "factor": 0.9,
+      "stat": "area",
+      "reason": "matrix_v2_nerf_overpowered_blueberry_special_focus",
+      "unit": "pannacotta",
+      "team": "blueberry"
+    },
+    {
+      "factor": 1.08,
+      "stat": "cooldown",
+      "reason": "matrix_v2_nerf_overpowered_blueberry_special_focus",
+      "unit": "pannacotta",
+      "team": "blueberry"
+    },
+    {
+      "factor": 0.94,
+      "stat": "hp",
+      "reason": "matrix_v2_trim_blueberry_mirror_advantage",
+      "unit": "baumkuchen",
+      "team": "blueberry"
+    },
+    {
+      "factor": 0.95,
+      "stat": "power",
+      "reason": "matrix_v2_trim_blueberry_swarm_mixed_advantage",
+      "unit": "pie",
+      "team": "blueberry"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "speed",
+      "factor": 0.9801
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 0.953
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "hp",
+      "factor": 1.0435
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "speed",
+      "factor": 1.0203
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cooldown",
+      "factor": 0.9829
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "power",
+      "factor": 1.0377
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "range",
+      "factor": 1.0122
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "area",
+      "factor": 1.0174
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "hp",
+      "factor": 0.9824
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.9633
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0337
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0157
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9867
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.0292
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0094
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.0243
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 0.9648
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "hp",
+      "factor": 1.0267
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "speed",
+      "factor": 1.0146
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cooldown",
+      "factor": 0.988
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "power",
+      "factor": 1.0462
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "range",
+      "factor": 1.0153
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "area",
+      "factor": 1.0219
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.9777
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cost",
+      "factor": 0.9564
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "hp",
+      "factor": 1.0251
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "speed",
+      "factor": 1.0274
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cooldown",
+      "factor": 0.9799
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "power",
+      "factor": 1.0251
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "range",
+      "factor": 1.008
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "area",
+      "factor": 1.0114
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "speed",
+      "factor": 0.9834
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cost",
+      "factor": 0.9651
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "hp",
+      "factor": 1.0265
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "speed",
+      "factor": 1.0145
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cooldown",
+      "factor": 0.9881
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "power",
+      "factor": 1.0458
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "range",
+      "factor": 1.0152
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "area",
+      "factor": 1.0217
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.9779
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.963
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0339
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0158
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9866
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.0294
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0095
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "speed",
+      "factor": 0.9845
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 0.9633
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "hp",
+      "factor": 1.0337
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "speed",
+      "factor": 1.0157
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cooldown",
+      "factor": 0.9867
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "power",
+      "factor": 1.0292
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "range",
+      "factor": 1.0094
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "area",
+      "factor": 1.0135
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 1.08,
+      "reason": "v3_matrix_seed: raspberry ranged_focus remains overpowered across most matchups"
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 0.88,
+      "reason": "v3_matrix_seed: reduce raspberry ranged burst dominance"
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cost",
+      "factor": 1.08,
+      "reason": "v3_matrix_seed: raspberry ranged_focus remains overpowered across most matchups"
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "power",
+      "factor": 0.88,
+      "reason": "v3_matrix_seed: reduce raspberry ranged area damage dominance"
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "area",
+      "factor": 0.88,
+      "reason": "v3_matrix_seed: reduce raspberry ranged area control"
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.94,
+      "reason": "v3_matrix_seed: trim raspberry swarm/mixed spillover strength"
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.05,
+      "reason": "v3_matrix_seed: trim raspberry swarm/mixed spillover strength"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cost",
+      "factor": 0.78,
+      "reason": "v3_matrix_seed: raspberry special_focus is nearly unused and weak"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "hp",
+      "factor": 1.15,
+      "reason": "v3_matrix_seed: improve raspberry special_focus survival"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "power",
+      "factor": 1.35,
+      "reason": "v3_matrix_seed: improve raspberry special_focus payoff"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cooldown",
+      "factor": 0.8,
+      "reason": "v3_matrix_seed: improve raspberry special_focus tempo"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "range",
+      "factor": 1.15,
+      "reason": "v3_matrix_seed: improve raspberry special_focus reach"
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "cost",
+      "factor": 0.9,
+      "reason": "v3_matrix_seed: blueberry tank_focus is weak"
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "hp",
+      "factor": 1.14,
+      "reason": "v3_matrix_seed: improve blueberry tank_focus durability"
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 1.1,
+      "reason": "v3_matrix_seed: improve blueberry tank_focus pressure"
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "speed",
+      "factor": 1.04,
+      "reason": "v3_matrix_seed: improve blueberry tank_focus map pressure"
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.08,
+      "reason": "v3_matrix_seed: blueberry ranged_focus remains strong"
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "power",
+      "factor": 0.92,
+      "reason": "v3_matrix_seed: reduce blueberry ranged damage"
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "area",
+      "factor": 0.92,
+      "reason": "v3_matrix_seed: reduce blueberry ranged area control"
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cooldown",
+      "factor": 1.06,
+      "reason": "v3_matrix_seed: slow blueberry ranged tempo"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 1.14,
+      "reason": "v3_matrix_seed: blueberry special_focus is too strong"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "power",
+      "factor": 0.88,
+      "reason": "v3_matrix_seed: reduce blueberry special payoff"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "area",
+      "factor": 0.88,
+      "reason": "v3_matrix_seed: reduce blueberry special area control"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cooldown",
+      "factor": 1.1,
+      "reason": "v3_matrix_seed: slow blueberry special tempo"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.94,
+      "reason": "v3_matrix_seed: trim blueberry mixed and upgrade spillover strength"
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 0.95,
+      "reason": "v3_matrix_seed: trim blueberry mixed and upgrade spillover strength"
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 1.05,
+      "reason": "v3_matrix_seed: trim blueberry mixed and upgrade spillover strength"
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "hp",
+      "factor": 0.9844
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cost",
+      "factor": 0.9674
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "hp",
+      "factor": 1.0297
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "speed",
+      "factor": 1.0139
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "cooldown",
+      "factor": 0.9883
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "power",
+      "factor": 1.0257
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "range",
+      "factor": 1.0083
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "area",
+      "factor": 1.0119
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "cost",
+      "factor": 0.76,
+      "reason": "v4_matrix_seed: raspberry tank_focus is nearly dead across matrix"
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "hp",
+      "factor": 1.28,
+      "reason": "v4_matrix_seed: improve raspberry tank survival"
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "power",
+      "factor": 1.18,
+      "reason": "v4_matrix_seed: improve raspberry tank pressure"
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "cooldown",
+      "factor": 0.9,
+      "reason": "v4_matrix_seed: improve raspberry tank tempo"
+    },
+    {
+      "team": "raspberry",
+      "unit": "baumkuchen",
+      "stat": "speed",
+      "factor": 1.08,
+      "reason": "v4_matrix_seed: improve raspberry tank map pressure"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cost",
+      "factor": 0.7,
+      "reason": "v4_matrix_seed: raspberry special_focus is nearly dead"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "hp",
+      "factor": 1.25,
+      "reason": "v4_matrix_seed: improve raspberry special survival"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "power",
+      "factor": 1.45,
+      "reason": "v4_matrix_seed: improve raspberry special payoff"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "cooldown",
+      "factor": 0.72,
+      "reason": "v4_matrix_seed: improve raspberry special tempo"
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "range",
+      "factor": 1.2,
+      "reason": "v4_matrix_seed: improve raspberry special reach"
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "hp",
+      "factor": 1.08,
+      "reason": "v4_matrix_seed: support weak raspberry swarm against blue ranged/special"
+    },
+    {
+      "team": "raspberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 0.96,
+      "reason": "v4_matrix_seed: support weak raspberry swarm against blue ranged/special"
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 0.92,
+      "reason": "v4_matrix_seed: raspberry ranged_focus still dominates when selected"
+    },
+    {
+      "team": "raspberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 1.05,
+      "reason": "v4_matrix_seed: raspberry ranged_focus still dominates when selected"
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "power",
+      "factor": 0.92,
+      "reason": "v4_matrix_seed: reduce raspberry ranged area dominance"
+    },
+    {
+      "team": "raspberry",
+      "unit": "tart",
+      "stat": "area",
+      "factor": 0.92,
+      "reason": "v4_matrix_seed: reduce raspberry ranged area dominance"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 1.2,
+      "reason": "v4_matrix_seed: blueberry special_focus dominates many matrix rows"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "power",
+      "factor": 0.82,
+      "reason": "v4_matrix_seed: reduce blueberry special burst"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "area",
+      "factor": 0.82,
+      "reason": "v4_matrix_seed: reduce blueberry special area control"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cooldown",
+      "factor": 1.18,
+      "reason": "v4_matrix_seed: slow blueberry special tempo"
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 1.12,
+      "reason": "v4_matrix_seed: blueberry ranged_focus suppresses weak raspberry strategies"
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "power",
+      "factor": 0.88,
+      "reason": "v4_matrix_seed: reduce blueberry ranged damage"
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "area",
+      "factor": 0.88,
+      "reason": "v4_matrix_seed: reduce blueberry ranged area control"
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 0.92,
+      "reason": "v4_matrix_seed: reduce blueberry mixed/upgrade ranged pressure"
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 1.08,
+      "reason": "v4_matrix_seed: reduce blueberry mixed/upgrade ranged pressure"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.92,
+      "reason": "v4_matrix_seed: reduce blueberry swarm/mixed fallback pressure"
+    },
+    {
+      "team": "blueberry",
+      "unit": "baumkuchen",
+      "stat": "hp",
+      "factor": 0.94,
+      "reason": "v4_matrix_seed: blueberry tank mirror heavily beats raspberry tank"
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "power",
+      "factor": 0.9752
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.9633
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0279
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0152
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9875
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.0483
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.016
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "cost",
+      "factor": 1.0255
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.9584
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0383
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0179
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9849
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.0332
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0107
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "hp",
+      "factor": 0.9806
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cost",
+      "factor": 0.9643
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "hp",
+      "factor": 1.0272
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "speed",
+      "factor": 1.0148
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "cooldown",
+      "factor": 0.9878
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "power",
+      "factor": 1.0469
+    },
+    {
+      "team": "blueberry",
+      "unit": "scone",
+      "stat": "range",
+      "factor": 1.0156
+    },
+    {
+      "team": "raspberry",
+      "unit": "macaron",
+      "stat": "speed",
+      "factor": 0.9846
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cost",
+      "factor": 0.9676
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "hp",
+      "factor": 1.0245
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "speed",
+      "factor": 1.0134
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "cooldown",
+      "factor": 0.989
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "power",
+      "factor": 1.0424
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "range",
+      "factor": 1.0141
+    },
+    {
+      "team": "blueberry",
+      "unit": "pannacotta",
+      "stat": "area",
+      "factor": 1.0201
+    },
+    {
+      "team": "blueberry",
+      "unit": "pie",
+      "stat": "speed",
+      "factor": 0.9851
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cost",
+      "factor": 0.9646
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "hp",
+      "factor": 1.0324
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "speed",
+      "factor": 1.0151
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "cooldown",
+      "factor": 0.9872
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "power",
+      "factor": 1.0281
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "range",
+      "factor": 1.0091
+    },
+    {
+      "team": "blueberry",
+      "unit": "tarte_tatin",
+      "stat": "area",
+      "factor": 1.013
+    }
+  ],
+  "final_summary": {},
+  "final_units": {
+    "raspberry": [
+      {
+        "key": "pie",
+        "role": "attacker",
+        "name": "파이",
+        "cost": 83,
+        "hp": 146.0884,
+        "speed": 0.7449,
+        "power": 33.7221,
+        "cooldown": 1.0,
+        "range": 1.0,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "tart",
+        "role": "aoe_ranged",
+        "name": "타르트",
+        "cost": 246,
+        "hp": 287.6804,
+        "speed": 0.6671,
+        "power": 18.1223,
+        "cooldown": 1.8397,
+        "range": 6.356,
+        "area": 0.9915,
+        "behavior": "attack"
+      },
+      {
+        "key": "baumkuchen",
+        "role": "tank",
+        "name": "바움쿠헨",
+        "cost": 144,
+        "hp": 676.6175,
+        "speed": 0.9723,
+        "power": 14.08,
+        "cooldown": 1.5645,
+        "range": 0.5169,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "scone",
+        "role": "single_ranged",
+        "name": "스콘",
+        "cost": 456,
+        "hp": 351.6528,
+        "speed": 0.554,
+        "power": 91.2199,
+        "cooldown": 1.6567,
+        "range": 3.2098,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "macaron",
+        "role": "special",
+        "name": "마카롱",
+        "cost": 111,
+        "hp": 93.3084,
+        "speed": 1.2692,
+        "power": 136.3858,
+        "cooldown": 0.7057,
+        "range": 3.9636,
+        "area": 1.0639,
+        "behavior": "heal"
+      }
+    ],
+    "blueberry": [
+      {
+        "key": "pie",
+        "role": "attacker",
+        "name": "파이",
+        "cost": 103,
+        "hp": 98.06,
+        "speed": 0.9851,
+        "power": 56.083,
+        "cooldown": 1.0,
+        "range": 1.0,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "tarte_tatin",
+        "role": "aoe_ranged",
+        "name": "타르트·타탱",
+        "cost": 245,
+        "hp": 185.832,
+        "speed": 1.0151,
+        "power": 36.2722,
+        "cooldown": 3.3904,
+        "range": 4.0364,
+        "area": 1.7381,
+        "behavior": "attack"
+      },
+      {
+        "key": "baumkuchen",
+        "role": "tank",
+        "name": "바움쿠헨",
+        "cost": 225,
+        "hp": 290.0996,
+        "speed": 0.9991,
+        "power": 29.7191,
+        "cooldown": 1.0,
+        "range": 0.5,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "scone",
+        "role": "single_ranged",
+        "name": "스콘",
+        "cost": 469,
+        "hp": 234.3322,
+        "speed": 0.8655,
+        "power": 157.4932,
+        "cooldown": 1.8706,
+        "range": 3.1881,
+        "area": 0.0,
+        "behavior": "attack"
+      },
+      {
+        "key": "pannacotta",
+        "role": "special",
+        "name": "판나코타",
+        "cost": 439,
+        "hp": 65.6092,
+        "speed": 1.7162,
+        "power": 352.9001,
+        "cooldown": 0.625,
+        "range": 1.1069,
+        "area": 4.8792,
+        "behavior": "suicide_aoe"
+      }
+    ]
+  }
+}

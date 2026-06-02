@@ -1,0 +1,13 @@
+team,strategy,avg_win_rate,min_win_rate,max_win_rate
+raspberry,tank_focus,0.0125,0.0,0.075
+raspberry,ranged_focus,0.8667,0.4875,1.0
+raspberry,swarm_focus,0.1271,0.0,0.625
+raspberry,special_focus,0.0104,0.0,0.05
+raspberry,upgrade_focus,0.275,0.0,0.875
+raspberry,mixed,0.2875,0.0125,0.8
+blueberry,tank_focus,0.4292,0.0,0.95
+blueberry,ranged_focus,0.9167,0.5125,1.0
+blueberry,swarm_focus,0.5729,0.0,1.0
+blueberry,special_focus,0.8333,0.05,1.0
+blueberry,upgrade_focus,0.8375,0.125,1.0
+blueberry,mixed,0.8312,0.1125,1.0

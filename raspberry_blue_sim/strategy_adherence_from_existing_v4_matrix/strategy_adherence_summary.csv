@@ -1,0 +1,13 @@
+team,requested_strategy,matches,win_rate,total_units,avg_units_per_match,attacker_share,tank_share,ranged_share,special_share,adherence_score,top_detected_strategy,top_detected_share,detected_upgrade_share
+raspberry,tank_focus,480,0.2229,69589,144.977,0.1691,0.7124,0.0401,0.0784,0.7124,tank_focus,0.9979,0.0
+raspberry,ranged_focus,480,0.9521,58040,120.917,0.3413,0.07,0.442,0.1468,0.442,mixed_composition,0.9604,0.0
+raspberry,swarm_focus,480,0.2938,96144,200.3,0.8949,0.0277,0.0355,0.0419,0.8949,swarm_focus,1.0,0.0
+raspberry,special_focus,480,0.1062,48031,100.065,0.1265,0.0489,0.0522,0.7723,0.7723,special_focus,1.0,0.0
+raspberry,upgrade_focus,480,0.6708,73180,152.458,0.3642,0.1953,0.1995,0.241,0.0,mixed_composition,1.0,0.0
+raspberry,mixed,480,0.6896,74596,155.408,0.3893,0.1876,0.2038,0.2193,0.6107,mixed_composition,0.9979,0.0
+blueberry,tank_focus,480,0.1375,44081,91.835,0.3487,0.5916,0.0441,0.0155,0.5916,tank_focus,0.8688,0.0
+blueberry,ranged_focus,480,0.5354,52421,109.21,0.4915,0.029,0.4678,0.0118,0.4678,swarm_focus,0.3812,0.0
+blueberry,swarm_focus,480,0.3458,84844,176.758,0.9253,0.0246,0.0349,0.0152,0.9253,swarm_focus,1.0,0.0
+blueberry,special_focus,480,0.8354,58194,121.237,0.5917,0.0707,0.0706,0.267,0.267,swarm_focus,0.9146,0.0
+blueberry,upgrade_focus,480,0.6021,59867,124.723,0.5691,0.1462,0.2058,0.0788,0.0,swarm_focus,0.8125,0.0
+blueberry,mixed,480,0.6083,59253,123.444,0.5769,0.1373,0.2161,0.0698,0.4231,swarm_focus,0.7979,0.0

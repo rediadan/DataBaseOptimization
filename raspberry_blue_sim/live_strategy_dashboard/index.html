@@ -1,0 +1,1529 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Strategy Training Live Dashboard</title>
+  <style>
+:root {
+  --bg: #f6f7fb;
+  --panel: #ffffff;
+  --ink: #111827;
+  --muted: #64748b;
+  --line: #d9dee8;
+  --raspberry: #d4485b;
+  --blueberry: #3567d6;
+  --good: #15803d;
+  --warn: #b45309;
+  --bad: #b91c1c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1080px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Segoe UI, Pretendard, Arial, sans-serif;
+}
+
+.shell {
+  width: min(1520px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 18px 0 24px;
+}
+
+.topbar,
+.controls,
+.metrics,
+.layout,
+.training-layout {
+  width: 100%;
+}
+
+.topbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 10px 0 16px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 26px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+#subtitle {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--warn);
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.14);
+}
+
+.dot.ok {
+  background: var(--good);
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.14);
+}
+
+.dot.bad {
+  background: var(--bad);
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.14);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1.6fr 1.6fr 1.25fr 1.25fr 1.25fr 110px 96px;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+
+.derived-control input {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+input,
+select,
+button {
+  height: 38px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 13px;
+}
+
+input,
+select {
+  padding: 0 10px;
+}
+
+button {
+  cursor: pointer;
+  font-weight: 800;
+  background: #111827;
+  color: #fff;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.metric,
+.heatmap-panel,
+.side,
+.training-panel,
+.log-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.metric {
+  min-height: 78px;
+  padding: 12px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+}
+
+.metric span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.metric strong {
+  font-size: 25px;
+  line-height: 1;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(720px, 1fr) 420px;
+  gap: 12px;
+  align-items: start;
+}
+
+.training-layout {
+  display: grid;
+  grid-template-columns: minmax(720px, 1fr) 500px;
+  gap: 12px;
+  align-items: stretch;
+  margin-bottom: 12px;
+}
+
+.heatmap-panel,
+.side,
+.training-panel,
+.log-panel {
+  padding: 14px;
+}
+
+.training-heatmap {
+  display: grid;
+  grid-template-columns: repeat(var(--train-cols), minmax(86px, 1fr));
+  gap: 6px;
+}
+
+.train-head,
+.train-axis,
+.train-cell,
+.empty-history {
+  min-height: 48px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.train-head,
+.train-axis,
+.empty-history {
+  background: #eef2f7;
+  color: #334155;
+}
+
+.train-cell {
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.empty-history {
+  grid-column: 1 / -1;
+}
+
+.live-progress {
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.progress-head strong {
+  font-size: 14px;
+}
+
+.progress-head span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.progress-track {
+  position: relative;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.progress-track::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: rgba(17, 24, 39, 0.38);
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--raspberry);
+  transition: width 180ms ease;
+}
+
+.live-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.live-kpi {
+  min-height: 54px;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.live-kpi span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.live-kpi strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.compact-title {
+  margin-top: 14px;
+}
+
+.candidate-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.candidate-cell {
+  min-height: 58px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 6px;
+  background: #e5e7eb;
+  color: #334155;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.candidate-cell.current {
+  outline: 3px solid rgba(17, 24, 39, 0.36);
+  outline-offset: -3px;
+}
+
+.candidate-cell.pending {
+  color: #64748b;
+}
+
+#live-log {
+  height: 336px;
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+  border-radius: 6px;
+  background: #111827;
+  color: #dbeafe;
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.matrix-metrics {
+  margin-top: 2px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.section-title h2 {
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+.section-title span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.heatmap {
+  display: grid;
+  grid-template-columns: 132px repeat(var(--cols), minmax(86px, 1fr));
+  gap: 6px;
+  align-items: stretch;
+}
+
+.corner,
+.axis,
+.cell {
+  min-height: 70px;
+  border-radius: 6px;
+}
+
+.corner,
+.axis {
+  background: #eef2f7;
+  color: #334155;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.axis.x {
+  min-height: 54px;
+}
+
+.axis.y {
+  justify-content: center;
+}
+
+.cell {
+  position: relative;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  padding: 8px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.cell.empty {
+  background: #e5e7eb;
+  color: #64748b;
+}
+
+.cell .rate {
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.cell .delta,
+.cell .control {
+  font-size: 11px;
+  font-weight: 800;
+  opacity: 0.86;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.legend-track {
+  display: grid;
+  grid-template-columns: repeat(5, 38px);
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.averages {
+  display: grid;
+  gap: 10px;
+}
+
+.avg-row {
+  display: grid;
+  grid-template-columns: 112px 1fr 54px;
+  align-items: center;
+  gap: 8px;
+}
+
+.avg-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: #334155;
+}
+
+.avg-bars {
+  display: grid;
+  gap: 4px;
+}
+
+.avg-track {
+  position: relative;
+  height: 15px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.avg-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  background: var(--raspberry);
+}
+
+.avg-fill.blue {
+  background: var(--blueberry);
+}
+
+.avg-value {
+  font-size: 12px;
+  color: #334155;
+  font-weight: 900;
+  text-align: right;
+}
+
+.problem-title {
+  margin-top: 22px;
+}
+
+.problems {
+  display: grid;
+  gap: 8px;
+  max-height: 450px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.problem {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px;
+  background: #fff;
+}
+
+.problem strong {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.problem span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 1180px) {
+  body {
+    min-width: 0;
+  }
+
+  .shell {
+    width: calc(100vw - 20px);
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .training-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .live-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .heatmap {
+    overflow-x: auto;
+    grid-template-columns: 118px repeat(var(--cols), minmax(82px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .controls,
+  .metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  .metric {
+    min-height: 66px;
+  }
+
+  .metric strong {
+    font-size: 21px;
+  }
+}
+
+</style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <h1>Strategy Training Live Dashboard</h1>
+        <p id="subtitle">Training progress and strategy matrix viewer</p>
+      </div>
+      <div class="statusbar">
+        <span id="status-dot" class="dot"></span>
+        <span id="status-text">loading</span>
+        <span id="last-updated">-</span>
+      </div>
+    </header>
+
+    <section class="controls" aria-label="dashboard controls">
+      <label class="wide-control">
+        Training Folder
+        <input id="training-root" type="text">
+      </label>
+      <label class="wide-control">
+        Matrix Folder
+        <input id="matrix-root" type="text">
+      </label>
+      <label class="derived-control">
+        Matrix CSV
+        <input id="matrix-path" type="text" readonly>
+      </label>
+      <label class="derived-control">
+        Summary JSON
+        <input id="summary-path" type="text" readonly>
+      </label>
+      <label>
+        Compare CSV
+        <input id="compare-path" type="text">
+      </label>
+      <label class="small-control">
+        Refresh
+        <select id="refresh-interval">
+          <option value="1000">1s</option>
+          <option value="2000" selected>2s</option>
+          <option value="5000">5s</option>
+          <option value="10000">10s</option>
+        </select>
+      </label>
+      <button id="reload-button" type="button">Reload</button>
+    </section>
+
+    <section class="metrics" aria-label="training metrics">
+      <div class="metric">
+        <span>Stage</span>
+        <strong id="train-stage">-</strong>
+      </div>
+      <div class="metric">
+        <span>Iteration</span>
+        <strong id="train-iteration">-</strong>
+      </div>
+      <div class="metric">
+        <span>Raspberry Win</span>
+        <strong id="train-raspberry">-</strong>
+      </div>
+      <div class="metric">
+        <span>Balance Score</span>
+        <strong id="train-score">-</strong>
+      </div>
+      <div class="metric">
+        <span>Diversity Penalty</span>
+        <strong id="train-diversity">-</strong>
+      </div>
+      <div class="metric">
+        <span>Confirmed</span>
+        <strong id="train-confirmed">-</strong>
+      </div>
+    </section>
+
+    <section class="training-layout">
+      <div class="training-panel">
+        <div class="section-title">
+          <h2>Training Iteration Heatmap</h2>
+          <span id="history-count">0 iterations</span>
+        </div>
+        <div class="live-progress">
+          <div class="progress-head">
+            <strong id="live-phase">waiting</strong>
+            <span id="live-progress-label">-</span>
+          </div>
+          <div class="progress-track">
+            <div id="live-progress-fill" class="progress-fill"></div>
+          </div>
+          <div class="live-kpis">
+            <div class="live-kpi">
+              <span>Live R Win</span>
+              <strong id="live-r-win">-</strong>
+            </div>
+            <div class="live-kpi">
+              <span>Live Matches</span>
+              <strong id="live-matches">-</strong>
+            </div>
+            <div class="live-kpi">
+              <span>Seed</span>
+              <strong id="live-seed">-</strong>
+            </div>
+            <div class="live-kpi">
+              <span>Candidate</span>
+              <strong id="live-candidate">-</strong>
+            </div>
+          </div>
+        </div>
+        <div class="section-title compact-title">
+          <h2>Candidate Search</h2>
+          <span id="candidate-status">waiting</span>
+        </div>
+        <div id="candidate-strip" class="candidate-strip"></div>
+        <div id="training-heatmap" class="training-heatmap"></div>
+      </div>
+      <aside class="log-panel">
+        <div class="section-title">
+          <h2>Live Log</h2>
+          <span id="log-status">-</span>
+        </div>
+        <pre id="live-log"></pre>
+      </aside>
+    </section>
+
+    <section class="metrics matrix-metrics" aria-label="matrix metrics">
+      <div class="metric">
+        <span>Avg Raspberry</span>
+        <strong id="metric-avg-raspberry">-</strong>
+      </div>
+      <div class="metric">
+        <span>Weakest Strategy</span>
+        <strong id="metric-weakest">-</strong>
+      </div>
+      <div class="metric">
+        <span>Strongest Strategy</span>
+        <strong id="metric-strongest">-</strong>
+      </div>
+      <div class="metric">
+        <span>Strategy Spread</span>
+        <strong id="metric-spread">-</strong>
+      </div>
+      <div class="metric">
+        <span>Mirror Gap</span>
+        <strong id="metric-mirror">-</strong>
+      </div>
+      <div class="metric">
+        <span>Penalty</span>
+        <strong id="metric-penalty">-</strong>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="heatmap-panel">
+        <div class="section-title">
+          <h2>Raspberry Win Rate</h2>
+          <span id="completion">0 / 36 matchups</span>
+        </div>
+        <div id="heatmap" class="heatmap"></div>
+        <div class="legend">
+          <span>Blueberry favored</span>
+          <div class="legend-track">
+            <span style="background:#1d4ed8"></span>
+            <span style="background:#93c5fd"></span>
+            <span style="background:#f8fafc"></span>
+            <span style="background:#fda4af"></span>
+            <span style="background:#be123c"></span>
+          </div>
+          <span>Raspberry favored</span>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="section-title">
+          <h2>Strategy Averages</h2>
+        </div>
+        <div id="averages" class="averages"></div>
+
+        <div class="section-title problem-title">
+          <h2>Problem Matchups</h2>
+          <span id="problem-count">0</span>
+        </div>
+        <div id="problems" class="problems"></div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+const DEFAULT_TRAINING_ROOT = "/raspberry_blue_sim/iterative_balance_runs_strategy_matrix_v5_fixed_mechanics_confirm_5000p";
+const DEFAULT_MATRIX_ROOT = "/raspberry_blue_sim/strategy_matrix_v5_fixed_mechanics_from_strategy_matrix_balance";
+const DEFAULT_COMPARE = "/raspberry_blue_sim/strategy_matrix_v1_from_strategy_diversity_balance/strategy_matrix.csv";
+
+const $ = (id) => document.getElementById(id);
+const state = {
+  timer: null,
+  lastRows: [],
+  compareRows: [],
+};
+
+function init() {
+  const params = new URLSearchParams(location.search);
+  const trainingRoot = params.get("training") || params.get("run") || DEFAULT_TRAINING_ROOT;
+  $("training-root").value = trainingRoot;
+  $("matrix-root").value = params.get("matrix") || deriveMatrixRoot(normalizeRoot(trainingRoot)) || DEFAULT_MATRIX_ROOT;
+  $("compare-path").value = params.get("compare") || DEFAULT_COMPARE;
+  $("refresh-interval").value = params.get("interval") || "2000";
+  applyDerivedPaths();
+  $("reload-button").addEventListener("click", refresh);
+  $("refresh-interval").addEventListener("change", schedule);
+  ["training-root", "matrix-root", "compare-path"].forEach((id) => {
+    $(id).addEventListener("change", () => {
+      applyDerivedPaths();
+      updateUrl();
+      refresh();
+    });
+  });
+  schedule();
+  refresh();
+}
+
+function updateUrl() {
+  const params = new URLSearchParams();
+  params.set("training", $("training-root").value.trim());
+  params.set("matrix", $("matrix-root").value.trim());
+  params.set("compare", $("compare-path").value.trim());
+  params.set("interval", $("refresh-interval").value);
+  history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
+}
+
+function applyDerivedPaths() {
+  const matrixRoot = normalizeRoot($("matrix-root").value.trim() || DEFAULT_MATRIX_ROOT);
+  const paths = derivePaths(matrixRoot);
+  $("matrix-path").value = paths.matrix;
+  $("summary-path").value = paths.summary;
+}
+
+function schedule() {
+  if (state.timer) clearInterval(state.timer);
+  state.timer = setInterval(refresh, Number($("refresh-interval").value));
+}
+
+async function refresh() {
+  const trainingRoot = normalizeRoot($("training-root").value.trim() || DEFAULT_TRAINING_ROOT);
+  const matrixPath = $("matrix-path").value.trim();
+  const summaryPath = $("summary-path").value.trim();
+  const comparePath = $("compare-path").value.trim();
+  const [historyResult, logResult, matrixResult, summaryResult, compareResult] = await Promise.all([
+    safeLoad(fetchCsv(`${trainingRoot}/master_history.csv`), []),
+    safeLoad(fetchText(`${trainingRoot}/run_console.log`), ""),
+    safeLoad(matrixPath ? fetchMatrixCsv(matrixPath) : Promise.resolve([]), []),
+    safeLoad(summaryPath ? fetchJson(summaryPath) : Promise.resolve(null), null),
+    safeLoad(comparePath ? fetchMatrixCsv(comparePath) : Promise.resolve([]), []),
+  ]);
+  const historyRows = historyResult.value;
+  const logText = logResult.value;
+  const rows = matrixResult.value;
+  const summary = summaryResult.value;
+  const compareRows = compareResult.value;
+  state.lastRows = rows;
+  state.compareRows = compareRows;
+  renderTraining(historyRows.map(normalizeHistoryRow), logText);
+  render(rows, summary, compareRows);
+  const failures = [
+    historyResult.error ? "history" : "",
+    logResult.error ? "log" : "",
+    matrixResult.error ? "matrix" : "",
+    summaryResult.error ? "summary" : "",
+    compareResult.error ? "compare" : "",
+  ].filter(Boolean);
+  if (failures.length) {
+    setStatus("warn", `loaded partial: ${failures.join(", ")} unavailable`);
+  } else {
+    setStatus("ok", `training ${historyRows.length} rows, matrix ${rows.length} rows`);
+  }
+}
+
+async function safeLoad(promise, fallback) {
+  try {
+    return { value: await promise, error: null };
+  } catch (error) {
+    return { value: fallback, error };
+  }
+}
+
+function normalizeRoot(path) {
+  return path.replace(/\/+$/, "");
+}
+
+function derivePaths(root) {
+  const normalized = normalizeRoot(root);
+  return {
+    matrix: `${normalized}/strategy_matrix.csv`,
+    summary: `${normalized}/strategy_matrix_summary.json`,
+  };
+}
+
+function deriveMatrixRoot(root) {
+  if (root.includes("/strategy_matrix_")) return root;
+  const match = root.match(/iterative_balance_runs_(strategy_matrix_v\d+|strategy_diversity_v\d+)[^/]*/);
+  if (match) {
+    return `/raspberry_blue_sim/${match[1]}_from_strategy_matrix_balance`;
+  }
+  return `${root}/strategy_matrix`;
+}
+
+async function fetchText(path) {
+  const url = `${path}${path.includes("?") ? "&" : "?"}_=${Date.now()}`;
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`${response.status} ${path}`);
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  return decodeText(bytes);
+}
+
+function decodeText(bytes) {
+  if (bytes.length >= 2 && bytes[0] === 0xff && bytes[1] === 0xfe) {
+    return new TextDecoder("utf-16le").decode(bytes).replace(/^\uFEFF/, "");
+  }
+  const utf8 = new TextDecoder("utf-8").decode(bytes).replace(/^\uFEFF/, "");
+  const nullCount = [...utf8.slice(0, 4000)].filter((char) => char === "\u0000").length;
+  if (nullCount > 20) {
+    return new TextDecoder("utf-16le").decode(bytes).replace(/^\uFEFF/, "");
+  }
+  return utf8;
+}
+
+async function fetchCsv(path) {
+  const text = await fetchText(path);
+  return parseCsv(text);
+}
+
+async function fetchMatrixCsv(path) {
+  const text = await fetchText(path);
+  return parseCsv(text)
+    .filter((row) => row.raspberry_strategy && row.blueberry_strategy)
+    .map((row) => ({
+      ...row,
+      raspberry_win_rate: Number(row.raspberry_win_rate),
+      blueberry_win_rate: Number(row.blueberry_win_rate),
+      avg_final_control: Number(row.avg_final_control),
+      avg_round_duration: Number(row.avg_round_duration),
+      strategy_diversity_penalty: Number(row.strategy_diversity_penalty),
+    }));
+}
+
+async function fetchJson(path) {
+  return JSON.parse(await fetchText(path));
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let field = "";
+  let row = [];
+  let quoted = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+    const next = text[i + 1];
+    if (quoted) {
+      if (char === '"' && next === '"') {
+        field += '"';
+        i += 1;
+      } else if (char === '"') {
+        quoted = false;
+      } else {
+        field += char;
+      }
+      continue;
+    }
+    if (char === '"') {
+      quoted = true;
+    } else if (char === ",") {
+      row.push(field);
+      field = "";
+    } else if (char === "\n") {
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = "";
+    } else if (char !== "\r") {
+      field += char;
+    }
+  }
+  if (field || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+  const [header, ...body] = rows;
+  if (!header) return [];
+  return body
+    .filter((cells) => cells.length && cells.some(Boolean))
+    .map((cells) => Object.fromEntries(header.map((key, index) => [key, cells[index] ?? ""])));
+}
+
+function normalizeHistoryRow(row) {
+  return {
+    ...row,
+    iteration: Number(row.iteration),
+    raspberry_win_rate: Number(row.raspberry_win_rate),
+    blueberry_win_rate: Number(row.blueberry_win_rate),
+    avg_final_control: Number(row.avg_final_control),
+    balance_score: Number(row.balance_score),
+    strategy_diversity_penalty: Number(row.strategy_diversity_penalty),
+    effective_strategies: Number(row.effective_strategies),
+    dominant_strategy_share: Number(row.dominant_strategy_share),
+    confirmation_raspberry_win_rate: Number(row.confirmation_raspberry_win_rate),
+    confirmation_balance_score: Number(row.confirmation_balance_score),
+    confirmation_strategy_diversity_penalty: Number(row.confirmation_strategy_diversity_penalty),
+    stopped: String(row.stopped || "").toLowerCase() === "true",
+    confirmation_passed: String(row.confirmation_passed || "").toLowerCase() === "true",
+  };
+}
+
+function renderTraining(historyRows, logText) {
+  const latest = historyRows.at(-1);
+  const logState = parseLogState(logText);
+  $("train-stage").textContent = logState.stage;
+  $("train-iteration").textContent = logState.iteration || (latest ? `${latest.iteration}` : "-");
+  $("train-raspberry").textContent = latest ? pct(latest.raspberry_win_rate) : logState.progress || "-";
+  $("train-score").textContent = latest && Number.isFinite(latest.balance_score) ? latest.balance_score.toFixed(3) : "-";
+  $("train-diversity").textContent = latest && Number.isFinite(latest.strategy_diversity_penalty)
+    ? latest.strategy_diversity_penalty.toFixed(3)
+    : "-";
+  $("train-confirmed").textContent = latest?.stopped ? "yes" : latest?.confirmation_passed ? "pass" : "no";
+  $("history-count").textContent = `${historyRows.length} iterations`;
+  $("log-status").textContent = logState.progress || `${logText.length} chars`;
+  renderLiveProgress(logState);
+  renderCandidateStrip(logState);
+  renderTrainingHeatmap(historyRows);
+  renderLog(logText);
+}
+
+function parseLogState(logText) {
+  if (!logText) {
+    return {
+      stage: "waiting",
+      iteration: "-",
+      progress: "-",
+      progressPct: 0,
+      candidates: [],
+      candidateTotal: 0,
+    };
+  }
+  const lines = logText.trim().split(/\r?\n/).filter(Boolean);
+  const tail = lines.slice(-120);
+  const joined = tail.join("\n");
+  const iterationMatches = [...joined.matchAll(/\[iteration (\d+)\/(\d+)\]/g)];
+  const lastIteration = iterationMatches.at(-1);
+  const trainMatches = [...joined.matchAll(/\[initial train\]\s+(\d+)\/(\d+) matches/g)];
+  const lastTrain = trainMatches.at(-1);
+  const candidateMatches = [...joined.matchAll(/\[iteration (\d+)\/(\d+) candidate (\d+)\/(\d+)\]/g)];
+  const lastCandidate = candidateMatches.at(-1);
+  const latestProgress = parseLatestProgress(lines);
+  const candidates = parseCandidateResults(lines);
+  const candidateTotal = parseCandidateTotal(lines, lastCandidate, candidates);
+  const base = {
+    stage: "running",
+    iteration: latestProgress?.iteration
+      ? `${latestProgress.iteration}/${latestProgress.iterationTotal}`
+      : lastIteration ? `${lastIteration[1]}/${lastIteration[2]}` : "-",
+    progress: "active",
+    progressPct: latestProgress?.progressPct ?? 0,
+    current: latestProgress,
+    candidates,
+    candidateTotal,
+    currentCandidate: latestProgress?.candidateIndex ?? (lastCandidate ? Number(lastCandidate[3]) : null),
+  };
+  if (/target confirmed|wrote:/.test(joined)) {
+    return { ...base, stage: "finished", progress: "done", progressPct: 100 };
+  }
+  if (lastCandidate) {
+    return {
+      ...base,
+      stage: "candidate",
+      iteration: `${lastCandidate[1]}/${lastCandidate[2]}`,
+      progress: latestProgress?.candidateSeed
+        ? `candidate ${lastCandidate[3]}/${lastCandidate[4]}, seed ${latestProgress.candidateSeed}/${latestProgress.candidateSeedTotal}`
+        : `${lastCandidate[3]}/${lastCandidate[4]} candidates`,
+    };
+  }
+  if (latestProgress?.phase === "confirmation") {
+    return {
+      ...base,
+      stage: "confirmation",
+      iteration: latestProgress.iteration ? `${latestProgress.iteration}/${latestProgress.iterationTotal}` : base.iteration,
+      progress: `seed ${latestProgress.seedIndex}/${latestProgress.seedTotal}`,
+    };
+  }
+  if (latestProgress?.phase === "validation" || (/validation/.test(joined) && lastIteration)) {
+    return {
+      ...base,
+      stage: "validation",
+      iteration: latestProgress?.iteration ? `${latestProgress.iteration}/${latestProgress.iterationTotal}` : `${lastIteration[1]}/${lastIteration[2]}`,
+      progress: latestProgress ? `seed ${latestProgress.seedIndex}/${latestProgress.seedTotal}` : "validating",
+    };
+  }
+  if (lastTrain) {
+    return {
+      ...base,
+      stage: "initial train",
+      iteration: "-",
+      progress: latestProgress ? `${latestProgress.done}/${latestProgress.total}` : `${lastTrain[1]}/${lastTrain[2]}`,
+    };
+  }
+  return base;
+}
+
+function parseLatestProgress(lines) {
+  const progressPattern = /^\[(.+?)\]\s+(\d+)\/(\d+) matches \(([0-9.]+)%\) wins=\{'raspberry':\s*(\d+),\s*'blueberry':\s*(\d+)\}/;
+  for (let index = lines.length - 1; index >= 0; index -= 1) {
+    const match = lines[index].match(progressPattern);
+    if (!match) continue;
+    const labelText = match[1];
+    const done = Number(match[2]);
+    const total = Number(match[3]);
+    const raspberryWins = Number(match[5]);
+    const blueberryWins = Number(match[6]);
+    const labelData = parseProgressLabel(labelText);
+    return {
+      ...labelData,
+      labelText,
+      done,
+      total,
+      progressPct: Number(match[4]),
+      raspberryWins,
+      blueberryWins,
+      raspberryWinRate: (raspberryWins + blueberryWins) > 0 ? raspberryWins / (raspberryWins + blueberryWins) : NaN,
+    };
+  }
+  return null;
+}
+
+function parseProgressLabel(labelText) {
+  if (labelText === "initial train") {
+    return { phase: "initial train" };
+  }
+  const base = labelText.match(/^iteration (\d+)\/(\d+)/);
+  const data = base ? {
+    iteration: Number(base[1]),
+    iterationTotal: Number(base[2]),
+    phase: "iteration",
+  } : { phase: "running" };
+  const confirmation = labelText.match(/target confirmation (\d+)\/(\d+)/);
+  if (confirmation) {
+    data.phase = "confirmation";
+    data.confirmationIndex = Number(confirmation[1]);
+    data.confirmationTotal = Number(confirmation[2]);
+  }
+  const candidate = labelText.match(/candidate (\d+)\/(\d+)/);
+  if (candidate) {
+    data.phase = "candidate";
+    data.candidateIndex = Number(candidate[1]);
+    data.candidateTotal = Number(candidate[2]);
+  }
+  const seed = labelText.match(/validation seed (\d+)\/(\d+)/);
+  if (seed) {
+    data.seedIndex = Number(seed[1]);
+    data.seedTotal = Number(seed[2]);
+  }
+  const candidateSeed = labelText.match(/candidate \d+\/\d+ seed (\d+)\/(\d+)/);
+  if (candidateSeed) {
+    data.candidateSeed = Number(candidateSeed[1]);
+    data.candidateSeedTotal = Number(candidateSeed[2]);
+  }
+  return data;
+}
+
+function parseCandidateResults(lines) {
+  const resultPattern = /^\[iteration (\d+)\/(\d+) candidate (\d+)\/(\d+)\] candidate done: score=([0-9.]+), win_rate=\{'raspberry':\s*([0-9.]+),\s*'blueberry':\s*([0-9.]+)\}, avg_control=([-0-9.]+)/;
+  const startPattern = /^\[iteration (\d+)\/(\d+) candidate (\d+)\/(\d+)\] candidate start: (.+)$/;
+  const descriptions = new Map();
+  const results = [];
+  for (const line of lines) {
+    const start = line.match(startPattern);
+    if (start) {
+      descriptions.set(`${start[1]}|${start[3]}`, start[5]);
+      continue;
+    }
+    const done = line.match(resultPattern);
+    if (!done) continue;
+    const key = `${done[1]}|${done[3]}`;
+    results.push({
+      iteration: Number(done[1]),
+      iterationTotal: Number(done[2]),
+      index: Number(done[3]),
+      total: Number(done[4]),
+      score: Number(done[5]),
+      raspberryWinRate: Number(done[6]),
+      blueberryWinRate: Number(done[7]),
+      avgControl: Number(done[8]),
+      description: descriptions.get(key) || "",
+    });
+  }
+  return results;
+}
+
+function parseCandidateTotal(lines, lastCandidate, candidates) {
+  if (lastCandidate) return Number(lastCandidate[4]);
+  const countLine = [...lines.join("\n").matchAll(/\[iteration \d+\/\d+\] candidates=(\d+)/g)].at(-1);
+  if (countLine) return Number(countLine[1]);
+  return candidates.length ? Math.max(...candidates.map((candidate) => candidate.total || candidate.index)) : 0;
+}
+
+function renderLiveProgress(logState) {
+  const current = logState.current;
+  const liveWinRate = current && Number.isFinite(current.raspberryWinRate) ? current.raspberryWinRate : null;
+  $("live-phase").textContent = `${logState.stage} ${logState.iteration && logState.iteration !== "-" ? logState.iteration : ""}`.trim();
+  $("live-progress-label").textContent = liveWinRate === null
+    ? logState.progress || "-"
+    : `R ${pct(liveWinRate)} | B ${pct(1 - liveWinRate)} | ${logState.progress || "-"}`;
+  $("live-progress-fill").style.width = `${liveWinRate === null ? 0 : Math.max(0, Math.min(100, liveWinRate * 100))}%`;
+  $("live-progress-fill").style.background = liveWinRate === null ? "#94a3b8" : heatColor(liveWinRate);
+  $("live-r-win").textContent = liveWinRate === null ? "-" : pct(liveWinRate);
+  $("live-matches").textContent = current ? `${current.done}/${current.total}` : "-";
+  $("live-seed").textContent = current?.seedIndex ? `${current.seedIndex}/${current.seedTotal}` : current?.candidateSeed ? `${current.candidateSeed}/${current.candidateSeedTotal}` : "-";
+  $("live-candidate").textContent = current?.candidateIndex ? `${current.candidateIndex}/${current.candidateTotal}` : "-";
+}
+
+function renderCandidateStrip(logState) {
+  const total = logState.candidateTotal || 0;
+  const results = new Map(logState.candidates.map((candidate) => [candidate.index, candidate]));
+  if (!total) {
+    $("candidate-status").textContent = "waiting";
+    $("candidate-strip").innerHTML = `<div class="candidate-cell pending">no candidates yet</div>`;
+    return;
+  }
+  $("candidate-status").textContent = `${results.size} / ${total} evaluated`;
+  const fragments = [];
+  for (let index = 1; index <= total; index += 1) {
+    const candidate = results.get(index);
+    const current = index === logState.currentCandidate && logState.stage === "candidate";
+    if (!candidate) {
+      fragments.push(`<div class="candidate-cell pending ${current ? "current" : ""}">#${index}<br>pending</div>`);
+      continue;
+    }
+    const bg = trainingColor(candidate.score, "lowGood");
+    const text = textColorForBg(bg);
+    fragments.push(`
+      <div class="candidate-cell ${current ? "current" : ""}" style="background:${bg};color:${text}" title="${escapeHtml(candidate.description)}">
+        <div>#${index}</div>
+        <div>score ${candidate.score.toFixed(3)}</div>
+        <div>R ${pct(candidate.raspberryWinRate)}</div>
+      </div>
+    `);
+  }
+  $("candidate-strip").innerHTML = fragments.join("");
+}
+
+function renderTrainingHeatmap(rows) {
+  const panel = $("training-heatmap");
+  if (!rows.length) {
+    panel.innerHTML = `<div class="empty-history">waiting for master_history.csv</div>`;
+    return;
+  }
+  const metrics = [
+    { key: "raspberry_win_rate", label: "R win", type: "centeredPct" },
+    { key: "avg_final_control", label: "control", type: "control" },
+    { key: "balance_score", label: "score", type: "lowGood" },
+    { key: "strategy_diversity_penalty", label: "diversity", type: "lowGood" },
+    { key: "effective_strategies", label: "effective", type: "highGood" },
+    { key: "dominant_strategy_share", label: "dominant", type: "lowGood" },
+    { key: "confirmation_raspberry_win_rate", label: "confirm R", type: "centeredPct" },
+  ];
+  const fragments = [`<div class="train-head">iter</div>`];
+  for (const metric of metrics) fragments.push(`<div class="train-head">${metric.label}</div>`);
+  for (const row of rows) {
+    fragments.push(`<div class="train-axis">${row.iteration}</div>`);
+    for (const metric of metrics) {
+      const value = row[metric.key];
+      const bg = trainingColor(value, metric.type);
+      const text = textColorForBg(bg);
+      fragments.push(`
+        <div class="train-cell" style="background:${bg};color:${text}">
+          ${formatTrainingValue(value, metric.type)}
+        </div>
+      `);
+    }
+  }
+  panel.style.setProperty("--train-cols", metrics.length + 1);
+  panel.innerHTML = fragments.join("");
+}
+
+function renderLog(logText) {
+  const lines = (logText || "").trim().split(/\r?\n/).filter(Boolean);
+  $("live-log").textContent = lines.slice(-36).join("\n") || "waiting for run_console.log";
+}
+
+function trainingColor(value, type) {
+  if (!Number.isFinite(value)) return "#e5e7eb";
+  if (type === "centeredPct") {
+    return heatColor(value);
+  }
+  if (type === "control") {
+    return heatColor(Math.max(0, Math.min(1, (value + 3) / 6)));
+  }
+  if (type === "highGood") {
+    return mix([248, 250, 252], [21, 128, 61], Math.max(0, Math.min(1, value / 6)));
+  }
+  return mix([21, 128, 61], [185, 28, 28], Math.max(0, Math.min(1, value)));
+}
+
+function textColorForBg(color) {
+  const match = color.match(/\d+/g);
+  if (!match) return "#111827";
+  const [r, g, b] = match.map(Number);
+  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  return luminance < 0.48 ? "#ffffff" : "#111827";
+}
+
+function formatTrainingValue(value, type) {
+  if (!Number.isFinite(value)) return "-";
+  if (type === "centeredPct") return pct(value);
+  if (type === "control") return signed(value, 2);
+  if (type === "highGood") return value.toFixed(2);
+  return value.toFixed(3);
+}
+
+function render(rows, summary, compareRows) {
+  const strategies = getStrategies(rows);
+  const compareMap = rowMap(compareRows);
+  $("subtitle").textContent = `Training: ${$("training-root").value.trim()} | Matrix: ${$("matrix-root").value.trim()}`;
+  renderMetrics(rows, summary);
+  renderHeatmap(rows, strategies, compareMap);
+  renderAverages(rows, strategies);
+  renderProblems(rows);
+}
+
+function getStrategies(rows) {
+  const preferred = ["tank_focus", "ranged_focus", "swarm_focus", "special_focus", "upgrade_focus", "mixed"];
+  const seen = new Set(rows.flatMap((row) => [row.raspberry_strategy, row.blueberry_strategy]).filter(Boolean));
+  const ordered = preferred.filter((item) => seen.has(item));
+  for (const item of seen) {
+    if (!ordered.includes(item)) ordered.push(item);
+  }
+  return ordered;
+}
+
+function rowMap(rows) {
+  const map = new Map();
+  for (const row of rows) {
+    map.set(`${row.raspberry_strategy}|${row.blueberry_strategy}`, row);
+  }
+  return map;
+}
+
+function renderMetrics(rows, summary) {
+  const score = summary?.score || computeScore(rows);
+  $("metric-avg-raspberry").textContent = pct(score.avg_raspberry_win_rate);
+  $("metric-weakest").textContent = pct(score.weakest_strategy_avg_win_rate);
+  $("metric-strongest").textContent = pct(score.strongest_strategy_avg_win_rate);
+  $("metric-spread").textContent = pp(score.strategy_win_rate_spread);
+  $("metric-mirror").textContent = pp(score.avg_mirror_gap);
+  $("metric-penalty").textContent = Number(score.matrix_balance_penalty ?? 0).toFixed(3);
+  $("completion").textContent = `${rows.length} / 36 matchups`;
+}
+
+function computeScore(rows) {
+  if (!rows.length) {
+    return {
+      avg_raspberry_win_rate: 0,
+      weakest_strategy_avg_win_rate: 0,
+      strongest_strategy_avg_win_rate: 0,
+      strategy_win_rate_spread: 0,
+      avg_mirror_gap: 0,
+      matrix_balance_penalty: 0,
+    };
+  }
+  const strategies = getStrategies(rows);
+  const avgR = avg(rows.map((row) => row.raspberry_win_rate));
+  const strategyRates = strategies.flatMap((strategy) => [
+    avg(rows.filter((row) => row.raspberry_strategy === strategy).map((row) => row.raspberry_win_rate)),
+    avg(rows.filter((row) => row.blueberry_strategy === strategy).map((row) => row.blueberry_win_rate)),
+  ]).filter(Number.isFinite);
+  const weakest = Math.min(...strategyRates);
+  const strongest = Math.max(...strategyRates);
+  const mirrors = rows
+    .filter((row) => row.raspberry_strategy === row.blueberry_strategy)
+    .map((row) => Math.abs(row.raspberry_win_rate - 0.5));
+  const mirrorGap = avg(mirrors);
+  return {
+    avg_raspberry_win_rate: avgR,
+    weakest_strategy_avg_win_rate: weakest,
+    strongest_strategy_avg_win_rate: strongest,
+    strategy_win_rate_spread: strongest - weakest,
+    avg_mirror_gap: mirrorGap,
+    matrix_balance_penalty: Math.abs(avgR - 0.5) + (strongest - weakest) + mirrorGap,
+  };
+}
+
+function renderHeatmap(rows, strategies, compareMap) {
+  const heatmap = $("heatmap");
+  heatmap.style.setProperty("--cols", strategies.length);
+  const map = rowMap(rows);
+  const fragments = [];
+  fragments.push(`<div class="corner">R \\ B</div>`);
+  for (const strategy of strategies) {
+    fragments.push(`<div class="axis x">${label(strategy)}</div>`);
+  }
+  for (const rStrategy of strategies) {
+    fragments.push(`<div class="axis y">${label(rStrategy)}</div>`);
+    for (const bStrategy of strategies) {
+      const key = `${rStrategy}|${bStrategy}`;
+      const row = map.get(key);
+      if (!row) {
+        fragments.push(`<div class="cell empty">pending</div>`);
+        continue;
+      }
+      const value = row.raspberry_win_rate;
+      const compare = compareMap.get(key);
+      const delta = compare ? value - compare.raspberry_win_rate : null;
+      const bg = heatColor(value);
+      const text = textColor(value);
+      fragments.push(`
+        <div class="cell" style="background:${bg};color:${text}" title="${rStrategy} vs ${bStrategy}">
+          <div class="rate">${pct(value)}</div>
+          <div class="control">control ${signed(row.avg_final_control, 2)}</div>
+          <div class="delta">${delta === null ? "" : `vs prev ${signedPct(delta)}`}</div>
+        </div>
+      `);
+    }
+  }
+  heatmap.innerHTML = fragments.join("");
+}
+
+function renderAverages(rows, strategies) {
+  const raspberry = strategies.map((strategy) => ({
+    strategy,
+    rate: avg(rows.filter((row) => row.raspberry_strategy === strategy).map((row) => row.raspberry_win_rate)),
+  }));
+  const blueberry = strategies.map((strategy) => ({
+    strategy,
+    rate: avg(rows.filter((row) => row.blueberry_strategy === strategy).map((row) => row.blueberry_win_rate)),
+  }));
+  $("averages").innerHTML = strategies.map((strategy, index) => `
+    <div class="avg-row">
+      <div class="avg-label">${label(strategy)}</div>
+      <div class="avg-bars">
+        <div class="avg-track"><div class="avg-fill" style="width:${raspberry[index].rate * 100}%"></div></div>
+        <div class="avg-track"><div class="avg-fill blue" style="width:${blueberry[index].rate * 100}%"></div></div>
+      </div>
+      <div class="avg-value">${pct(raspberry[index].rate)}<br>${pct(blueberry[index].rate)}</div>
+    </div>
+  `).join("");
+}
+
+function renderProblems(rows) {
+  const problems = rows
+    .map((row) => ({ ...row, gap: Math.abs(row.raspberry_win_rate - 0.5) }))
+    .filter((row) => row.gap >= 0.30)
+    .sort((a, b) => b.gap - a.gap);
+  $("problem-count").textContent = String(problems.length);
+  $("problems").innerHTML = problems.slice(0, 12).map((row) => {
+    const side = row.raspberry_win_rate > 0.5 ? "Raspberry" : "Blueberry";
+    return `
+      <div class="problem">
+        <strong>${label(row.raspberry_strategy)} vs ${label(row.blueberry_strategy)}</strong>
+        <span>${side} favored | R ${pct(row.raspberry_win_rate)} | gap ${pp(row.gap)}</span>
+      </div>
+    `;
+  }).join("");
+}
+
+function setStatus(kind, text) {
+  const dot = $("status-dot");
+  dot.className = `dot ${kind === "ok" ? "ok" : kind === "bad" ? "bad" : ""}`;
+  $("status-text").textContent = text;
+  $("last-updated").textContent = new Date().toLocaleTimeString();
+}
+
+function heatColor(value) {
+  const clamped = Math.max(0, Math.min(1, value));
+  if (clamped < 0.5) {
+    return mix([29, 78, 216], [248, 250, 252], clamped / 0.5);
+  }
+  return mix([248, 250, 252], [190, 18, 60], (clamped - 0.5) / 0.5);
+}
+
+function textColor(value) {
+  return value <= 0.22 || value >= 0.78 ? "#ffffff" : "#111827";
+}
+
+function mix(a, b, t) {
+  const rgb = a.map((channel, index) => Math.round(channel + (b[index] - channel) * t));
+  return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+}
+
+function avg(values) {
+  const clean = values.filter(Number.isFinite);
+  return clean.length ? clean.reduce((sum, value) => sum + value, 0) / clean.length : 0;
+}
+
+function pct(value) {
+  return `${(Number(value || 0) * 100).toFixed(1)}%`;
+}
+
+function pp(value) {
+  return `${(Number(value || 0) * 100).toFixed(1)}%p`;
+}
+
+function signed(value, digits) {
+  const number = Number(value || 0);
+  return `${number >= 0 ? "+" : ""}${number.toFixed(digits)}`;
+}
+
+function signedPct(value) {
+  const number = Number(value || 0) * 100;
+  return `${number >= 0 ? "+" : ""}${number.toFixed(1)}%p`;
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function label(strategy) {
+  return String(strategy || "").replace(/_/g, " ");
+}
+
+init();
+
+</script>
+</body>
+</html>
+

@@ -29,6 +29,7 @@ from config import (
     sector_center,
     sector_from_position,
 )
+from strategy_diversity import classify_strategy
 
 POLICY_BACKPROP_DISCOUNT = 0.995
 MATCH_WIN_REWARD_WEIGHT = 0.60
@@ -91,6 +92,7 @@ class MatchResult:
     rounds_played: int
     raspberry_final_upgrades: int
     blueberry_final_upgrades: int
+    strategy_by_team: Dict[str, dict] = field(default_factory=dict)
 
 
 class HeuristicAgent:
@@ -166,6 +168,126 @@ class HeuristicAgent:
                 weight += 1.1
             weights.append(weight)
         return self.rng.choices(affordable, weights=weights, k=1)[0]
+
+
+class StrategyBiasedAgent:
+    def __init__(self, team: str, rng: random.Random, strategy: str):
+        self.team = team
+        self.rng = rng
+        self.strategy = strategy
+        self.next_decision_at = 0.0
+
+    def maybe_act(self, sim: "RoundSim", now: float) -> None:
+        if now + 1e-9 < self.next_decision_at:
+            return
+        self.next_decision_at = now + self.rng.uniform(0.8, 1.4)
+        actions = sim.available_actions(self.team)
+        if not actions:
+            return
+        sim.apply_action(self.team, self.choose_action(sim, now, actions))
+
+    def choose_action(
+        self,
+        sim: "RoundSim",
+        now: float,
+        actions: List[tuple[str, Optional[str]]],
+    ) -> tuple[str, Optional[str]]:
+        forced = self.forced_upgrade_focus_action(sim, actions)
+        if forced:
+            return forced
+        weighted = [(action, self.action_weight(sim, now, action)) for action in actions]
+        weights = [max(0.01, weight) for _, weight in weighted]
+        return self.rng.choices([action for action, _ in weighted], weights=weights, k=1)[0]
+
+    def forced_upgrade_focus_action(
+        self,
+        sim: "RoundSim",
+        actions: List[tuple[str, Optional[str]]],
+    ) -> Optional[tuple[str, Optional[str]]]:
+        if self.strategy != "upgrade_focus":
+            return None
+        state = sim.states[self.team]
+        control = sim.control if self.team == "raspberry" else -sim.control
+        legal = set(actions)
+        if ("upgrade", "attack") in legal or ("upgrade", "hp") in legal:
+            if state.attack_upgrade_level <= state.hp_upgrade_level and ("upgrade", "attack") in legal:
+                return ("upgrade", "attack")
+            if ("upgrade", "hp") in legal:
+                return ("upgrade", "hp")
+            return ("upgrade", "attack")
+        should_save = state.upgrade_level < 2 or (state.upgrade_level < 3 and control >= -1)
+        if should_save and state.credits >= BASE_CREDITS and ("wait", None) in legal:
+            return ("wait", None)
+        return None
+
+    def action_weight(self, sim: "RoundSim", now: float, action: tuple[str, Optional[str]]) -> float:
+        kind, key = action
+        state = sim.states[self.team]
+        control = sim.control if self.team == "raspberry" else -sim.control
+        pressure = sim.front_pressure(self.team)
+        weight = 1.0
+
+        if kind == "wait":
+            return 0.35 if state.credits < UPGRADE_COST else 0.08
+        if kind == "upgrade":
+            return self.upgrade_weight(state, key or "attack", now, control)
+        if kind != "spawn" or not key:
+            return weight
+
+        spec = next(spec for spec in TEAMS[self.team]["units"] if spec.key == key)
+        role = spec.role
+        if self.strategy == "tank_focus":
+            weight *= 8.0 if role == "tank" else 0.45
+            if control < 0 and role == "tank":
+                weight *= 1.35
+        elif self.strategy == "ranged_focus":
+            weight *= 7.0 if role in {"aoe_ranged", "single_ranged"} else 0.5
+            if pressure > 0 and role == "aoe_ranged":
+                weight *= 1.45
+        elif self.strategy == "swarm_focus":
+            weight *= 8.0 if role == "attacker" else 0.4
+            if spec.cost <= 120:
+                weight *= 1.4
+        elif self.strategy == "special_focus":
+            weight *= 8.0 if role == "special" else 0.45
+            if now < 20 and role == "special":
+                weight *= 0.45
+        elif self.strategy == "upgrade_focus":
+            weight *= 0.45 if state.upgrade_level < 2 else 0.7
+            if state.upgrade_level >= 2:
+                weight *= 1.45
+        elif self.strategy == "mixed":
+            if role == "attacker":
+                weight *= 1.8
+            elif role == "tank":
+                weight *= 1.4 + max(0, -control) * 0.4
+            elif role == "aoe_ranged":
+                weight *= 1.5 + min(1.5, pressure * 0.4)
+            elif role == "single_ranged":
+                weight *= 1.2 + (0.4 if now > 45 else 0.0)
+            elif role == "special":
+                weight *= 1.1 + (0.5 if now > 40 else 0.0)
+        return weight
+
+    def upgrade_weight(self, state: TeamState, upgrade_stat: str, now: float, control: int) -> float:
+        if self.strategy == "upgrade_focus":
+            if state.upgrade_level < 3:
+                base = 7.5
+            else:
+                base = 2.0
+        elif self.strategy in {"tank_focus", "swarm_focus"}:
+            base = 0.7 if state.upgrade_level == 0 and now < 35 else 1.2
+        elif self.strategy == "ranged_focus":
+            base = 1.6 if upgrade_stat == "attack" else 0.9
+        elif self.strategy == "special_focus":
+            base = 1.5 if now > 35 else 0.7
+        else:
+            base = 1.4 + 0.2 * max(0, control)
+        if upgrade_stat == "attack" and state.attack_upgrade_level <= state.hp_upgrade_level:
+            base *= 1.15
+        if upgrade_stat == "hp" and state.hp_upgrade_level <= state.attack_upgrade_level:
+            base *= 1.15
+        return base
 
 
 class MCTSAgent:
@@ -316,7 +438,7 @@ class RoundSim:
         match_id: int,
         round_no: int,
         states: Dict[str, TeamState],
-        agent_type: str,
+        agent_type,
         policy: Optional[dict] = None,
     ):
         self.rng = rng
@@ -335,14 +457,21 @@ class RoundSim:
         self.agents = self.create_agents(agent_type)
         self.final_scores: Dict[str, float] = {team: 0.5 for team in TEAMS}
 
-    def create_agents(self, agent_type: str):
+    def create_agents(self, agent_type):
+        if isinstance(agent_type, dict):
+            return {team: self.create_agent(team, agent_type.get(team, "heuristic")) for team in TEAMS}
+        return {team: self.create_agent(team, agent_type) for team in TEAMS}
+
+    def create_agent(self, team: str, agent_type: str):
+        if agent_type.startswith("strategy:"):
+            return StrategyBiasedAgent(team, self.rng, agent_type.split(":", 1)[1])
         if agent_type == "mcts":
-            return {team: MCTSAgent(team, self.rng) for team in TEAMS}
+            return MCTSAgent(team, self.rng)
         if agent_type == "policy_train":
-            return {team: PolicyMCTSAgent(team, self.rng, self.policy, training=True) for team in TEAMS}
+            return PolicyMCTSAgent(team, self.rng, self.policy, training=True)
         if agent_type == "trained_mcts":
-            return {team: PolicyMCTSAgent(team, self.rng, self.policy, training=False) for team in TEAMS}
-        return {team: HeuristicAgent(team, self.rng) for team in TEAMS}
+            return PolicyMCTSAgent(team, self.rng, self.policy, training=False)
+        return HeuristicAgent(team, self.rng)
 
     def run(self) -> RoundResult:
         self.now = 0.0
@@ -498,7 +627,7 @@ class RoundSim:
             unit.cooldown_left = max(0.0, unit.cooldown_left - dt)
             if unit.spec.behavior == "heal":
                 self.act_healer(unit)
-                self.move(unit, dt, allow_blocking=False)
+                self.move(unit, dt, allow_blocking=True)
                 continue
             target = self.find_target(unit)
             if target and abs(target.x - unit.x) <= unit.spec.range * SECTOR_WIDTH / 10:
@@ -667,7 +796,7 @@ class RoundSim:
 
 
 class MatchSim:
-    def __init__(self, rng: random.Random, match_id: int, agent_type: str, policy: Optional[dict] = None):
+    def __init__(self, rng: random.Random, match_id: int, agent_type, policy: Optional[dict] = None):
         self.rng = rng
         self.match_id = match_id
         self.agent_type = agent_type
@@ -693,6 +822,15 @@ class MatchSim:
             round_no += 1
         winner = "raspberry" if wins["raspberry"] > wins["blueberry"] else "blueberry"
         self.backpropagate_policy(winner, wins)
+        strategy_by_team = {
+            team: classify_strategy(
+                team,
+                self.states[team].produced,
+                self.states[team].attack_upgrade_level,
+                self.states[team].hp_upgrade_level,
+            )
+            for team in TEAMS
+        }
         return MatchResult(
             self.match_id,
             winner,
@@ -701,6 +839,7 @@ class MatchSim:
             len(self.round_results),
             self.states["raspberry"].upgrade_level,
             self.states["blueberry"].upgrade_level,
+            strategy_by_team,
         )
 
     def backpropagate_policy(self, winner: str, wins: Dict[str, int]) -> None:
@@ -745,7 +884,7 @@ def save_policy(path: str, policy: dict) -> None:
 def run_matches(
     matches: int,
     seed: int,
-    agent_type: str = "heuristic",
+    agent_type="heuristic",
     policy: Optional[dict] = None,
     progress_label: str = "",
     progress_updates: int = 5,

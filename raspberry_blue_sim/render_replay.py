@@ -58,7 +58,7 @@ def snapshot(round_sim: RoundSim, now: float) -> dict:
     }
 
 
-def run_one_round(policy: dict, agent_type: str, seed: int, sample_interval: float) -> dict:
+def run_one_round(policy: dict, agent_type, seed: int, sample_interval: float) -> dict:
     rng = random.Random(seed)
     states = {team: TeamState(team) for team in TEAMS}
     round_sim = RoundSim(rng, 1, 1, states, agent_type, policy)
@@ -214,9 +214,11 @@ def render_gif(replay: dict, out_path: str, fps: int) -> None:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--policy", required=True)
+    parser.add_argument("--policy", default="")
     parser.add_argument("--balance-result", required=True)
-    parser.add_argument("--agent", default="policy_train", choices=["policy_train", "trained_mcts", "mcts", "heuristic"])
+    parser.add_argument("--agent", default="policy_train")
+    parser.add_argument("--raspberry-agent", default="")
+    parser.add_argument("--blueberry-agent", default="")
     parser.add_argument("--seed", type=int, default=91042)
     parser.add_argument("--sample-interval", type=float, default=1.0)
     parser.add_argument("--replay-out", default="raspberry_blue_sim/replays/best_mcts_round.json")
@@ -225,8 +227,14 @@ def main():
     args = parser.parse_args()
 
     apply_balance_result(args.balance_result)
-    policy = load_policy(args.policy)
-    replay = run_one_round(policy, args.agent, args.seed, args.sample_interval)
+    policy = load_policy(args.policy) if args.policy else {}
+    agent_type = args.agent
+    if args.raspberry_agent or args.blueberry_agent:
+        agent_type = {
+            "raspberry": args.raspberry_agent or args.agent,
+            "blueberry": args.blueberry_agent or args.agent,
+        }
+    replay = run_one_round(policy, agent_type, args.seed, args.sample_interval)
     write_replay(args.replay_out, replay)
     render_gif(replay, args.gif_out, args.fps)
     print(json.dumps({k: replay[k] for k in ("winner", "reason", "duration", "final_control")}, indent=2))

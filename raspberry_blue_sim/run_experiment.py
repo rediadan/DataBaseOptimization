@@ -6,6 +6,7 @@ from pathlib import Path
 from balance import apply_adjustments, reset_balance
 from config import TEAMS
 from simulator import load_policy, run_matches
+from strategy_diversity import summarize_strategy_diversity
 
 
 def write_matches(path: Path, rows):
@@ -20,9 +21,13 @@ def write_matches(path: Path, rows):
                 "rounds_played",
                 "raspberry_final_upgrades",
                 "blueberry_final_upgrades",
+                "raspberry_strategy",
+                "blueberry_strategy",
             ]
         )
         for row in rows:
+            raspberry_profile = getattr(row, "strategy_by_team", {}).get("raspberry", {})
+            blueberry_profile = getattr(row, "strategy_by_team", {}).get("blueberry", {})
             writer.writerow(
                 [
                     row.match_id,
@@ -32,6 +37,8 @@ def write_matches(path: Path, rows):
                     row.rounds_played,
                     row.raspberry_final_upgrades,
                     row.blueberry_final_upgrades,
+                    raspberry_profile.get("strategy", ""),
+                    blueberry_profile.get("strategy", ""),
                 ]
             )
 
@@ -162,6 +169,7 @@ def build_summary(match_rows, round_rows, aggregate, matches: int, agent_type: s
         "avg_final_hp_upgrades_per_match": {
             team: round(aggregate[team].hp_upgrade_level / matches, 4) for team in TEAMS
         },
+        "strategy_diversity": summarize_strategy_diversity(match_rows),
     }
 
 
