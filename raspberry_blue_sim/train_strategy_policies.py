@@ -11,11 +11,10 @@ from train_mcts import policy_summary
 
 
 STRATEGIES = [
-    "tank_focus",
     "tank_aoe_focus",
     "ranged_focus",
     "swarm_focus",
-    "special_focus",
+    "suicide_aoe_focus",
     "upgrade_focus",
     "mixed",
 ]
@@ -40,6 +39,8 @@ def dominant_detected_strategy(summary: dict, team: str) -> str:
 
 def strategy_count(summary: dict, team: str, strategy: str) -> int:
     key = "mixed_composition" if strategy == "mixed" else strategy
+    if strategy in {"healer_support", "suicide_aoe_focus"}:
+        key = "special_focus"
     counts = summary.get("strategy_diversity", {}).get("by_team", {}).get(team, {}).get("strategy_counts", {})
     return int(counts.get(key, 0))
 

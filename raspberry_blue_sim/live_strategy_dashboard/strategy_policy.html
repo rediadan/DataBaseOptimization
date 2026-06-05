@@ -522,7 +522,14 @@ th {
   </main>
 
 <script>
-const STRATEGIES = ["tank_focus", "tank_aoe_focus", "ranged_focus", "swarm_focus", "special_focus", "upgrade_focus", "mixed"];
+const DEFAULT_STRATEGIES = [
+  "tank_aoe_focus",
+  "ranged_focus",
+  "swarm_focus",
+  "suicide_aoe_focus",
+  "upgrade_focus",
+  "mixed",
+];
 const $ = (id) => document.getElementById(id);
 const state = { timer: null };
 
@@ -654,9 +661,11 @@ function splitCsvLine(line) {
 }
 
 function render(root, summary, rows, log, status) {
-  const total = Number(summary?.total_strategies || STRATEGIES.length);
+  const strategyList = strategyListFrom(summary, rows, log);
+  const total = Number(summary?.total_strategies || strategyList.length);
   const completed = Number(summary?.completed_strategies || rows.length || 0);
-  const live = summary?.live === true || (completed > 0 && completed < total);
+  const hasRunLog = /\[[a-z_]+\] strategy policy training start/.test(log || "");
+  const live = summary?.live === true || (completed < total && hasRunLog);
   const rowMap = new Map(rows.map((row) => [row.strategy, row]));
   const progress = live ? currentProgress(log, rowMap) : null;
   const current = progress?.strategy || "";
@@ -679,13 +688,25 @@ function render(root, summary, rows, log, status) {
   $("grid-hint").textContent = `${completed} completed, ${total - completed} remaining`;
   $("log").textContent = tail(log || "waiting for run_console.log...", 120);
 
-  renderCards(rowMap, current, progress);
+  renderCards(strategyList, rowMap, current, progress);
   renderRows(rows);
   renderStatus(status, rows, live);
 }
 
-function renderCards(rowMap, current, progress) {
-  $("strategy-grid").innerHTML = STRATEGIES.map((strategy) => {
+function strategyListFrom(summary, rows, log) {
+  const ordered = [];
+  const add = (strategy) => {
+    if (strategy && !ordered.includes(strategy)) ordered.push(strategy);
+  };
+  for (const strategy of summary?.strategies || DEFAULT_STRATEGIES) add(strategy);
+  for (const row of rows) add(row.strategy);
+  const progress = currentProgress(log || "", new Map(rows.map((row) => [row.strategy, row])));
+  add(progress?.strategy);
+  return ordered.length ? ordered : DEFAULT_STRATEGIES;
+}
+
+function renderCards(strategyList, rowMap, current, progress) {
+  $("strategy-grid").innerHTML = strategyList.map((strategy) => {
     const row = rowMap.get(strategy);
     const hit = row ? targetHit(row) : 0;
     const cls = row ? (hit >= 0.6 ? "done good" : hit >= 0.35 ? "done" : "done bad") : (strategy === current ? "running" : "");
@@ -751,7 +772,7 @@ function renderRows(rows) {
 }
 
 function renderEmpty() {
-  $("strategy-grid").innerHTML = STRATEGIES.map((strategy) => `
+  $("strategy-grid").innerHTML = DEFAULT_STRATEGIES.map((strategy) => `
     <article class="strategy-card">
       <div class="strategy-main">
         <div class="strategy-name">${escapeHtml(strategy)}</div>

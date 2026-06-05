@@ -115,15 +115,15 @@ class HeuristicAgent:
         pressure = sim.front_pressure(self.team)
 
         if self.upgrade_first and state.upgrade_level == 0 and now < 12:
-            if state.credits >= UPGRADE_COST:
+            if state.credits >= sim.upgrade_cost(self.team):
                 sim.buy_upgrade(self.team, self.choose_upgrade_stat(state))
             return
 
-        if now > 10 and state.credits >= UPGRADE_COST and state.upgrade_level == 0:
+        if now > 10 and state.credits >= sim.upgrade_cost(self.team) and state.upgrade_level == 0:
             sim.buy_upgrade(self.team, self.choose_upgrade_stat(state))
             return
 
-        if state.credits >= UPGRADE_COST:
+        if state.credits >= sim.upgrade_cost(self.team):
             base_upgrade_chance = 0.18 + 0.05 * max(0, control) + 0.04 * max(0, pressure)
             if now > 60:
                 base_upgrade_chance += 0.15
@@ -232,7 +232,7 @@ class StrategyBiasedAgent:
         weight = 1.0
 
         if kind == "wait":
-            return 0.35 if state.credits < UPGRADE_COST else 0.08
+            return 0.35 if state.credits < sim.upgrade_cost(self.team) else 0.08
         if kind == "upgrade":
             return self.upgrade_weight(state, key or "attack", now, control)
         if kind != "spawn" or not key:
@@ -265,6 +265,25 @@ class StrategyBiasedAgent:
             weight *= 8.0 if role == "special" else 0.45
             if now < 20 and role == "special":
                 weight *= 0.45
+        elif self.strategy == "healer_support":
+            tank_count = state.produced.get("baumkuchen", 0)
+            if role == "tank":
+                weight *= 4.8 + max(0, -control) * 0.55
+            elif role == "special":
+                weight *= 6.5 if tank_count > 0 or now > 25 else 1.2
+                if control < 0:
+                    weight *= 1.25
+            else:
+                weight *= 0.55
+        elif self.strategy == "suicide_aoe_focus":
+            if role == "special":
+                weight *= 8.8 + min(2.0, max(0.0, pressure) * 0.5)
+                if now < 12:
+                    weight *= 0.75
+            elif role == "attacker":
+                weight *= 1.35
+            else:
+                weight *= 0.42
         elif self.strategy == "upgrade_focus":
             if state.upgrade_level == 0:
                 weight *= 0.55
@@ -307,6 +326,14 @@ class StrategyBiasedAgent:
             base = 1.6 if upgrade_stat == "attack" else 0.9
         elif self.strategy == "special_focus":
             base = 1.5 if now > 35 else 0.7
+        elif self.strategy == "healer_support":
+            base = 1.35 if upgrade_stat == "hp" else 0.85
+            if now > 45:
+                base *= 1.15
+        elif self.strategy == "suicide_aoe_focus":
+            base = 1.45 if upgrade_stat == "attack" else 0.75
+            if now > 35:
+                base *= 1.10
         else:
             base = 1.4 + 0.2 * max(0, control)
         if upgrade_stat == "attack" and state.attack_upgrade_level <= state.hp_upgrade_level:
@@ -480,6 +507,14 @@ def strategy_reward_for_state(team: str, state: TeamState, strategy: str) -> flo
     if strategy == "swarm_focus":
         return attacker
     if strategy == "special_focus":
+        return special
+    if strategy == "healer_support":
+        combo_share = tank + special
+        role_balance = 2.0 * min(tank, special)
+        return min(1.0, combo_share * 0.45 + role_balance * 0.55)
+    if strategy == "suicide_aoe_focus":
+        if team == "blueberry":
+            return min(1.0, special * 1.08)
         return special
     if strategy == "upgrade_focus":
         upgrade_progress = min(1.0, state.upgrade_level / 3.0)
@@ -734,14 +769,14 @@ class RoundSim:
     def available_actions(self, team: str) -> List[tuple[str, Optional[str]]]:
         state = self.states[team]
         actions: List[tuple[str, Optional[str]]] = []
-        if state.credits >= UPGRADE_COST:
+        if state.credits >= self.upgrade_cost(team):
             actions.append(("upgrade", "attack"))
             actions.append(("upgrade", "hp"))
         for spec in TEAMS[team]["units"]:
             if state.credits >= spec.cost:
                 actions.append(("spawn", spec.key))
         saving_for_first_upgrade = state.upgrade_level == 0 and state.credits >= BASE_CREDITS
-        if not actions or saving_for_first_upgrade or (650 <= state.credits < UPGRADE_COST):
+        if not actions or saving_for_first_upgrade or (650 <= state.credits < self.upgrade_cost(team)):
             actions.append(("wait", None))
         return actions
 
@@ -758,11 +793,12 @@ class RoundSim:
 
     def buy_upgrade(self, team: str, upgrade_stat: str) -> bool:
         state = self.states[team]
-        if state.credits < UPGRADE_COST:
+        cost = self.upgrade_cost(team)
+        if state.credits < cost:
             return False
         if upgrade_stat not in {"attack", "hp"}:
             return False
-        state.credits -= UPGRADE_COST
+        state.credits -= cost
         state.upgrade_level += 1
         if upgrade_stat == "attack":
             state.attack_upgrade_level += 1
@@ -797,12 +833,21 @@ class RoundSim:
         state = self.states[team]
         hp = spec.hp
         power = spec.power
-        hp = spec.hp * (1 + UPGRADE_RATE * state.hp_upgrade_level)
+        rate = self.upgrade_rate(team)
+        hp = spec.hp * (1 + rate * state.hp_upgrade_level)
         if spec.behavior != "heal":
-            power = spec.power * (1 + UPGRADE_RATE * state.attack_upgrade_level)
+            power = spec.power * (1 + rate * state.attack_upgrade_level)
         if spec.behavior == "heal":
-            power = spec.power * (1 + UPGRADE_RATE * state.attack_upgrade_level)
+            power = spec.power * (1 + rate * state.attack_upgrade_level)
         return hp, power
+
+    def upgrade_cost(self, team: str) -> int:
+        factor = float(TEAMS[team].get("upgrade_cost_factor", 1.0))
+        return max(1, int(round(UPGRADE_COST * factor)))
+
+    def upgrade_rate(self, team: str) -> float:
+        factor = float(TEAMS[team].get("upgrade_rate_factor", 1.0))
+        return max(0.01, UPGRADE_RATE * factor)
 
     def spawn_position(self, team: str) -> float:
         if team == "raspberry":

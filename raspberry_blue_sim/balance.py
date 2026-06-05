@@ -20,6 +20,10 @@ def apply_adjustments(adjustments: List[Dict[str, Any]]) -> None:
         stat = adjustment["stat"]
         factor = float(adjustment.get("factor", 1.0))
         delta = float(adjustment.get("delta", 0.0))
+        if unit_key == "__upgrade__":
+            current = float(TEAMS[team].get(stat, 1.0))
+            TEAMS[team][stat] = round(max(0.01, current * factor + delta), 4)
+            continue
         units = TEAMS[team]["units"]
         for index, spec in enumerate(units):
             if spec.key != unit_key:
@@ -37,6 +41,16 @@ def apply_adjustments(adjustments: List[Dict[str, Any]]) -> None:
 def export_units() -> Dict[str, List[Dict[str, Any]]]:
     return {
         team: [asdict(spec) for spec in data["units"]]
+        for team, data in TEAMS.items()
+    }
+
+
+def export_team_settings() -> Dict[str, Dict[str, Any]]:
+    return {
+        team: {
+            "upgrade_cost_factor": data.get("upgrade_cost_factor", 1.0),
+            "upgrade_rate_factor": data.get("upgrade_rate_factor", 1.0),
+        }
         for team, data in TEAMS.items()
     }
 

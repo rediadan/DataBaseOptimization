@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Matrix Balance Loop</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #dbe3ee;
+      --panel: #ffffff;
+      --raspberry: #c70f46;
+      --blueberry: #2557d6;
+      --soft-raspberry: #fde7ee;
+      --soft-blueberry: #e8f0ff;
+      --good: #d9fbe8;
+      --bad: #fee2e2;
+      --warn: #fff7d6;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+    }
+    main {
+      width: min(1560px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 16px 0 28px;
+    }
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 4px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    input, select, button {
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 0 10px;
+      font: inherit;
+    }
+    input { min-width: 420px; }
+    button {
+      min-width: 88px;
+      background: #111827;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .kpi, .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .kpi {
+      padding: 10px;
+      min-height: 72px;
+    }
+    .kpi span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .kpi strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1.1;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(720px, 1.35fr) minmax(420px, 0.9fr);
+      gap: 12px;
+      align-items: start;
+    }
+    .panel {
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .title h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+    .title span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .matrix {
+      display: grid;
+      grid-template-columns: 104px repeat(var(--cols), minmax(92px, 1fr));
+      gap: 6px;
+    }
+    .head, .axis, .cell {
+      min-height: 68px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 6px;
+      overflow: hidden;
+    }
+    .head {
+      background: linear-gradient(135deg, var(--soft-raspberry) 0 49%, var(--soft-blueberry) 50% 100%);
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .axis {
+      background: var(--soft-raspberry);
+      border-left: 4px solid #f6a2bb;
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .col-head {
+      background: var(--soft-blueberry);
+      border-top: 4px solid #9bbcf7;
+    }
+    .pending {
+      background: #e5e9ef;
+      color: #64748b;
+      font-weight: 700;
+    }
+    .rate {
+      font-size: 19px;
+      font-weight: 950;
+    }
+    .detail {
+      font-size: 11px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 12px;
+    }
+    th {
+      background: #111827;
+      color: #fff;
+      font-weight: 900;
+      height: 28px;
+    }
+    td, th {
+      border: 1px solid var(--line);
+      padding: 7px;
+      text-align: center;
+      vertical-align: middle;
+      word-break: break-word;
+    }
+    td:first-child, th:first-child {
+      font-weight: 900;
+    }
+    .patch-list {
+      display: grid;
+      gap: 6px;
+    }
+    .patch-scroll {
+      max-height: 420px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .patch-section {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .patch-section:last-child {
+      margin-bottom: 0;
+    }
+    .patch-section h3 {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .patch-reason {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+    .patch-row {
+      display: grid;
+      grid-template-columns: 88px 104px 82px 78px 1fr;
+      gap: 6px;
+      align-items: stretch;
+    }
+    .pill {
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      padding: 7px 8px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .target-row {
+      display: grid;
+      grid-template-columns: 94px 104px 1fr 82px;
+      gap: 6px;
+      align-items: stretch;
+    }
+    .target-row.waiting .pill {
+      border-style: dashed;
+    }
+    .target-row.confirmed .pill {
+      border-width: 2px;
+    }
+    .buff { background: var(--good); color: #166534; }
+    .nerf { background: var(--bad); color: #991b1b; }
+    .neutral { background: #f1f5f9; color: #475569; }
+    .log {
+      max-height: 240px;
+      overflow: auto;
+      white-space: pre-wrap;
+      background: #0b1220;
+      color: #dbeafe;
+      border-radius: 6px;
+      padding: 10px;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .empty {
+      min-height: 80px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      border-radius: 6px;
+      font-weight: 800;
+    }
+    @media (max-width: 1100px) {
+      .topbar, .layout, .kpis { grid-template-columns: 1fr; }
+      input { min-width: 0; width: 100%; }
+      .matrix { grid-template-columns: 88px repeat(var(--cols), minmax(82px, 1fr)); overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topbar">
+      <div>
+        <h1>Matrix Balance Loop</h1>
+        <div class="sub">strategy agents -> team matrix -> strategy average -> identity patch -> repeat</div>
+      </div>
+      <label>
+        Loop Folder
+        <input id="loop-root" value="/raspberry_blue_sim/live_matrix_balance_loop_current">
+      </label>
+      <label>
+        Refresh
+        <select id="refresh-interval">
+          <option value="1000">1s</option>
+          <option value="2000" selected>2s</option>
+          <option value="5000">5s</option>
+        </select>
+      </label>
+      <button id="reload">Reload</button>
+    </div>
+
+    <section class="kpis">
+      <div class="kpi"><span>Status</span><strong id="kpi-status">-</strong></div>
+      <div class="kpi"><span>Iteration</span><strong id="kpi-iteration">-</strong></div>
+      <div class="kpi"><span>Matchups</span><strong id="kpi-matchups">-</strong></div>
+      <div class="kpi"><span>Score</span><strong id="kpi-score">-</strong></div>
+      <div class="kpi"><span>Strongest</span><strong id="kpi-strongest">-</strong></div>
+      <div class="kpi"><span>Weakest</span><strong id="kpi-weakest">-</strong></div>
+    </section>
+
+    <div class="layout">
+      <section>
+        <div class="panel">
+          <div class="title">
+            <h2 id="matrix-title">Current Matrix</h2>
+            <span id="matrix-note">waiting</span>
+          </div>
+          <div id="matrix" class="matrix"></div>
+        </div>
+
+        <div class="panel">
+          <div class="title">
+            <h2>Strategy Average</h2>
+            <span>combined win rate by agent strategy</span>
+          </div>
+          <div id="averages"></div>
+        </div>
+
+        <div class="panel">
+          <div class="title">
+            <h2>Iteration History</h2>
+            <span id="history-note">0 iterations</span>
+          </div>
+          <div id="history"></div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel">
+          <div class="title">
+            <h2>Live Patch</h2>
+            <span id="patch-note">waiting</span>
+          </div>
+          <div id="patch"></div>
+        </div>
+
+        <div class="panel">
+          <div class="title">
+            <h2>Cumulative Balance</h2>
+            <span id="balance-note">waiting</span>
+          </div>
+          <div id="balance"></div>
+        </div>
+
+        <div class="panel">
+          <div class="title">
+            <h2>Console</h2>
+            <span id="log-note">-</span>
+          </div>
+          <div id="log" class="log"></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+const DEFAULT_RASPBERRY_STRATEGIES = ["tank_aoe_focus", "ranged_focus", "swarm_focus", "upgrade_focus", "mixed"];
+const DEFAULT_BLUEBERRY_STRATEGIES = ["tank_aoe_focus", "ranged_focus", "swarm_focus", "suicide_aoe_focus", "upgrade_focus", "mixed"];
+const STAT_ORDER = ["cost", "hp", "speed", "power", "cooldown", "range", "area"];
+const LOWER_IS_BETTER = new Set(["cost", "cooldown"]);
+const BASE_UNITS = {
+  raspberry: {
+    pie: { cost: 80, hp: 130, speed: 0.8, power: 40, cooldown: 1.0, range: 1.0, area: 0.0 },
+    tart: { cost: 280, hp: 250, speed: 0.6, power: 20, cooldown: 2.0, range: 6.0, area: 1.2 },
+    baumkuchen: { cost: 250, hp: 420, speed: 0.8, power: 10, cooldown: 1.8, range: 0.5, area: 0.0 },
+    scone: { cost: 500, hp: 300, speed: 0.5, power: 100, cooldown: 1.8, range: 3.0, area: 0.0 },
+    macaron: { cost: 300, hp: 50, speed: 1.2, power: 50, cooldown: 1.5, range: 2.5, area: 1.0 },
+  },
+  blueberry: {
+    pie: { cost: 100, hp: 100, speed: 1.0, power: 70, cooldown: 1.0, range: 1.0, area: 0.0 },
+    tarte_tatin: { cost: 180, hp: 180, speed: 1.0, power: 50, cooldown: 3.0, range: 4.0, area: 2.5 },
+    baumkuchen: { cost: 250, hp: 300, speed: 1.0, power: 30, cooldown: 1.0, range: 0.5, area: 0.0 },
+    scone: { cost: 500, hp: 200, speed: 0.8, power: 150, cooldown: 2.0, range: 3.0, area: 0.0 },
+    pannacotta: { cost: 400, hp: 50, speed: 1.5, power: 400, cooldown: 0.5, range: 1.0, area: 6.5 },
+  },
+};
+const $ = (id) => document.getElementById(id);
+let timer = null;
+
+function init() {
+  const params = new URLSearchParams(location.search);
+  $("loop-root").value = params.get("run") || "/raspberry_blue_sim/live_matrix_balance_loop_current";
+  $("refresh-interval").value = params.get("interval") || "2000";
+  $("reload").addEventListener("click", refresh);
+  $("loop-root").addEventListener("change", () => { updateUrl(); refresh(); });
+  $("refresh-interval").addEventListener("change", () => { updateUrl(); schedule(); });
+  schedule();
+  refresh();
+}
+
+function updateUrl() {
+  const params = new URLSearchParams();
+  params.set("run", $("loop-root").value.trim());
+  params.set("interval", $("refresh-interval").value);
+  history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
+}
+
+function schedule() {
+  if (timer) clearInterval(timer);
+  timer = setInterval(refresh, Number($("refresh-interval").value));
+}
+
+async function refresh() {
+  const root = normalizeRoot($("loop-root").value.trim());
+  const [status, matrixRows, averages, history, patch, balance, logText] = await Promise.all([
+    safe(fetchJson(`${root}/loop_status.json`), null),
+    safe(fetchMatrixCsv(`${root}/current_matrix.csv`), []),
+    safe(fetchCsv(`${root}/current_strategy_averages.csv`), []),
+    safe(fetchCsv(`${root}/iteration_history.csv`), []),
+    safe(fetchJson(`${root}/current_patch.json`), null),
+    safe(fetchJson(`${root}/current_adjustments.json`), null),
+    safe(fetchText(`${root}/run_console.log`), ""),
+  ]);
+  renderStatus(status, matrixRows);
+  renderMatrix(matrixRows, status);
+  renderAverages(averages);
+  renderHistory(history);
+  renderPatch(patch);
+  renderBalance(balance);
+  renderLog(logText);
+}
+
+async function safe(promise, fallback) {
+  try { return await promise; } catch { return fallback; }
+}
+
+async function fetchText(path) {
+  const response = await fetch(`${path}${path.includes("?") ? "&" : "?"}_=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) throw new Error(`${response.status} ${path}`);
+  return await response.text();
+}
+async function fetchJson(path) { return JSON.parse(await fetchText(path)); }
+async function fetchCsv(path) { return parseCsv(await fetchText(path)); }
+async function fetchMatrixCsv(path) {
+  return (await fetchCsv(path)).filter((row) => row.raspberry_strategy && row.blueberry_strategy).map((row) => ({
+    ...row,
+    raspberry_win_rate: Number(row.raspberry_win_rate),
+    blueberry_win_rate: Number(row.blueberry_win_rate),
+    avg_final_control: Number(row.avg_final_control),
+    strategy_diversity_penalty: Number(row.strategy_diversity_penalty),
+  }));
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let field = "", row = [], quoted = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i], next = text[i + 1];
+    if (char === '"' && quoted && next === '"') { field += '"'; i += 1; continue; }
+    if (char === '"') { quoted = !quoted; continue; }
+    if (char === "," && !quoted) { row.push(field); field = ""; continue; }
+    if ((char === "\n" || char === "\r") && !quoted) {
+      if (char === "\r" && next === "\n") i += 1;
+      row.push(field); field = "";
+      if (row.some((value) => value !== "")) rows.push(row);
+      row = [];
+      continue;
+    }
+    field += char;
+  }
+  if (field || row.length) { row.push(field); rows.push(row); }
+  const header = rows.shift() || [];
+  return rows.map((values) => Object.fromEntries(header.map((key, index) => [key, values[index] ?? ""])));
+}
+
+function renderStatus(status, rows) {
+  const score = status?.latest_score || {};
+  const totalMatchups = status?.total_matchups || DEFAULT_RASPBERRY_STRATEGIES.length * DEFAULT_BLUEBERRY_STRATEGIES.length;
+  $("kpi-status").textContent = status ? `${status.status || "-"} / ${status.phase || "-"}` : "-";
+  $("kpi-iteration").textContent = status ? `${status.iteration || 0}/${status.total_iterations || 0}` : "-";
+  $("kpi-matchups").textContent = status ? `${status.completed_matchups || rows.length}/${totalMatchups}` : `${rows.length}/${totalMatchups}`;
+  $("kpi-score").textContent = score.score === undefined ? "-" : Number(score.score).toFixed(3);
+  $("kpi-strongest").textContent = score.strongest_strategy ? `${teamShort(score.strongest_team)} ${score.strongest_strategy} ${pct(score.strongest_strategy_avg)}` : "-";
+  $("kpi-weakest").textContent = score.weakest_strategy ? `${teamShort(score.weakest_team)} ${score.weakest_strategy} ${pct(score.weakest_strategy_avg)}` : "-";
+}
+
+function renderMatrix(rows, status) {
+  const raspberryStrategies = status?.raspberry_strategies || DEFAULT_RASPBERRY_STRATEGIES;
+  const blueberryStrategies = status?.blueberry_strategies || DEFAULT_BLUEBERRY_STRATEGIES;
+  const totalMatchups = raspberryStrategies.length * blueberryStrategies.length;
+  $("matrix-title").textContent = `Current ${raspberryStrategies.length}x${blueberryStrategies.length} Matrix`;
+  $("matrix-note").textContent = status?.current_matchup || `${rows.length} / ${totalMatchups} matchups`;
+  $("matrix").style.setProperty("--cols", blueberryStrategies.length);
+  const map = new Map(rows.map((row) => [`${row.raspberry_strategy}|${row.blueberry_strategy}`, row]));
+  const parts = [`<div class="head">R \\ B</div>`];
+  for (const b of blueberryStrategies) parts.push(`<div class="head col-head">${escapeHtml(b)}</div>`);
+  for (const r of raspberryStrategies) {
+    parts.push(`<div class="axis">${escapeHtml(r)}</div>`);
+    for (const b of blueberryStrategies) {
+      const row = map.get(`${r}|${b}`);
+      if (!row) {
+        parts.push(`<div class="cell pending">pending</div>`);
+        continue;
+      }
+      const value = row.raspberry_win_rate;
+      const bg = heatColor(value);
+      const text = textColor(value);
+      parts.push(`
+        <div class="cell" style="background:${bg};color:${text}" title="${escapeHtml(r)} vs ${escapeHtml(b)}">
+          <div class="rate">${pct(value)}</div>
+          <div class="detail">control ${num(row.avg_final_control, 2)}</div>
+          <div class="detail">div ${num(row.strategy_diversity_penalty, 2)}</div>
+        </div>
+      `);
+    }
+  }
+  $("matrix").innerHTML = parts.join("");
+}
+
+function renderAverages(rows) {
+  if (!rows.length) {
+    $("averages").innerHTML = `<div class="empty">waiting for current_strategy_averages.csv</div>`;
+    return;
+  }
+  $("averages").innerHTML = `
+    <table>
+      <thead><tr><th>Team</th><th>Strategy</th><th>Avg Win</th><th>As Raspberry</th><th>As Blueberry</th><th>Samples</th></tr></thead>
+      <tbody>
+        ${rows.map((row) => {
+          const avg = Number(row.avg_win_rate || row.combined);
+          const bg = Number.isFinite(avg) ? avgColor(avg) : "#f1f5f9";
+          return `<tr>
+            <td>${teamLabel(row.team)}</td>
+            <td>${escapeHtml(row.strategy)}</td>
+            <td style="background:${bg};font-weight:900">${pct(avg)}</td>
+            <td>${pct(row.as_raspberry)}</td>
+            <td>${pct(row.as_blueberry)}</td>
+            <td>${escapeHtml(row.samples)}</td>
+          </tr>`;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderHistory(rows) {
+  $("history-note").textContent = `${rows.length} iterations`;
+  if (!rows.length) {
+    $("history").innerHTML = `<div class="empty">waiting for iteration_history.csv</div>`;
+    return;
+  }
+  $("history").innerHTML = `
+    <table>
+      <thead><tr><th>Iter</th><th>Score</th><th>R Avg</th><th>Spread</th><th>Extreme</th><th>Strong</th><th>Weak</th><th>Patch</th></tr></thead>
+      <tbody>
+        ${rows.map((row) => `<tr>
+          <td>${escapeHtml(row.iteration)}</td>
+          <td>${num(row.score, 3)}</td>
+          <td>${pct(row.avg_raspberry_win_rate)}</td>
+          <td>${pct(row.strategy_spread)}</td>
+          <td>${pct(row.extreme_rate)}</td>
+          <td>${teamShort(row.strongest_team)} ${escapeHtml(row.strongest_strategy)} ${pct(row.strongest_strategy_avg)}</td>
+          <td>${teamShort(row.weakest_team)} ${escapeHtml(row.weakest_strategy)} ${pct(row.weakest_strategy_avg)}</td>
+          <td>${escapeHtml(row.patch_reason)}</td>
+        </tr>`).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderPatch(patch) {
+  if (!patch) {
+    $("patch-note").textContent = "waiting";
+    $("patch").innerHTML = `<div class="empty">waiting for current_patch.json</div>`;
+    return;
+  }
+  const candidates = patch.candidate_targets || [];
+  const confirmed = patch.confirmed_targets || [];
+  const adjustments = patch.adjustments || [];
+  const confirmedText = confirmed.length ? `, ${confirmed.length} confirmed` : "";
+  $("patch-note").textContent = patch.applied
+    ? `${adjustments.length} adjustments${confirmedText}`
+    : `${candidates.length} candidates`;
+  $("patch").innerHTML = `
+    <div class="patch-scroll">
+      <div class="patch-section">
+        <h3>Status</h3>
+        <div class="patch-reason">${escapeHtml(patch.reason || "no patch reason")}</div>
+      </div>
+      <div class="patch-section">
+        <h3>Candidate Targets</h3>
+        ${renderPatchTargets(candidates, "waiting")}
+      </div>
+      <div class="patch-section">
+        <h3>Confirmed Targets</h3>
+        ${renderPatchTargets(confirmed, "confirmed")}
+      </div>
+      <div class="patch-section">
+        <h3>Applied Adjustments</h3>
+        ${renderPatchAdjustments(adjustments)}
+      </div>
+    </div>
+  `;
+}
+
+function renderPatchTargets(targets, stateClass) {
+  if (!targets.length) return `<div class="empty">none</div>`;
+  return `
+    <div class="patch-list">
+      ${targets.map((target) => {
+        const cls = target.mode === "buff" ? "buff" : target.mode === "nerf" ? "nerf" : "neutral";
+        return `<div class="target-row ${stateClass}">
+          <div class="pill ${cls}">${escapeHtml(target.mode)}</div>
+          <div class="pill">${escapeHtml(target.team)}</div>
+          <div class="pill">${escapeHtml(target.strategy)}</div>
+          <div class="pill">${pct(target.avg_win_rate)}</div>
+        </div>`;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderPatchAdjustments(adjustments) {
+  if (!adjustments.length) return `<div class="empty">none</div>`;
+  return `
+    <div class="patch-list">
+      ${adjustments.map((item) => {
+        const cls = item.mode === "buff" ? "buff" : item.mode === "nerf" ? "nerf" : "neutral";
+        return `<div class="patch-row">
+          <div class="pill ${cls}">${escapeHtml(item.mode)}</div>
+          <div class="pill">${escapeHtml(item.team)}</div>
+          <div class="pill">${escapeHtml(item.unit)}</div>
+          <div class="pill">${escapeHtml(item.stat)}</div>
+          <div class="pill">${escapeHtml(item.strategy)} / ${Number(item.factor).toFixed(4)}x</div>
+        </div>`;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderBalance(balance) {
+  const finalUnits = flattenFinalUnits(balance?.final_units || balance?.finalUnits);
+  const settings = balance?.team_settings || {};
+  if (!finalUnits.size && !Object.keys(settings).length) {
+    $("balance-note").textContent = "waiting";
+    $("balance").innerHTML = `<div class="empty">waiting for current_adjustments.json</div>`;
+    return;
+  }
+  const rows = [];
+  for (const team of Object.keys(BASE_UNITS)) {
+    for (const unit of Object.keys(BASE_UNITS[team])) {
+      const current = finalUnits.get(`${team}|${unit}`) || BASE_UNITS[team][unit];
+      rows.push({ team, unit, current });
+    }
+  }
+  $("balance-note").textContent = `${rows.length} units`;
+  $("balance").innerHTML = `
+    <table>
+      <thead><tr><th>Team</th><th>Unit</th>${STAT_ORDER.map((stat) => `<th>${stat}</th>`).join("")}</tr></thead>
+      <tbody>
+        ${rows.map((row) => `<tr>
+          <td>${teamLabel(row.team)}</td>
+          <td>${escapeHtml(row.unit)}</td>
+          ${STAT_ORDER.map((stat) => balanceCell(row.team, row.unit, stat, row.current[stat])).join("")}
+        </tr>`).join("")}
+      </tbody>
+    </table>
+    ${renderUpgradeSettings(settings)}
+  `;
+}
+
+function renderUpgradeSettings(settings) {
+  const teams = Object.keys(settings);
+  if (!teams.length) return "";
+  return `
+    <table style="margin-top:10px">
+      <thead><tr><th>Team</th><th>Upgrade Cost</th><th>Upgrade Rate</th></tr></thead>
+      <tbody>
+        ${teams.map((team) => {
+          const costFactor = Number(settings[team].upgrade_cost_factor ?? 1);
+          const rateFactor = Number(settings[team].upgrade_rate_factor ?? 1);
+          return `<tr>
+            <td>${teamLabel(team)}</td>
+            <td class="${costFactor > 1 ? "nerf" : costFactor < 1 ? "buff" : "neutral"}">1000 -> ${fmt(1000 * costFactor)}</td>
+            <td class="${rateFactor < 1 ? "nerf" : rateFactor > 1 ? "buff" : "neutral"}">0.30 -> ${fmt(0.30 * rateFactor)}</td>
+          </tr>`;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function balanceCell(team, unit, stat, currentValue) {
+  const before = BASE_UNITS[team][unit][stat];
+  const current = Number(currentValue);
+  const changed = Number.isFinite(current) && Math.abs(current - before) > 0.0001;
+  if (!changed) return `<td class="neutral">${fmt(before)}</td>`;
+  const beneficial = LOWER_IS_BETTER.has(stat) ? current < before : current > before;
+  return `<td class="${beneficial ? "buff" : "nerf"}">${fmt(before)} -> ${fmt(current)}</td>`;
+}
+
+function flattenFinalUnits(payload) {
+  const map = new Map();
+  if (!payload) return map;
+  for (const [team, units] of Object.entries(payload)) {
+    if (!Array.isArray(units)) continue;
+    for (const unit of units) map.set(`${team}|${unit.key}`, unit);
+  }
+  return map;
+}
+
+function renderLog(text) {
+  const lines = text.trim() ? text.trim().split(/\r?\n/) : [];
+  $("log-note").textContent = `${lines.length} lines`;
+  $("log").textContent = lines.slice(-80).join("\n");
+}
+
+function normalizeRoot(path) {
+  return (path || "").trim().replace(/\\/g, "/").replace(/\/+$/, "");
+}
+function pct(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? `${(number * 100).toFixed(1)}%` : "-";
+}
+function num(value, digits) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number.toFixed(digits) : "-";
+}
+function fmt(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "-";
+  return Number.isInteger(number) ? String(number) : number.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+}
+function teamLabel(team) {
+  return team === "raspberry" ? "Raspberry" : team === "blueberry" ? "Blueberry" : team;
+}
+function teamShort(team) {
+  return team === "raspberry" ? "R" : team === "blueberry" ? "B" : "";
+}
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[char]));
+}
+function heatColor(value) {
+  const v = Math.max(0, Math.min(1, Number(value)));
+  if (v < 0.5) return mix([37, 87, 214], [248, 250, 252], v / 0.5);
+  return mix([248, 250, 252], [199, 15, 70], (v - 0.5) / 0.5);
+}
+function avgColor(value) {
+  const gap = Math.abs(Number(value) - 0.5) * 2;
+  return mix([255, 255, 255], [254, 226, 226], gap);
+}
+function textColor(value) {
+  return Math.abs(Number(value) - 0.5) > 0.32 ? "#fff" : "#0f172a";
+}
+function mix(a, b, t) {
+  const clamped = Math.max(0, Math.min(1, t));
+  const rgb = a.map((value, index) => Math.round(value + (b[index] - value) * clamped));
+  return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+}
+
+init();
+  </script>
+</body>
+</html>

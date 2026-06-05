@@ -38,6 +38,8 @@ TEAMS = {
         "display": "라즈베리",
         "side": -1,
         "upgrade_stat": "attack",
+        "upgrade_cost_factor": 1.0,
+        "upgrade_rate_factor": 1.0,
         "units": [
             UnitSpec("pie", "attacker", "파이", 80, 130, 0.8, 40, 1.0, 1.0, 0.0),
             UnitSpec("tart", "aoe_ranged", "타르트", 280, 250, 0.6, 20, 2.0, 6.0, 1.2),
@@ -50,6 +52,8 @@ TEAMS = {
         "display": "블루베리",
         "side": 1,
         "upgrade_stat": "hp",
+        "upgrade_cost_factor": 1.0,
+        "upgrade_rate_factor": 1.0,
         "units": [
             UnitSpec("pie", "attacker", "파이", 100, 100, 1.0, 70, 1.0, 1.0, 0.0),
             UnitSpec("tarte_tatin", "aoe_ranged", "타르트·타탱", 180, 180, 1.0, 50, 3.0, 4.0, 2.5),

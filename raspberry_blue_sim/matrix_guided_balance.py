@@ -453,6 +453,58 @@ def write_master_history(path: Path, selected: dict[str, Any], baseline_score: d
     write_rows(path, list(row.keys()), [row])
 
 
+def write_live_candidate_history(path: Path, evaluations: list[dict[str, Any]], baseline_score: dict[str, float]) -> None:
+    rows = []
+    for evaluation in sorted(evaluations, key=lambda item: item["candidate_id"]):
+        score = evaluation["score"]
+        rows.append(
+            {
+                "iteration": evaluation["candidate_id"].replace("candidate_", "C"),
+                "raspberry_win_rate": score["avg_raspberry_win_rate"],
+                "blueberry_win_rate": round(1.0 - score["avg_raspberry_win_rate"], 4),
+                "avg_final_control": score["avg_control_gap"],
+                "avg_round_duration": "",
+                "balance_score": score["score"],
+                "strategy_diversity_penalty": score["strategy_spread"],
+                "effective_strategies": "",
+                "dominant_strategy_share": score["extreme_rate"],
+                "confirmation_raspberry_win_rate": "",
+                "confirmation_blueberry_win_rate": "",
+                "confirmation_avg_final_control": "",
+                "confirmation_balance_score": "",
+                "confirmation_strategy_diversity_penalty": "",
+                "confirmation_passed": "",
+                "patch_added": evaluation["description"],
+                "stopped": False,
+                "baseline_matrix_score": baseline_score.get("score", ""),
+            }
+        )
+    write_rows(
+        path,
+        [
+            "iteration",
+            "raspberry_win_rate",
+            "blueberry_win_rate",
+            "avg_final_control",
+            "avg_round_duration",
+            "balance_score",
+            "strategy_diversity_penalty",
+            "effective_strategies",
+            "dominant_strategy_share",
+            "confirmation_raspberry_win_rate",
+            "confirmation_blueberry_win_rate",
+            "confirmation_avg_final_control",
+            "confirmation_balance_score",
+            "confirmation_strategy_diversity_penalty",
+            "confirmation_passed",
+            "patch_added",
+            "stopped",
+            "baseline_matrix_score",
+        ],
+        rows,
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--matrix-csv", required=True)
@@ -504,6 +556,8 @@ def main() -> None:
         )
         evaluations.append(evaluation)
         log(f"[candidate {index}/{len(candidates)}] done: score={evaluation['score']}")
+        write_candidate_evaluations(out_dir / "candidate_evaluations.csv", sorted(evaluations, key=lambda item: item["score"]["score"]))
+        write_live_candidate_history(out_dir / "master_history.csv", evaluations, baseline_score)
 
     evaluations.sort(key=lambda item: item["score"]["score"])
     if not evaluations:
@@ -534,7 +588,7 @@ def main() -> None:
         encoding="utf-8",
     )
     (out_dir / "final_result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    write_master_history(out_dir / "master_history.csv", selected, baseline_score)
+    write_live_candidate_history(out_dir / "master_history.csv", evaluations, baseline_score)
     log(f"[matrix-guided selected] {selected['candidate_id']}: {selected['description']}")
     log(json.dumps(selected["score"], ensure_ascii=False, indent=2))
     log(f"wrote: {out_dir}")

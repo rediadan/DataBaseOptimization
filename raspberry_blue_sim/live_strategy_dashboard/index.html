@@ -942,6 +942,8 @@ button {
 const DEFAULT_TRAINING_ROOT = "/raspberry_blue_sim/live_training_current";
 const DEFAULT_MATRIX_ROOT = "/raspberry_blue_sim/live_matrix_current";
 const DEFAULT_COMPARE = "/raspberry_blue_sim/strategy_matrix_v1_from_strategy_diversity_balance/strategy_matrix.csv";
+const DEFAULT_RASPBERRY_STRATEGIES = ["tank_aoe_focus", "ranged_focus", "swarm_focus", "upgrade_focus", "mixed"];
+const DEFAULT_BLUEBERRY_STRATEGIES = ["tank_aoe_focus", "ranged_focus", "swarm_focus", "suicide_aoe_focus", "upgrade_focus", "mixed"];
 const BASE_UNITS = {
   raspberry: {
     pie: { cost: 80, hp: 130, speed: 0.8, power: 40, cooldown: 1.0, range: 1.0, area: 0.0 },
@@ -1062,6 +1064,12 @@ function normalizeRoot(path) {
 
 function derivePaths(root) {
   const normalized = normalizeRoot(root);
+  if (normalized.includes("matrix_balance_loop")) {
+    return {
+      matrix: `${normalized}/current_matrix.csv`,
+      summary: `${normalized}/current_matrix_summary.json`,
+    };
+  }
   return {
     matrix: `${normalized}/strategy_matrix.csv`,
     summary: `${normalized}/strategy_matrix_summary.json`,
@@ -1232,7 +1240,7 @@ function renderTraining(historyRows, logText, balanceData) {
   $("log-status").textContent = logState.progress || `${logText.length} chars`;
   renderLiveProgress(logState);
   renderCandidateStrip(logState);
-  renderTrainingHeatmap(historyRows);
+  renderTrainingHeatmap(historyRows, logState);
   renderBalanceAdjustments(balanceData);
   renderLog(logText);
 }
@@ -1257,9 +1265,14 @@ function parseLogState(logText) {
   const lastTrain = trainMatches.at(-1);
   const candidateMatches = [...joined.matchAll(/\[iteration (\d+)\/(\d+) candidate (\d+)\/(\d+)\]/g)];
   const lastCandidate = candidateMatches.at(-1);
+  const matrixCandidateMatches = [...joined.matchAll(/\[candidate (\d+)\/(\d+)\] (?:start|done):/g)];
+  const lastMatrixCandidate = matrixCandidateMatches.at(-1);
   const latestProgress = parseLatestProgress(lines);
   const candidates = parseCandidateResults(lines);
-  const candidateTotal = parseCandidateTotal(lines, lastCandidate, candidates);
+  const candidateTotal = parseCandidateTotal(lines, lastCandidate, candidates, lastMatrixCandidate);
+  if (latestProgress?.candidateIndex && !latestProgress.candidateTotal) {
+    latestProgress.candidateTotal = candidateTotal;
+  }
   const base = {
     stage: "running",
     iteration: latestProgress?.iteration
@@ -1270,7 +1283,9 @@ function parseLogState(logText) {
     current: latestProgress,
     candidates,
     candidateTotal,
-    currentCandidate: latestProgress?.candidateIndex ?? (lastCandidate ? Number(lastCandidate[3]) : null),
+    currentCandidate: latestProgress?.candidateIndex
+      ?? (lastCandidate ? Number(lastCandidate[3]) : null)
+      ?? (lastMatrixCandidate ? Number(lastMatrixCandidate[1]) : null),
   };
   if (/target confirmed|wrote:/.test(joined)) {
     return { ...base, stage: "finished", progress: "done", progressPct: 100 };
@@ -1283,6 +1298,14 @@ function parseLogState(logText) {
       progress: latestProgress?.candidateSeed
         ? `candidate ${lastCandidate[3]}/${lastCandidate[4]}, seed ${latestProgress.candidateSeed}/${latestProgress.candidateSeedTotal}`
         : `${lastCandidate[3]}/${lastCandidate[4]} candidates`,
+    };
+  }
+  if (lastMatrixCandidate) {
+    return {
+      ...base,
+      stage: "matrix candidate",
+      iteration: "-",
+      progress: `${lastMatrixCandidate[1]}/${lastMatrixCandidate[2]} candidates`,
     };
   }
   if (latestProgress?.phase === "confirmation") {
@@ -1359,6 +1382,12 @@ function parseProgressLabel(labelText) {
     data.candidateIndex = Number(candidate[1]);
     data.candidateTotal = Number(candidate[2]);
   }
+  const matrixCandidate = labelText.match(/^candidate_(\d+)\s+(.+)$/);
+  if (matrixCandidate) {
+    data.phase = "candidate";
+    data.candidateIndex = Number(matrixCandidate[1]);
+    data.matchup = matrixCandidate[2];
+  }
   const seed = labelText.match(/validation seed (\d+)\/(\d+)/);
   if (seed) {
     data.seedIndex = Number(seed[1]);
@@ -1375,6 +1404,8 @@ function parseProgressLabel(labelText) {
 function parseCandidateResults(lines) {
   const resultPattern = /^\[iteration (\d+)\/(\d+) candidate (\d+)\/(\d+)\] candidate done: score=([0-9.]+), win_rate=\{'raspberry':\s*([0-9.]+),\s*'blueberry':\s*([0-9.]+)\}, avg_control=([-0-9.]+)/;
   const startPattern = /^\[iteration (\d+)\/(\d+) candidate (\d+)\/(\d+)\] candidate start: (.+)$/;
+  const matrixStartPattern = /^\[candidate (\d+)\/(\d+)\] start: (.+)$/;
+  const matrixDonePattern = /^\[candidate (\d+)\/(\d+)\] done: score=\{'score':\s*([0-9.]+),\s*'avg_raspberry_win_rate':\s*([0-9.]+),\s*'strategy_spread':\s*([0-9.]+),\s*'mirror_gap':\s*([0-9.]+),\s*'extreme_rate':\s*([0-9.]+),\s*'dead_strategy_penalty':\s*([0-9.]+),\s*'avg_control_gap':\s*([0-9.]+)\}/;
   const descriptions = new Map();
   const results = [];
   for (const line of lines) {
@@ -1383,28 +1414,56 @@ function parseCandidateResults(lines) {
       descriptions.set(`${start[1]}|${start[3]}`, start[5]);
       continue;
     }
+    const matrixStart = line.match(matrixStartPattern);
+    if (matrixStart) {
+      descriptions.set(`matrix|${matrixStart[1]}`, matrixStart[3]);
+      continue;
+    }
     const done = line.match(resultPattern);
-    if (!done) continue;
-    const key = `${done[1]}|${done[3]}`;
+    if (done) {
+      const key = `${done[1]}|${done[3]}`;
+      results.push({
+        iteration: Number(done[1]),
+        iterationTotal: Number(done[2]),
+        index: Number(done[3]),
+        total: Number(done[4]),
+        score: Number(done[5]),
+        raspberryWinRate: Number(done[6]),
+        blueberryWinRate: Number(done[7]),
+        avgControl: Number(done[8]),
+        description: descriptions.get(key) || "",
+      });
+      continue;
+    }
+    const matrixDone = line.match(matrixDonePattern);
+    if (!matrixDone) continue;
     results.push({
-      iteration: Number(done[1]),
-      iterationTotal: Number(done[2]),
-      index: Number(done[3]),
-      total: Number(done[4]),
-      score: Number(done[5]),
-      raspberryWinRate: Number(done[6]),
-      blueberryWinRate: Number(done[7]),
-      avgControl: Number(done[8]),
-      description: descriptions.get(key) || "",
+      iteration: 1,
+      iterationTotal: 1,
+      index: Number(matrixDone[1]),
+      total: Number(matrixDone[2]),
+      score: Number(matrixDone[3]),
+      raspberryWinRate: Number(matrixDone[4]),
+      blueberryWinRate: 1 - Number(matrixDone[4]),
+      strategySpread: Number(matrixDone[5]),
+      mirrorGap: Number(matrixDone[6]),
+      extremeRate: Number(matrixDone[7]),
+      deadStrategyPenalty: Number(matrixDone[8]),
+      avgControl: Number(matrixDone[9]),
+      description: descriptions.get(`matrix|${matrixDone[1]}`) || "",
+      mode: "matrix-guided",
     });
   }
   return results;
 }
 
-function parseCandidateTotal(lines, lastCandidate, candidates) {
+function parseCandidateTotal(lines, lastCandidate, candidates, lastMatrixCandidate) {
   if (lastCandidate) return Number(lastCandidate[4]);
+  if (lastMatrixCandidate) return Number(lastMatrixCandidate[2]);
   const countLine = [...lines.join("\n").matchAll(/\[iteration \d+\/\d+\] candidates=(\d+)/g)].at(-1);
   if (countLine) return Number(countLine[1]);
+  const matrixCountLine = [...lines.join("\n").matchAll(/\[matrix-guided start\] problems=\d+, candidates=(\d+)/g)].at(-1);
+  if (matrixCountLine) return Number(matrixCountLine[1]);
   return candidates.length ? Math.max(...candidates.map((candidate) => candidate.total || candidate.index)) : 0;
 }
 
@@ -1419,7 +1478,7 @@ function renderLiveProgress(logState) {
   $("live-progress-fill").style.background = liveWinRate === null ? "#94a3b8" : heatColor(liveWinRate);
   $("live-r-win").textContent = liveWinRate === null ? "-" : pct(liveWinRate);
   $("live-matches").textContent = current ? `${current.done}/${current.total}` : "-";
-  $("live-seed").textContent = current?.seedIndex ? `${current.seedIndex}/${current.seedTotal}` : current?.candidateSeed ? `${current.candidateSeed}/${current.candidateSeedTotal}` : "-";
+  $("live-seed").textContent = current?.seedIndex ? `${current.seedIndex}/${current.seedTotal}` : current?.candidateSeed ? `${current.candidateSeed}/${current.candidateSeedTotal}` : current?.matchup || "-";
   $("live-candidate").textContent = current?.candidateIndex ? `${current.candidateIndex}/${current.candidateTotal}` : "-";
 }
 
@@ -1453,10 +1512,15 @@ function renderCandidateStrip(logState) {
   $("candidate-strip").innerHTML = fragments.join("");
 }
 
-function renderTrainingHeatmap(rows) {
+function renderTrainingHeatmap(rows, logState = null) {
   const panel = $("training-heatmap");
   if (!rows.length) {
-    panel.innerHTML = `<div class="empty-history">waiting for master_history.csv</div>`;
+    const candidateRows = buildCandidateHeatmapRows(logState);
+    if (!candidateRows.length) {
+      panel.innerHTML = `<div class="empty-history">waiting for master_history.csv</div>`;
+      return;
+    }
+    renderCandidateHeatmap(panel, candidateRows);
     return;
   }
   const metrics = [
@@ -1469,6 +1533,47 @@ function renderTrainingHeatmap(rows) {
     { key: "confirmation_raspberry_win_rate", label: "confirm R", type: "centeredPct" },
   ];
   const fragments = [`<div class="train-head">iter</div>`];
+  for (const metric of metrics) fragments.push(`<div class="train-head">${metric.label}</div>`);
+  for (const row of rows) {
+    fragments.push(`<div class="train-axis">${row.iteration}</div>`);
+    for (const metric of metrics) {
+      const value = row[metric.key];
+      const bg = trainingColor(value, metric.type);
+      const text = textColorForBg(bg);
+      fragments.push(`
+        <div class="train-cell" style="background:${bg};color:${text}">
+          ${formatTrainingValue(value, metric.type)}
+        </div>
+      `);
+    }
+  }
+  panel.style.setProperty("--train-cols", metrics.length + 1);
+  panel.innerHTML = fragments.join("");
+}
+
+function buildCandidateHeatmapRows(logState) {
+  if (!logState?.candidates?.length) return [];
+  return logState.candidates.map((candidate) => ({
+    iteration: `C${candidate.index}`,
+    raspberry_win_rate: candidate.raspberryWinRate,
+    balance_score: candidate.score,
+    strategy_spread: candidate.strategySpread,
+    mirror_gap: candidate.mirrorGap,
+    extreme_rate: candidate.extremeRate,
+    avg_final_control: candidate.avgControl,
+  }));
+}
+
+function renderCandidateHeatmap(panel, rows) {
+  const metrics = [
+    { key: "raspberry_win_rate", label: "R avg", type: "centeredPct" },
+    { key: "balance_score", label: "score", type: "lowGood" },
+    { key: "strategy_spread", label: "spread", type: "lowGood" },
+    { key: "mirror_gap", label: "mirror", type: "lowGood" },
+    { key: "extreme_rate", label: "extreme", type: "lowGood" },
+    { key: "avg_final_control", label: "control", type: "lowGood" },
+  ];
+  const fragments = [`<div class="train-head">cand</div>`];
   for (const metric of metrics) fragments.push(`<div class="train-head">${metric.label}</div>`);
   for (const row of rows) {
     fragments.push(`<div class="train-axis">${row.iteration}</div>`);
@@ -1697,21 +1802,42 @@ function formatTrainingValue(value, type) {
 }
 
 function render(rows, summary, compareRows) {
-  const strategies = summary?.strategies?.length ? summary.strategies : getStrategies(rows);
+  const axes = getMatrixAxes(rows, summary);
   const compareMap = rowMap(compareRows);
   const mode = summary?.agent_mode ? ` | Agent: ${summary.agent_mode}${summary.mcts_iterations ? ` x${summary.mcts_iterations}` : ""}` : "";
   $("subtitle").textContent = `Training: ${$("training-root").value.trim()} | Matrix: ${$("matrix-root").value.trim()}${mode}`;
-  renderMetrics(rows, summary);
-  renderHeatmap(rows, strategies, compareMap);
-  renderAverages(rows, strategies);
+  renderMetrics(rows, summary, axes);
+  renderHeatmap(rows, axes, compareMap);
+  renderAverages(rows, axes);
   renderProblems(rows);
 }
 
-function getStrategies(rows) {
-  const preferred = ["tank_focus", "tank_aoe_focus", "ranged_focus", "swarm_focus", "special_focus", "upgrade_focus", "mixed"];
-  const seen = new Set(rows.flatMap((row) => [row.raspberry_strategy, row.blueberry_strategy]).filter(Boolean));
-  const ordered = preferred.filter((item) => seen.has(item));
-  for (const item of seen) {
+function getMatrixAxes(rows, summary) {
+  const raspberry = normalizeStrategyAxis(
+    summary?.raspberry_strategies || summary?.row_strategies || summary?.strategies,
+    rows.map((row) => row.raspberry_strategy),
+    DEFAULT_RASPBERRY_STRATEGIES,
+  );
+  const blueberry = normalizeStrategyAxis(
+    summary?.blueberry_strategies || summary?.column_strategies || summary?.strategies,
+    rows.map((row) => row.blueberry_strategy),
+    DEFAULT_BLUEBERRY_STRATEGIES,
+  );
+  return { raspberry, blueberry };
+}
+
+function normalizeStrategyAxis(configured, observedValues, preferred) {
+  const observed = new Set(observedValues.filter(Boolean));
+  const source = Array.isArray(configured) && configured.length ? configured : preferred;
+  const ordered = [];
+  for (const item of source) {
+    if (!item) continue;
+    if (!ordered.includes(item)) ordered.push(item);
+  }
+  for (const item of preferred) {
+    if (observed.has(item) && !ordered.includes(item)) ordered.push(item);
+  }
+  for (const item of observed) {
     if (!ordered.includes(item)) ordered.push(item);
   }
   return ordered;
@@ -1725,10 +1851,9 @@ function rowMap(rows) {
   return map;
 }
 
-function renderMetrics(rows, summary) {
-  const score = summary?.score || computeScore(rows);
-  const strategies = summary?.strategies || getStrategies(rows);
-  const totalMatchups = strategies.length ? strategies.length * strategies.length : 0;
+function renderMetrics(rows, summary, axes) {
+  const score = normalizeMatrixScore(summary?.score) || computeScore(rows, axes);
+  const totalMatchups = axes.raspberry.length && axes.blueberry.length ? axes.raspberry.length * axes.blueberry.length : 0;
   $("metric-avg-raspberry").textContent = pct(score.avg_raspberry_win_rate);
   $("metric-weakest").textContent = pct(score.weakest_strategy_avg_win_rate);
   $("metric-strongest").textContent = pct(score.strongest_strategy_avg_win_rate);
@@ -1738,7 +1863,19 @@ function renderMetrics(rows, summary) {
   $("completion").textContent = `${rows.length} / ${totalMatchups} matchups`;
 }
 
-function computeScore(rows) {
+function normalizeMatrixScore(score) {
+  if (!score) return null;
+  return {
+    avg_raspberry_win_rate: Number(score.avg_raspberry_win_rate ?? 0),
+    weakest_strategy_avg_win_rate: Number(score.weakest_strategy_avg_win_rate ?? score.weakest_strategy_avg ?? 0),
+    strongest_strategy_avg_win_rate: Number(score.strongest_strategy_avg_win_rate ?? score.strongest_strategy_avg ?? 0),
+    strategy_win_rate_spread: Number(score.strategy_win_rate_spread ?? score.strategy_spread ?? 0),
+    avg_mirror_gap: Number(score.avg_mirror_gap ?? 0),
+    matrix_balance_penalty: Number(score.matrix_balance_penalty ?? score.score ?? 0),
+  };
+}
+
+function computeScore(rows, axes = getMatrixAxes(rows, null)) {
   if (!rows.length) {
     return {
       avg_raspberry_win_rate: 0,
@@ -1749,12 +1886,11 @@ function computeScore(rows) {
       matrix_balance_penalty: 0,
     };
   }
-  const strategies = getStrategies(rows);
   const avgR = avg(rows.map((row) => row.raspberry_win_rate));
-  const strategyRates = strategies.flatMap((strategy) => [
-    avg(rows.filter((row) => row.raspberry_strategy === strategy).map((row) => row.raspberry_win_rate)),
-    avg(rows.filter((row) => row.blueberry_strategy === strategy).map((row) => row.blueberry_win_rate)),
-  ]).filter(Number.isFinite);
+  const strategyRates = [
+    ...axes.raspberry.map((strategy) => avg(rows.filter((row) => row.raspberry_strategy === strategy).map((row) => row.raspberry_win_rate))),
+    ...axes.blueberry.map((strategy) => avg(rows.filter((row) => row.blueberry_strategy === strategy).map((row) => row.blueberry_win_rate))),
+  ].filter(Number.isFinite);
   const weakest = Math.min(...strategyRates);
   const strongest = Math.max(...strategyRates);
   const mirrors = rows
@@ -1771,18 +1907,18 @@ function computeScore(rows) {
   };
 }
 
-function renderHeatmap(rows, strategies, compareMap) {
+function renderHeatmap(rows, axes, compareMap) {
   const heatmap = $("heatmap");
-  heatmap.style.setProperty("--cols", strategies.length);
+  heatmap.style.setProperty("--cols", axes.blueberry.length);
   const map = rowMap(rows);
   const fragments = [];
   fragments.push(`<div class="corner" style="background:linear-gradient(135deg,#fdecef 0%,#fdecef 48%,#eaf1ff 52%,#eaf1ff 100%)">R \\ B</div>`);
-  for (const strategy of strategies) {
+  for (const strategy of axes.blueberry) {
     fragments.push(`<div class="axis x team-axis">${label(strategy)}</div>`);
   }
-  for (const rStrategy of strategies) {
+  for (const rStrategy of axes.raspberry) {
     fragments.push(`<div class="axis y team-axis">${label(rStrategy)}</div>`);
-    for (const bStrategy of strategies) {
+    for (const bStrategy of axes.blueberry) {
       const key = `${rStrategy}|${bStrategy}`;
       const row = map.get(key);
       if (!row) {
@@ -1806,25 +1942,30 @@ function renderHeatmap(rows, strategies, compareMap) {
   heatmap.innerHTML = fragments.join("");
 }
 
-function renderAverages(rows, strategies) {
-  const raspberry = strategies.map((strategy) => ({
+function renderAverages(rows, axes) {
+  const raspberry = axes.raspberry.map((strategy) => ({
     strategy,
     rate: avg(rows.filter((row) => row.raspberry_strategy === strategy).map((row) => row.raspberry_win_rate)),
   }));
-  const blueberry = strategies.map((strategy) => ({
+  const blueberry = axes.blueberry.map((strategy) => ({
     strategy,
     rate: avg(rows.filter((row) => row.blueberry_strategy === strategy).map((row) => row.blueberry_win_rate)),
   }));
-  $("averages").innerHTML = strategies.map((strategy, index) => `
+  const rowCount = Math.max(raspberry.length, blueberry.length);
+  $("averages").innerHTML = Array.from({ length: rowCount }, (_, index) => {
+    const r = raspberry[index] || { strategy: "", rate: NaN };
+    const b = blueberry[index] || { strategy: "", rate: NaN };
+    return `
     <div class="avg-row">
-      <div class="avg-label">${label(strategy)}</div>
+      <div class="avg-label">${label(r.strategy)}<br><span>${label(b.strategy)}</span></div>
       <div class="avg-bars">
-        <div class="avg-track"><div class="avg-fill" style="width:${raspberry[index].rate * 100}%"></div></div>
-        <div class="avg-track"><div class="avg-fill blue" style="width:${blueberry[index].rate * 100}%"></div></div>
+        <div class="avg-track"><div class="avg-fill" style="width:${safeRate(r.rate) * 100}%"></div></div>
+        <div class="avg-track"><div class="avg-fill blue" style="width:${safeRate(b.rate) * 100}%"></div></div>
       </div>
-      <div class="avg-value">${pct(raspberry[index].rate)}<br>${pct(blueberry[index].rate)}</div>
+      <div class="avg-value">${pct(r.rate)}<br>${pct(b.rate)}</div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 }
 
 function renderProblems(rows) {
@@ -1871,6 +2012,10 @@ function mix(a, b, t) {
 function avg(values) {
   const clean = values.filter(Number.isFinite);
   return clean.length ? clean.reduce((sum, value) => sum + value, 0) / clean.length : 0;
+}
+
+function safeRate(value) {
+  return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0;
 }
 
 function pct(value) {

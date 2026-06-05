@@ -1,0 +1,7 @@
+metric,baseline,validation,delta
+Score,0.359324,0.378023,+0.018699
+Raspberry avg win rate,0.462000,0.463700,+0.001700
+Strategy spread,0.471700,0.491200,+0.019500
+Mirror gap,0.340000,0.362000,+0.022000
+Extreme rate,0.366700,0.400000,+0.033300
+Control gap,0.611700,0.615100,+0.003400

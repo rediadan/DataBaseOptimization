@@ -3,7 +3,8 @@ param(
   [string]$BalanceRun = "iterative_balance_runs_strategy_mcts_upgrade_tuned_confirm_5000p",
   [int]$Playouts = 1500,
   [int]$Seed = 20260609,
-  [switch]$NoArchive
+  [switch]$NoArchive,
+  [switch]$NoPause
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,5 +41,9 @@ python -u $script `
   --seed $Seed 2>&1 | Tee-Object -FilePath $log
 
 Write-Host ""
-Write-Host "Strategy policy training finished. Press Enter to close this window." -ForegroundColor Green
-Read-Host
+if ($NoPause) {
+  Write-Host "Strategy policy training finished." -ForegroundColor Green
+} else {
+  Write-Host "Strategy policy training finished. Press Enter to close this window." -ForegroundColor Green
+  Read-Host
+}
